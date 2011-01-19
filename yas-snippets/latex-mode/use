@@ -1,0 +1,4 @@
+#contributor : Jason Yamada-Hanff
+#name : \usepackage{}
+# --
+\usepackage{$1}

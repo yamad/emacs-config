@@ -1,0 +1,5 @@
+#name: <%field:... name="${type}-${id}." label="..."
+# --
+<%field:${1:text}
+$>name="\${type}-\${id}.$2"
+$>label="$3"/>

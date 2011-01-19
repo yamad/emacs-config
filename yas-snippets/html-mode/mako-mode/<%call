@@ -1,0 +1,5 @@
+#name: <%def name=...></%def
+#--
+<%call expr="$1($2)">
+$>$0
+</%call>

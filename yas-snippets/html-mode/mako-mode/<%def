@@ -1,0 +1,5 @@
+#name: <%def name=...></%def
+#--
+<%def name="$1($2)">
+$>$0
+</%def>

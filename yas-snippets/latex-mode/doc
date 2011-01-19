@@ -1,0 +1,8 @@
+#contributor : Jason Yamada-Hanff
+#name : \documentclass{}
+# --
+\documentclass{${1:article}}
+
+\begin{${2:document}}
+$3
+\end{document}

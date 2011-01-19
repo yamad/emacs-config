@@ -1,0 +1,6 @@
+#name: <%field:select...
+# --
+<%field:select
+$>name="${1:name}"
+$>label="$2"
+$>options="\${c.list_fields['$1']}"/>

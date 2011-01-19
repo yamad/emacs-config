@@ -1,0 +1,6 @@
+#contributor : Jason Yamada-Hanff
+#name : \author{}
+# --
+\title{$1}
+\author{${2:Jason Yamada-Hanff}}
+\date{$3}
