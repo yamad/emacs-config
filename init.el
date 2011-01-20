@@ -49,14 +49,14 @@
 
 ;; YASnippet
 ;; ======================================
-(setq load-path (append load-path (list "~/.emacs.d/site-lisp/yasnippet")))
 (require 'yasnippet)
 ;(add-to-list 'yas/extra-mode-hooks
              ;'mako-mode-hook)
 (yas/initialize)
-(yas/load-directory "/usr/share/emacs/etc/yasnippet/snippets")
+(if (eq system-type 'windows-nt)
+    (yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/snippets")
+(yas/load-directory "/usr/share/emacs/etc/yasnippet/snippets"))
 (yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
-(yas/load-directory "~/.emacs.d/site-lisp/yas-snippets")
 
 (require 'dropdown-list)
 (setq yas/prompt-functions '(yas/dropdown-prompt))
