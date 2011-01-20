@@ -5,9 +5,14 @@
 (setq load-path (append load-path (list "~/.emacs.d")))
 (setq load-path (append load-path (list "~/.emacs.d/site-lisp")))
 
+
 ;; General requires
 (require 'find-files)
 (require 'rst)
+(setq auto-mode-alist
+      (append '(("\\.rst$" . rst-mode)
+                ("\\.rest$" . rst-mode)) auto-mode-alist))
+
 
 ;; General Options
 (setq visible-bell 1)
@@ -44,11 +49,13 @@
 
 ;; YASnippet
 ;; ======================================
+(setq load-path (append load-path (list "~/.emacs.d/site-lisp/yasnippet")))
 (require 'yasnippet)
 ;(add-to-list 'yas/extra-mode-hooks
              ;'mako-mode-hook)
 (yas/initialize)
 (yas/load-directory "/usr/share/emacs/etc/yasnippet/snippets")
+(yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
 (yas/load-directory "~/.emacs.d/site-lisp/yas-snippets")
 
 (require 'dropdown-list)
@@ -109,6 +116,12 @@
 
 ;; Python
 ;; ======================================
+
+;; Strip trailing whitespace from python, C, and C++
+(add-hook 'python-mode-hook
+          (lambda ()
+            (add-hook 'write-file-functions 'delete-trailing-whitespace)))
+
 
 ;; IPython
 (setq ipythoncommand "/usr/bin/ipython")
@@ -185,6 +198,12 @@
 ;; ======================================
 (require 'igor-mode)
 
+;; Matlab
+;; ======================================
+;(add-to-list 'load-path "~/src/matlab-emacs")
+;(load-library "matlab-load")
+;(matlab-cedet-setup)
+
 ;; Icicles
 ;; ======================================
 (setq load-path (append load-path (list "~/.emacs.d/site-lisp/icicles")))
@@ -227,7 +246,8 @@
 
 ;; link abbreviations
 (setq org-link-abbrev-alist
-      '(("google"  . "http://www.google.com/search?q=")))
+      '(("doi"     . "http://dx.doi.org/")
+        ("google"  . "http://www.google.com/search?q=%s")))
 
 ;; org+remember integration
 (setq org-directory "~/notebook/org/")
@@ -395,20 +415,48 @@
   (interactive)
   (find-files-glob "~/notebook/org/gtd/*.org")
 )
+
+;; Date-Time Functions
+(defvar current-date-format "%Y-%m-%d %a"
+  "Format of date to insert with `insert-current-date` func")
+
+(defun insert-current-date ()
+  "insert the current date using the format of `current-date-format`"
+  (interactive)
+  (insert (format-time-string current-date-format (current-time))))
+
+(global-set-key "\C-c\C-d" 'insert-current-date)
+
+
+;; Windows(OS)-specific Configuration
+;; ======================================
+
+(if (eq system-type 'windows-nt)
+  (progn
+    ;; Printer
+    (setenv "PRINTER" "PDFCreator")
+    (cond ((eq system-type 'windows-nt)
+	   (setq ps-printer-name "PDFCreator")
+	   (setq ps-printer-name-option "-d")
+	   (setq ps-lpr-command "C:\\cygwin\\bin\\lpr.exe")))
+    
+    ;; Add cygwin to path
+    (setenv "PATH" (concat (getenv "PATH") ";C:\\cygwin\\bin"))))
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ecb-options-version "2.40")
  '(frame-background-mode (quote dark))
  '(inhibit-startup-screen t)
  '(org-agenda-files (quote ("~/notebook/org/gtd/General.org" "~/notebook/org/gtd/P-Dev.org" "~/notebook/org/gtd/P-Projects.org" "/home/jason/notebook/org/gtd/Lists.org" "/home/jason/notebook/org/gtd/Work.org")))
  '(quack-smart-open-paren-p t)
+ '(inhibit-startup-screen t)
  '(rst-level-face-base-light 15))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
+ ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
