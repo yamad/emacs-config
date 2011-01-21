@@ -35,6 +35,7 @@
 ;; Set syntax highlighting and default color scheme
 (require 'color-theme)
 (color-theme-initialize)
+(color-theme-standard)
 ;(color-theme-arjen)
 (global-font-lock-mode 1)
 
@@ -43,6 +44,31 @@
 (setq-default c-basic-offset 4)
 (setq-default py-indent-offset 4)
 (setq tab-width 4)
+
+;; Line endings
+
+(defun set-eol-conversion (new-eol)
+  "Specify new end-of-line conversion NEW-EOL for the buffer's
+file coding system.  This marks the buffer as modified.  Choices
+are: unix, dos, mac"
+  (interactive "End-of-line conversion for visited file: \n")
+  ;; Check for valid input
+  (unless (or (string-equal new-eol "unix")
+              (string-equal new-eol "dos")
+              (string-equal new-eol "mac"))
+    (error "Invalid EOL type, %s" new-eol))
+
+  (if buffer-file-coding-system
+      (let ((new-coding-system
+             (coding-system-change-eol-conversion
+              buffer-file-coding-system new-eol)))
+        (set-buffer-file-coding-system new-coding-system))
+    (let ((new-coding-system
+           (coding-system-change-eol-conversion
+            'undecided new-eol)))
+      (set-buffer-file-coding-system new-coding-system)))
+  (message "EOL conversion now %s" new-eol))
+
 
 ;; Auto-Install
 (require 'auto-install)
