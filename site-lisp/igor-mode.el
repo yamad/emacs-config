@@ -28,7 +28,6 @@
 (setq auto-mode-alist
       (append '(("\\.ipf$" . igor-mode)) auto-mode-alist))
 
-
 (defun igor-wrap-re-startline (word-re)
   "Wrap a regexp to require WORD-RE to be at the start of a line"
   (concat "^[ \t]*" word-re))
@@ -129,6 +128,95 @@
     "version")
   "IgorPro Other Keywords")
 
+(defconst igor-builtin-functions
+  '("BinarySearch" "BinarySearchInterp" "ContourInfo"
+    "ContourNameToWaveRef" "ContourZ" "CreationDate" "CsrWave"
+    "CsrWaveRef" "CsrXWave" "CsrXWaveRef" "Date" "DateTime" "DimDelta"
+    "DimOffset" "DimSize" "FindDimLabel" "GetDimLabel"
+    "GetWavesDataFolder" "ImageInfo" "ImageNameToWaveRef" "Inf"
+    "LowerStr" "MatrixDet" "MatrixDot" "MatrixRank" "MatrixTrace"
+    "NaN" "NameOfWave" "Pi" "Secs2Date" "Secs2Time" "StudentA"
+    "StudentT" "TagVal" "TagWaveRef" "Time" "TraceInfo"
+    "TraceNameToWaveRef" "UpperStr" "VariableList" "WaveDims"
+    "WaveExists" "WaveInfo" "WaveList" "WaveName" "WaveRefIndexed"
+    "WaveType" "WaveUnits" "XWaveName" "XWaveRefFromTrace" "abs"
+    "acos" "acosh" "alog" "and" "asin" "asinh" "atan" "atan2" "atanh"
+    "bessI" "bessJ" "bessK" "bessY" "betai" "binomial" "cabs" "ceil"
+    "char2num" "cmplx" "conj" "cos" "cosh" "cpowi" "date" "date2secs"
+    "deltax" "e" "enoise" "erf" "erfc" "exists" "exp" "factorial"
+    "faverage" "faverageXY" "floor" "gammln" "gammp" "gammq" "gnoise"
+    "imag" "leftx" "limit" "ln" "log" "magsqr" "max" "mean" "min"
+    "mod" "modDate" "note" "num2char" "num2istr" "num2str" "numpnts"
+    "numtype" "p" "p2rect" "pnt2x" "poly" "poly2D" "q" "r" "r2polar"
+    "real" "rightx" "round" "s" "sawtooth" "sign" "sin" "sinc" "sinh"
+    "sqrt" "startMSTimer" "stopMSTimer" "str2num" "sum" "t" "tan"
+    "tanh" "ticks" "time" "trunc" "x" "x2pnt" "y" "z")
+  "Igor Pro 6 Built-in Functions")
+
+(defconst igor-builtin-operations
+  '("AppendText" "AppendToGraph" "AppendToLayout" "AppendToTable"
+    "AppendXYZContour" "AutoPositionWindow" "BackgroundInfo" "Beep"
+    "BrowseURL" "BuildMenu" "Button" "Chart" "CheckBox"
+    "CheckDisplayed" "Close" "CloseMovie" "ColorScale" "ColorTab2Wave"
+    "ControlBar" "ControlInfo" "ControlNameList" "ControlUpdate"
+    "ConvexHull" "Convolve" "CopyScales" "Correlate" "CtrlBackground"
+    "CtrlFIFO" "Cursor" "CurveFit" "DefaultFont" "DelayUpdate"
+    "DeletePoints" "Differentiate" "Dir" "Display" "DisplayHelpTopic"
+    "DisplayProcedure" "DoAlert" "DoIgorMenu" "DoUpdate" "DoWindow"
+    "DoXOPIdle" "DrawLine" "DrawOval" "DrawPICT" "DrawPoly"
+    "DrawRRect" "DrawRect" "DrawText" "Duplicate"
+    "DuplicateDataFolder" "EdgeStats" "Edit" "ErrorBars" "Execute"
+    "ExecuteScriptText" "FBinRead" "FBinWrite" "FFT" "FIFO2Wave"
+    "FIFOStatus" "FReadLine" "FSetPos" "FStatus" "FTPDownload"
+    "FTPUpload" "FastOp" "FindLevel" "FindLevels" "FindPeak"
+    "FindPointsInPoly" "FindRoots" "FindSequence" "FindValue"
+    "FuncFit" "FuncFitMD" "GetAxis" "GetMarquee" "GetSelection"
+    "GetWindow" "GraphNormal" "GraphWaveDraw" "GraphWaveEdit"
+    "GroupBox" "Hanning" "HideInfo" "HideProcedures" "HideTools"
+    "Histogram" "IFFT" "ImageAnalyzeParticles" "ImageBlend"
+    "ImageBoundaryToMask" "ImageEdgeDetection" "ImageFileInfo"
+    "ImageFilter" "ImageGenerateROIMask" "ImageHistModification"
+    "ImageHistogram" "ImageInfo" "ImageInterpolate" "ImageLineProfile"
+    "ImageLoad" "ImageMorphology" "ImageNameList" "ImageNameToWaveRef"
+    "ImageRemoveBackground" "ImageRotate" "ImageSave" "ImageSeedFill"
+    "ImageStats" "ImageThreshold" "ImageTransform" "ImageWindow"
+    "IndexSort" "InsertPoints" "Integrate" "IntegrateODE"
+    "Interp3DPath" "KillBackground" "KillControl" "KillDataFolder"
+    "KillFIFO" "KillPICTs" "KillPath" "KillStrings" "KillVariables"
+    "KillWaves" "Label" "Layout" "Legend" "ListBox" "LoadData"
+    "LoadPICT" "LoadWave" "Make" "MakeIndex" "MarkPerfTestTime"
+    "MatrixConvolve" "MatrixEigenV" "MatrixFilter" "MatrixGaussJ"
+    "MatrixLLS" "MatrixLUBkSub" "MatrixLUD" "MatrixLinearSolve"
+    "MatrixMultiply" "MatrixSVBkSub" "MatrixSVD" "MatrixSchur"
+    "MatrixSolve" "MatrixTranspose" "Modify" "ModifyContour"
+    "ModifyGraph" "ModifyImage" "ModifyLayout" "ModifyPanel"
+    "ModifyTable" "ModifyWaterfall" "MoveDataFolder" "MoveString"
+    "MoveVariable" "MoveWave" "MoveWindow" "NewDataFolder" "NewFIFO"
+    "NewFIFOChan" "NewImage" "NewLayout" "NewMovie" "NewNotebook"
+    "NewPanel" "NewPath" "NewWaterfall" "Note" "Notebook" "Open"
+    "OpenNotebook" "OpenProc" "Optimize" "P" "PathInfo" "PauseForUser"
+    "PauseUpdate" "PlayMovie" "PlayMovieAction" "PlaySnd" "PlaySound"
+    "PopupContextualMenu" "PopupMenu" "PopupMenuControl" "Preferences"
+    "Print" "PrintGraphs" "PrintLayout" "PrintNotebook" "Project"
+    "PulseStats" "PutScrapText" "Quit" "ReadVariables" "Redimension"
+    "Remove" "RemoveContour" "RemoveFromGraph" "RemoveFromLayout"
+    "RemoveFromTable" "RemoveImage" "RemoveLayoutObjects" "RemovePath"
+    "Rename" "RenameDataFolder" "RenamePICT" "RenamePath"
+    "ReorderTraces" "ReplaceText" "ReplaceWave" "ResumeUpdate"
+    "Rotate" "Save" "SaveExperiment" "SaveNotebook" "SavePICT"
+    "SetAxis" "SetBackground" "SetDashPattern" "SetDataFolder"
+    "SetDimLabel" "SetDrawEnv" "SetDrawLayer" "SetFormula"
+    "SetIgorMenuMode" "SetIgorOption" "SetMarquee" "SetProcessSleep"
+    "SetRandomSeed" "SetScale" "SetVariable" "SetWindow" "ShowInfo"
+    "ShowTools" "Silent" "Sleep" "Slider" "Slow" "Smooth"
+    "SmoothCustom" "Sort" "SoundInRecord" "SoundInSet"
+    "SoundInStartChart" "SoundInStatus" "SoundInStopChart"
+    "SphericalInterpolate" "SphericalTriangulate" "Stack"
+    "StackWindows" "String" "TabControl" "Tag" "TextBox" "Tile"
+    "TileWindows" "TitleBox" "Triangulate3d" "Unwrap" "ValDisplay"
+    "Variable" "WaveMeanStdv" "WaveStats" "boundingBall" "fprintf"
+    "popup" "printf" "sprintf" "sscanf" "wfprintf")
+  "Igor Pro 6 Built-in Operations")
 
 ;; Regexp optimized versions of word lists
 (defvar igor-procdec-keywords-re
@@ -143,6 +231,11 @@
   (regexp-opt igor-hash-keywords 'words))
 (defvar igor-other-keywords-re
   (regexp-opt igor-other-keywords 'words))
+
+(defconst igor-builtin-functions-re
+  (regexp-opt igor-builtin-functions 'words))
+(defconst igor-builtin-operations-re
+  (regexp-opt igor-builtin-operations 'words))
 
 (defconst igor-number-re "-?\\(?:[0-9]*\\.\\)?[0-9]+\\(?:e\\(?:\\+\\|-\\)?[0-9]+\\)?"
   "Number syntax in Igor")
@@ -159,14 +252,6 @@
    "\\([ \t]*:[ \t]*" igor-procsub-keywords-re "[ \t]*\\)?" ; procedure subtype
    )
   "Regexp for definition line of Igor functions/macros/etc.")
-
-;; Clear memory of keyword lists (which are now saved in regexps)
-;(setq igor-procdec-keywords nil)
-;(setq igor-procsub-keywords nil)
-;(setq igor-objrefs-keywords nil)
-;(setq igor-flowcontrol-keywords nil)
-;(setq igor-hash-keywords nil)
-;(setq igor-other-keywords nil)
 
 ;; Syntax Highlighting
 
@@ -192,6 +277,8 @@
      (cons igor-objrefs-keywords-re 'font-lock-type-face)
      (cons igor-flowcontrol-keywords-re 'font-lock-keyword-face)
      (cons igor-other-keywords-re 'font-lock-type-face)
+     (cons igor-builtin-functions-re 'font-lock-builtin-face)
+     (cons igor-builtin-operations-re 'font-lock-builtin-face)
      ;; Numbers
      (cons igor-number-re 'font-lock-constant-face)
      (cons igor-hash-keywords-re 'font-lock-preprocessor-face))))
@@ -566,6 +653,15 @@
   (interactive)
   (igor-indent-to-column (igor-calculate-indent)))
 
+;; Clear memory of keyword lists (which are now saved in regexps)
+(setq igor-procdec-keywords nil)
+(setq igor-procsub-keywords nil)
+(setq igor-objrefs-keywords nil)
+(setq igor-flowcontrol-keywords nil)
+(setq igor-hash-keywords nil)
+(setq igor-other-keywords nil)
+(setq igor-builtin-functions nil)
+(setq igor-builtin-operations nil)
 
 ;; Define this mode
 (define-derived-mode igor-mode fundamental-mode "Igor"
