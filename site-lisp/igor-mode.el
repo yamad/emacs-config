@@ -8,7 +8,10 @@
 
 ;;; Commentary:
 ;;
-;; Written for Igor Pro 6.12A
+;; Written for Igor Pro 6.12A. 
+;;
+;; Code was initially based heavily on Fred White's visual-basic-mode
+;; <http://www.emacswiki.org/cgi-bin/wiki/visual-basic-mode.el>
 
 ;;; Code:
 (defvar igor-tab-width 4)
@@ -373,6 +376,17 @@
             (push (car pair) (cdr (assoc endkey newlist)))
           (push (list endkey (car pair)) newlist))))))
 
+
+;;; Indentation pairs
+;; When a keyword is encountered that defines a block, it may
+;;  * start a construct (following lines are indented)
+;;  * end a construct (unindent to start level)
+;;  * start a new section of the construct (a mid-level keyword), which may:
+;;     * unindent to start and be used multiple times (e.g., if-elseif)
+;;     * unindent to start and be used only once (e.g., if-else)
+;;     * indent from start and be used multiple times (e.g., switch-case)
+;;     * indent from start and be used only once (e.g., switch-default)
+;;  * no keyword is found (indent as previous line)
 (defconst igor-start-end-pairs
   '(("Function" "End")
     ("Macro" "End" "EndMacro")
@@ -404,7 +418,7 @@
   "List of cons cells of start and multi-use mid-level keywords
   for same-level indentation.")
 
-(defconst igor-start-end-inc-pairs
+(defconst igor-start-middle-inc-pairs
   '(("switch" "default")
     ("strswitch" "default"))
   "List of cons cells of start and single-use mid-level keywords
@@ -415,12 +429,6 @@
     ("strswitch" "case"))
   "List of cons cells of start and multi-use mid-level keywords
   for increased-level indentation.")
-
-(defconst igor-switch-case-pairs
-  '(("switch" "case" "default")
-    ("strswitch" "case" "default"))
-  "A list of pairs where the car is the starting keyword and the
-  cdr is for mid-level keywords that increase indentation.")
 
 (defconst igor-indent-same-pairs
   (igor-flip-pairs
@@ -436,7 +444,7 @@
 
 (defconst igor-indent-increase-pairs
   (igor-flip-pairs
-   (append igor-start-end-inc-pairs))
+   (append igor-start-middle-inc-pairs))
   "List of cons cells of single-use increased-level end and start
   keywords.")
 
