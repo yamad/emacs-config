@@ -389,17 +389,32 @@
     ("#if" "#endif")
     ("#ifdef" "#endif")
     ("#ifndef" "#endif"))
-  "A list of cons cells where car and cdr are the starting and
-  ending keywords of an indentation block in Igor.  The cdr
-  should include all valid ending keywords of the car.")
+  "List of cons cells of start and end keywords for indentation
+  blocks. cdr holds all valid end keywords of the car keyword.")
 
 (defconst igor-start-middle-pairs
-  '(("if" "else" "elseif")
-    ("try" "catch")
+  '(("if" "else")
+    ("try" "catch"))
+  "List of cons cells of start and single-use mid-level keywords
+  for same-level indentation.")
+
+(defconst igor-start-middle-many-pairs
+  '(("if" "elseif")
     ("#if" "#elif"))
-  "A list of pairs where car and cdr are the starting and
-  mid-level keywords for an indentation block in Igor.  For
-  intermediate construct such as 'else' in an 'if' statement.")
+  "List of cons cells of start and multi-use mid-level keywords
+  for same-level indentation.")
+
+(defconst igor-start-end-inc-pairs
+  '(("switch" "default")
+    ("strswitch" "default"))
+  "List of cons cells of start and single-use mid-level keywords
+  for increased-level indentation.")
+
+(defconst igor-start-middle-many-inc-pairs
+  '(("switch" "case")
+    ("strswitch" "case"))
+  "List of cons cells of start and multi-use mid-level keywords
+  for increased-level indentation.")
 
 (defconst igor-switch-case-pairs
   '(("switch" "case" "default")
@@ -407,28 +422,58 @@
   "A list of pairs where the car is the starting keyword and the
   cdr is for mid-level keywords that increase indentation.")
 
-(defconst igor-indent-match-pairs
+(defconst igor-indent-same-pairs
   (igor-flip-pairs
-   (append igor-start-end-pairs igor-start-middle-pairs)))
+   (append igor-start-end-pairs igor-start-middle-pairs))
+  "List of cons cells of single-use same-level end and start
+  keywords.")
+
+(defconst igor-indent-same-many-pairs
+  (igor-flip-pairs
+   (append igor-start-middle-many-pairs))
+  "List of cons cells of multi-use same-level end and start
+  keywords.")
 
 (defconst igor-indent-increase-pairs
   (igor-flip-pairs
-   (append igor-switch-case-pairs)))
+   (append igor-start-end-inc-pairs))
+  "List of cons cells of single-use increased-level end and start
+  keywords.")
 
-(defconst igor-indent-match-pairs-regexp
-  (igor-convert-pairs-str-to-regexp igor-indent-match-pairs))
+(defconst igor-indent-increase-many-pairs
+  (igor-flip-pairs
+   (append igor-start-middle-many-inc-pairs))
+  "List of cons cells of multi-use increased-level end and start
+  keywords.")
+
+(defconst igor-indent-same-pairs-regexp
+  (igor-convert-pairs-str-to-regexp igor-indent-same-pairs))
+
+(defconst igor-indent-same-many-pairs-regexp
+  (igor-convert-pairs-str-to-regexp igor-indent-same-many-pairs))
 
 (defconst igor-indent-increase-pairs-regexp
   (igor-convert-pairs-str-to-regexp igor-indent-increase-pairs))
 
-(defconst igor-indent-match-keys-regexp
+(defconst igor-indent-increase-many-pairs-regexp
+  (igor-convert-pairs-str-to-regexp igor-indent-increase-many-pairs))
+
+(defconst igor-indent-same-keys-regexp
   (igor-wrap-regexp-startline
    (regexp-opt
-    (sort (mapcar 'car igor-indent-match-pairs) 'string<) 'words)))
+    (sort (mapcar 'car igor-indent-same-pairs) 'string<) 'words)))
+(defconst igor-indent-same-many-keys-regexp
+  (igor-wrap-regexp-startline
+   (regexp-opt
+    (sort (mapcar 'car igor-indent-same-many-pairs) 'string<) 'words)))
 (defconst igor-indent-increase-keys-regexp
   (igor-wrap-regexp-startline
    (regexp-opt
     (sort (mapcar 'car igor-indent-increase-pairs) 'string<) 'words)))
+(defconst igor-indent-increase-many-keys-regexp
+  (igor-wrap-regexp-startline
+   (regexp-opt
+    (sort (mapcar 'car igor-indent-increase-many-pairs) 'string<) 'words)))
 
 (defun igor-find-indent-match (inlist)
   "Return indent count for the matched regexp pair from
@@ -463,15 +508,26 @@
        ;; If first line, no indentation
        ((bobp)
         0)
-       ;; Block stmts that match indent of beginning block stmt
-       ((looking-at igor-indent-match-keys-regexp)
-        (igor-find-indent-match
-         igor-indent-match-pairs-regexp))
 
-       ;; Block stmts that increase indent from begin block stmt (switch/case)
-       ((looking-at igor-indent-increase-keys-regexp)
-        (+ (igor-find-first-indent-match
+       ;; Statements that match start keyword indent
+       ((looking-at igor-indent-same-keys-regexp) ; single-use words
+        (igor-find-indent-match
+         igor-indent-same-pairs-regexp))
+
+       ((looking-at igor-indent-same-many-keys-regexp) ; multi-use
+        (igor-find-first-indent-match
+         igor-indent-same-many-pairs-regexp))
+
+
+       ;; Keywords that increase start keyword indent
+       ((looking-at igor-indent-increase-keys-regexp) ; single-use words
+        (+ (igor-find-indent-match
             igor-indent-increase-pairs-regexp)
+           igor-tab-width))
+
+       ((looking-at igor-indent-increase-many-keys-regexp) ; multi-use
+        (+ (igor-find-first-indent-match
+            igor-indent-increase-many-pairs-regexp)
            igor-tab-width))
 
        ;; Cases depending on previous line indent
