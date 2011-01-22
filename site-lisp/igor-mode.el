@@ -29,9 +29,9 @@
       (append '(("\\.ipf$" . igor-mode)) auto-mode-alist))
 
 
-(defun igor-wrap-regexp-startline (word-regexp)
-  "Wrap a regexp to require word-regexp to be at the start of a line"
-  (concat "^[ \t]*" word-regexp))
+(defun igor-wrap-re-startline (word-re)
+  "Wrap a regexp to require WORD-RE to be at the start of a line"
+  (concat "^[ \t]*" word-re))
 
 ;; Igor Pro Language Keywords and Built-ins
 (defvar igor-procdec-keywords
@@ -131,36 +131,32 @@
 
 
 ;; Regexp optimized versions of word lists
-(defvar igor-procdec-keywords-regexp
-  (igor-wrap-regexp-startline
-   (regexp-opt igor-procdec-keywords 'words)))
-(defvar igor-procsub-keywords-regexp
+(defvar igor-procdec-keywords-re
+  (regexp-opt igor-procdec-keywords 'words))
+(defvar igor-procsub-keywords-re
   (regexp-opt igor-procsub-keywords 'words))
-(defvar igor-objrefs-keywords-regexp
+(defvar igor-objrefs-keywords-re
   (regexp-opt igor-objrefs-keywords 'words))
-(defvar igor-flowcontrol-keywords-regexp
+(defvar igor-flowcontrol-keywords-re
   (regexp-opt igor-flowcontrol-keywords 'words))
-(defvar igor-hash-keywords-regexp
+(defvar igor-hash-keywords-re
   (regexp-opt igor-hash-keywords 'words))
-(defvar igor-other-keywords-regexp
+(defvar igor-other-keywords-re
   (regexp-opt igor-other-keywords 'words))
 
-(defconst igor-number-regexp "-?\\(?:[0-9]*\\.\\)?[0-9]+\\(?:e\\(?:\\+\\|-\\)?[0-9]+\\)?"
+(defconst igor-number-re "-?\\(?:[0-9]*\\.\\)?[0-9]+\\(?:e\\(?:\\+\\|-\\)?[0-9]+\\)?"
   "Number syntax in Igor")
-(defconst igor-name-regexp "[a-zA-Z0-9_]+"
+(defconst igor-name-re "[a-zA-Z0-9_]+"
   "Legal object names in Igor")
 
-(defvar igor-defun-regexp
+(defvar igor-defun-re
   (concat
-   igor-procdec-keywords-regexp "[ \t]+"    ; procedure type
-   "\\(" igor-name-regexp "\\)[ \t]*"       ; procedure name
-   "\\((" "\\(?:[ \t]*" "\\(" igor-name-regexp "\\)*" "[ \t]*,?[ \t]*\\)*" ")\\)" ; parameter list
-   "\\([ \t]*:[ \t]*" igor-procsub-keywords-regexp "[ \t]*\\)?" ; procedure subtype
+   igor-procdec-keywords-re "[ \t]+"    ; procedure type
+   "\\(" igor-name-re "\\)[ \t]*"       ; procedure name
+   "\\((" "\\(?:[ \t]*" "\\(" igor-name-re "\\)*" "[ \t]*,?[ \t]*\\)*" ")\\)" ; parameter list
+   "\\([ \t]*:[ \t]*" igor-procsub-keywords-re "[ \t]*\\)?" ; procedure subtype
    )
   "Regexp for definition line of Igor functions/macros/etc.")
-(regexp-opt-depth igor-defun-regexp)
-6
-
 
 ;; Clear memory of keyword lists (which are now saved in regexps)
 ;(setq igor-procdec-keywords nil)
@@ -190,18 +186,18 @@
            '(2 font-lock-function-name-face nil t) ; procedure name
            '(4 font-lock-variable-name-face nil t) ; parameters
            '(6 font-lock-keyword-face))            ; procedure subtype
-     (cons igor-procdec-keywords-regexp 'font-lock-keyword-face)
-     (cons igor-procsub-keywords-regexp 'font-lock-keyword-face)
-     (cons igor-objrefs-keywords-regexp 'font-lock-type-face)
-     (cons igor-flowcontrol-keywords-regexp 'font-lock-keyword-face)
-     (cons igor-other-keywords-regexp 'font-lock-type-face)
+     (cons igor-procdec-keywords-re 'font-lock-keyword-face)
+     (cons igor-procsub-keywords-re 'font-lock-keyword-face)
+     (cons igor-objrefs-keywords-re 'font-lock-type-face)
+     (cons igor-flowcontrol-keywords-re 'font-lock-keyword-face)
+     (cons igor-other-keywords-re 'font-lock-type-face)
      ;; Numbers
-     (cons igor-number-regexp 'font-lock-constant-face)
-     (cons igor-hash-keywords-regexp 'font-lock-preprocessor-face))))
+     (cons igor-number-re 'font-lock-constant-face)
+     (cons igor-hash-keywords-re 'font-lock-preprocessor-face))))
 
 (defvar igor-font-lock-keywords-2
   `(append igor-font-lock-keywords-1
-          (,igor-other-keywords-regexp . font-lock-keyword-face)))
+          (,igor-other-keywords-re . font-lock-keyword-face)))
 
 (defvar igor-font-lock-keywords-default
   igor-font-lock-keywords-1)
@@ -239,18 +235,18 @@
     "try" "catch" "#if" "#elif" "#ifdef" "#ifndef")
   "Words that increase indentation level")
 
-(defvar igor-closeblock-regexp
+(defvar igor-closeblock-re
   (concat "^[ \t]*" (regexp-opt igor-closeblock-words 'words)))
 
-(defvar igor-openblock-regexp
+(defvar igor-openblock-re
   (concat "^[ \t]*" (regexp-opt igor-openblock-words 'words)))
 
-(defconst igor-blank-regexp "^[ \t]*$")
-(defconst igor-comment-regexp "^[ \t]*\/\/.*$")
+(defconst igor-blank-re "^[ \t]*$")
+(defconst igor-comment-re "^[ \t]*\/\/.*$")
 
-(defconst igor-defun-start-regexp
+(defconst igor-defun-start-re
   (concat "^[ \t]*" (regexp-opt igor-defun-start-words 'words)))
-(defconst igor-defun-end-regexp
+(defconst igor-defun-end-re
   (concat "^[ \t]*" (regexp-opt igor-defun-end-words 'words)))
 
 
@@ -260,12 +256,12 @@
 (defun igor-beginning-of-defun()
   "Set the pointer at the beginning of the Function/Macro/etc within which the pointer is located."
   (interactive)
-  (re-search-backward igor-defun-start-regexp))
+  (re-search-backward igor-defun-start-re))
 
 (defun igor-end-of-defun()
   "Set the pointer at the end of the Function/Macro/etc within which the pointer is located."
   (interactive)
-  (re-search-forward igor-defun-end-regexp))
+  (re-search-forward igor-defun-end-re))
 
 (defun igor-mark-defun()
   "Set the region pointer around Function/Macro/etc within which the pointer is located."
@@ -285,8 +281,8 @@
   (if (not (bobp))
       (forward-line -1))        ; previous-line depends on goal column
   (while (and (not (bobp))
-              (or (looking-at igor-blank-regexp)
-                  (looking-at igor-comment-regexp)))
+              (or (looking-at igor-blank-re)
+                  (looking-at igor-comment-re)))
     (forward-line -1)))
 
 (defun igor-next-line-of-code()
@@ -295,7 +291,7 @@
   (if (null (eobp))
       (forward-line 1))        ; next-line depends on goal column
   (while (and (null (eobp))
-              (looking-at igor-comment-regexp))
+              (looking-at igor-comment-re))
     (forward-line 1)))
 
 (defun igor-find-predicate-matching-stmt (open-p close-p)
@@ -314,14 +310,14 @@
             ((funcall open-p)
              (setq level (- level 1)))))))
 
-(defun igor-find-matching-stmt (open-regexp close-regexp)
+(defun igor-find-matching-stmt (open-re close-re)
   "Same as function `igor-find-predicate-matching-stmt' except
-  that regexps OPEN-REGEXP CLOSE-REGEXP are supplied instead of
+  that regexps OPEN-RE CLOSE-RE are supplied instead of
   predicate, equivalent predicate being to be looking at those
   regexps."
   (igor-find-predicate-matching-stmt
-   (lambda () (looking-at open-regexp))
-   (lambda () (looking-at close-regexp))))
+   (lambda () (looking-at open-re))
+   (lambda () (looking-at close-re))))
 
 (defun igor-find-first-predicate-matching-stmt (open-p sub-p)
   "Find opening statement statisfying OPEN-P predicate for which
@@ -340,22 +336,22 @@
       (if (funcall open-p)
           (setq found t)))))
 
-(defun igor-find-first-matching-stmt (open-regexp sub-regexp)
+(defun igor-find-first-matching-stmt (open-re sub-re)
   "Same as function `igor-find-first-predicate-matching-stmt'
-  except that regexps OPEN-REGEXP and SUB-REGEXP are supplied
+  except that regexps OPEN-RE and SUB-RE are supplied
   instead of predicates"
   (igor-find-first-predicate-matching-stmt
-   (lambda () (looking-at open-regexp))
-   (lambda () (looking-at sub-regexp))))
+   (lambda () (looking-at open-re))
+   (lambda () (looking-at sub-re))))
 
-(defun igor-convert-pairs-str-to-regexp (inlist)
+(defun igor-convert-pairs-str-to-re (inlist)
   "Convert pairs of strings to pairs of optimized regexps"
   (let (regexp-list)
     (dolist (curr (reverse inlist) regexp-list)
       (push (list
-             (igor-wrap-regexp-startline
+             (igor-wrap-re-startline
               (regexp-opt (list (car curr)) 'words))
-             (igor-wrap-regexp-startline
+             (igor-wrap-re-startline
               (regexp-opt (cdr curr) 'words)))
             regexp-list))))
 
@@ -446,40 +442,40 @@
   "List of cons cells of multi-use increased-level end and start
   keywords.")
 
-(defconst igor-indent-same-pairs-regexp
-  (igor-convert-pairs-str-to-regexp igor-indent-same-pairs))
+(defconst igor-indent-same-pairs-re
+  (igor-convert-pairs-str-to-re igor-indent-same-pairs))
 
-(defconst igor-indent-same-many-pairs-regexp
-  (igor-convert-pairs-str-to-regexp igor-indent-same-many-pairs))
+(defconst igor-indent-same-many-pairs-re
+  (igor-convert-pairs-str-to-re igor-indent-same-many-pairs))
 
-(defconst igor-indent-increase-pairs-regexp
-  (igor-convert-pairs-str-to-regexp igor-indent-increase-pairs))
+(defconst igor-indent-increase-pairs-re
+  (igor-convert-pairs-str-to-re igor-indent-increase-pairs))
 
-(defconst igor-indent-increase-many-pairs-regexp
-  (igor-convert-pairs-str-to-regexp igor-indent-increase-many-pairs))
+(defconst igor-indent-increase-many-pairs-re
+  (igor-convert-pairs-str-to-re igor-indent-increase-many-pairs))
 
-(defconst igor-indent-same-keys-regexp
-  (igor-wrap-regexp-startline
+(defconst igor-indent-same-keys-re
+  (igor-wrap-re-startline
    (regexp-opt
     (sort (mapcar 'car igor-indent-same-pairs) 'string<) 'words)))
-(defconst igor-indent-same-many-keys-regexp
-  (igor-wrap-regexp-startline
+(defconst igor-indent-same-many-keys-re
+  (igor-wrap-re-startline
    (regexp-opt
     (sort (mapcar 'car igor-indent-same-many-pairs) 'string<) 'words)))
-(defconst igor-indent-increase-keys-regexp
-  (igor-wrap-regexp-startline
+(defconst igor-indent-increase-keys-re
+  (igor-wrap-re-startline
    (regexp-opt
     (sort (mapcar 'car igor-indent-increase-pairs) 'string<) 'words)))
-(defconst igor-indent-increase-many-keys-regexp
-  (igor-wrap-regexp-startline
+(defconst igor-indent-increase-many-keys-re
+  (igor-wrap-re-startline
    (regexp-opt
     (sort (mapcar 'car igor-indent-increase-many-pairs) 'string<) 'words)))
 
 (defun igor-find-indent-match (inlist)
   "Return indent count for the matched regexp pair from
-  inlist. Assumes the open-regexp is in cdr and close-regexp is
+  inlist. Assumes the open-re is in cdr and close-re is
   in car (flipped pairs, see `igor-flip-pairs').  Finds the first
-  unclosed occurence of open-regexp."
+  unclosed occurence of open-re."
   (let ((elt (car inlist)))
     (if (looking-at (car elt))
         (progn
@@ -489,9 +485,9 @@
 
 (defun igor-find-first-indent-match (inlist)
   "Return indent count for the matched regexp pair from
-  inlist. Assumes the open-regexp is in cdr and close-regexp is
+  inlist. Assumes the open-re is in cdr and close-re is
   in car (flipped pairs, see `igor-flip-pairs').  Finds the first
-  occurence of open-regexp."
+  occurence of open-re."
   (let ((elt (car inlist)))
     (if (looking-at (car elt))
         (progn
@@ -510,31 +506,31 @@
         0)
 
        ;; Statements that match start keyword indent
-       ((looking-at igor-indent-same-keys-regexp) ; single-use words
+       ((looking-at igor-indent-same-keys-re) ; single-use words
         (igor-find-indent-match
-         igor-indent-same-pairs-regexp))
+         igor-indent-same-pairs-re))
 
-       ((looking-at igor-indent-same-many-keys-regexp) ; multi-use
+       ((looking-at igor-indent-same-many-keys-re) ; multi-use
         (igor-find-first-indent-match
-         igor-indent-same-many-pairs-regexp))
+         igor-indent-same-many-pairs-re))
 
 
        ;; Keywords that increase start keyword indent
-       ((looking-at igor-indent-increase-keys-regexp) ; single-use words
+       ((looking-at igor-indent-increase-keys-re) ; single-use words
         (+ (igor-find-indent-match
-            igor-indent-increase-pairs-regexp)
+            igor-indent-increase-pairs-re)
            igor-tab-width))
 
-       ((looking-at igor-indent-increase-many-keys-regexp) ; multi-use
+       ((looking-at igor-indent-increase-many-keys-re) ; multi-use
         (+ (igor-find-first-indent-match
-            igor-indent-increase-many-pairs-regexp)
+            igor-indent-increase-many-pairs-re)
            igor-tab-width))
 
        ;; Cases depending on previous line indent
        (t
         (igor-previous-line-of-code)
         ;; Block open stmts increase next line indent
-        (if (looking-at igor-openblock-regexp)
+        (if (looking-at igor-openblock-re)
             (+ (current-indentation) igor-tab-width)
           ;; By default, just copy indent from prev line
           (current-indentation)))))))
@@ -549,7 +545,7 @@
          (blank-line-p
           (save-excursion
             (beginning-of-line)
-            (looking-at igor-blank-regexp))))
+            (looking-at igor-blank-re))))
 
     (cond ((/= col (current-indentation))
            (save-excursion
