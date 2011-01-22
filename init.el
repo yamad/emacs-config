@@ -35,7 +35,9 @@
 ;; Set syntax highlighting and default color scheme
 (require 'color-theme)
 (color-theme-initialize)
-(color-theme-standard)
+(load-file "~/.emacs.d/site-lisp/color-theme-zenburn.el")
+(color-theme-zenburn)
+;(color-theme-standard)
 ;(color-theme-arjen)
 (global-font-lock-mode 1)
 
@@ -468,6 +470,7 @@ are: unix, dos, mac"
     
     ;; Add cygwin to path
     (setenv "PATH" (concat (getenv "PATH") ";C:\\cygwin\\bin"))))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
