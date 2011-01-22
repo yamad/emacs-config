@@ -455,6 +455,14 @@ are: unix, dos, mac"
 
 (global-set-key "\C-c\C-d" 'insert-current-date)
 
+(defun reload-igor-mode ()
+  (interactive)
+  (if (member major-mode '(igor-mode))
+      (progn
+        (text-mode)
+        (unload-feature 'igor-mode t)
+        (load-library "igor-mode")
+        (igor-mode))))
 
 ;; Windows(OS)-specific Configuration
 ;; ======================================
