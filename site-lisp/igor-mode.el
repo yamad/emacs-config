@@ -151,7 +151,9 @@
 
 (defvar igor-defun-re
   (concat
-   igor-procdec-keywords-re "[ \t]+"    ; procedure type
+   "^[ \t]*\\(\\(?:Static[ \t]+\\)?"    ; modifier prefix
+   igor-procdec-keywords-re "\\)"       ; procedure type
+   "\\(?:\\/S\\)*[ \t]+"                ; procedure modifier
    "\\(" igor-name-re "\\)[ \t]*"       ; procedure name
    "\\((" "\\(?:[ \t]*" "\\(" igor-name-re "\\)*" "[ \t]*,?[ \t]*\\)*" ")\\)" ; parameter list
    "\\([ \t]*:[ \t]*" igor-procsub-keywords-re "[ \t]*\\)?" ; procedure subtype
@@ -181,11 +183,10 @@
   (eval-when-compile
     (list
      ;; Function names
-     (list igor-defun-regexp
-           '(1 font-lock-keyword-face nil t) ; procedure type
-           '(2 font-lock-function-name-face nil t) ; procedure name
-           '(4 font-lock-variable-name-face nil t) ; parameters
-           '(6 font-lock-keyword-face))            ; procedure subtype
+     (list igor-defun-re
+           '(1 font-lock-keyword-face nil)       ; modifier and procedure type
+           '(3 font-lock-function-name-face nil) ; procedure name
+           '(7 font-lock-keyword-face))          ; procedure subtype
      (cons igor-procdec-keywords-re 'font-lock-keyword-face)
      (cons igor-procsub-keywords-re 'font-lock-keyword-face)
      (cons igor-objrefs-keywords-re 'font-lock-type-face)
