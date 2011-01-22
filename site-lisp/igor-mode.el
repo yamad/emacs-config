@@ -1,6 +1,6 @@
 ;;; igor-mode.el --- Major mode for editing Igor Pro procedure files
 
-;; Copyright (C) 2011  
+;; Copyright (C) 2011
 
 ;; Author:   Jason Yamada-Hanff <jyamada@fas.harvard.edu>
 ;; Keywords: languages
@@ -8,7 +8,7 @@
 
 ;;; Commentary:
 ;;
-;; Written for Igor Pro 6.12A. 
+;; Written for Igor Pro 6.12A.
 ;;
 ;; Code was initially based heavily on Fred White's visual-basic-mode
 ;; <http://www.emacswiki.org/cgi-bin/wiki/visual-basic-mode.el>
@@ -35,8 +35,8 @@
 
 ;; Igor Pro Language Keywords and Built-ins
 (defvar igor-procdec-keywords
-  '("End" "EndMacro" "EndStructure" 
-    "Function" "Macro" "Picture" 
+  '("End" "EndMacro" "EndStructure"
+    "Function" "Macro" "Picture"
     "Proc" "Structure" "Window")
   "IgorPro Procedure Declaration Keywords")
 
@@ -173,14 +173,6 @@
 ;; Syntax Highlighting
 
 ;; Syntax Table
-;; (defvar igor-mode-syntax-table nil
-;;   "Syntax table used while in Igor mode.")
-;; (if igor-mode-syntax-table ()
-;;   (setq igor-mode-syntax-table (make-syntax-table))
-;;   ; Comments
-;;   (modify-syntax-entry ?/ ". 12" igor-mode-syntax-table)
-;;   (modify-syntax-entry ?\n ">" igor-mode-syntax-table))
-
 (defvar igor-mode-syntax-table
   (let ((st (make-syntax-table)))
     ;; Single-line comments "//"
@@ -219,7 +211,7 @@
     igor-font-lock-keywords-1           ; level 1
     igor-font-lock-keywords-2           ; level 2
     ))
-    
+
 (defvar igor-font-lock-defaults
   '(igor-font-lock-keywords-1        ; keyword list
     nil                              ; perform syntactic fontification
@@ -243,7 +235,7 @@
 
 (defvar igor-openblock-words
   '("Function" "Macro" "Picture" "Proc" "Structure" "Window"
-    "default" "do" "for" "if" "else" "elseif" "case" "switch" 
+    "default" "do" "for" "if" "else" "elseif" "case" "switch"
     "try" "catch" "#if" "#elif" "#ifdef" "#ifndef")
   "Words that increase indentation level")
 
