@@ -81,7 +81,8 @@ are: unix, dos, mac"
 ;(add-to-list 'yas/extra-mode-hooks
              ;'mako-mode-hook)
 (yas/initialize)
-(if (eq system-type 'windows-nt)
+(if (or (eq system-type 'windows-nt)
+        (eq system-type 'darwin))
     (yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/snippets")
 (yas/load-directory "/usr/share/emacs/etc/yasnippet/snippets"))
 (yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
@@ -130,12 +131,69 @@ are: unix, dos, mac"
 
 ;; XML
 ;; ======================================
+(eval-after-load 'rng-loc
+  '(add-to-list 'rng-schema-locating-files
+		"~/.schemas/nxml-schemas.xml"))
 
 ;; N3-Mode
 (add-to-list 'load-path "~/.emacs.d/site-lisp/n3-mode.el")
 (autoload 'n3-mode "n3-mode" "Major mode for OWL and N3 files" t)
 (add-to-list 'auto-mode-alist '("\\.n3\\'" . n3-mode))
 (add-to-list 'auto-mode-alist '("\\.owl\\'" . n3-mode))
+
+;; nxml
+(defun decorate-region (b e btxt etxt)
+  "Wrap a region bounded by positions B and E with the string
+BTXT at the beginning and ETXT at the end"
+  (interactive "r\nMBeginning text: \nMEnding text: ")
+  (save-excursion
+    (save-restriction
+      (narrow-to-region b e)
+      (goto-char (point-min))
+      (insert btxt)
+      (goto-char (point-max))
+      (insert etxt))))
+
+(defun decorate-thing (thing btxt etxt)
+  "Wrap current thing with BTXT and ETXT"
+  (interactive "SThing: \nMBeginning text: \nMEnding text: ")
+  (let ((bounds (bounds-of-thing-at-point thing)))
+    (decorate-region
+     (car bounds)
+     (cdr bounds)
+     btxt etxt)))
+
+(require 'rng-nxml)
+
+(defun my-rng-complete-tag ()
+  (completing-read "Tag: "
+                   'rng-complete-qname-function
+                   nil nil ""
+                   'rng-tag-history))
+
+(defun nxml-wrap-region (b e tag)
+  (interactive
+   (list
+    (region-beginning)
+    (region-end)
+    (my-rng-complete-tag)))
+  (decorate-region b e
+   (format "<%s>" tag)
+   (format "</%s>" tag)))
+
+(defun nxml-wrap-thing (thing tag)
+  (interactive
+   (list
+    (intern (read-string "Thing: " nil))
+    (my-rng-complete-tag)))
+  (let ((bounds (bounds-of-thing-at-point thing)))
+    (nxml-wrap-region (car bounds) (cdr bounds) tag)))
+
+(defun nxml-wrap-word (tag)
+  (interactive
+   (list
+    (my-rng-complete-tag)))
+  (nxml-wrap-thing 'word tag))
 
 ;; Scheme
 ;; ======================================
@@ -144,12 +202,11 @@ are: unix, dos, mac"
 
 ;; Python
 ;; ======================================
-
+(require 'python-mode)
 ;; Strip trailing whitespace from python, C, and C++
 (add-hook 'python-mode-hook
           (lambda ()
             (add-hook 'write-file-functions 'delete-trailing-whitespace)))
-
 
 ;; IPython
 (setq ipythoncommand "/usr/bin/ipython")
@@ -240,7 +297,8 @@ are: unix, dos, mac"
 
 ;; Org mode
 ;; ======================================
-
+(if (eq system-type 'darwin)
+    (setq load-path (cons "~/src/org-mode/lisp" load-path)))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
