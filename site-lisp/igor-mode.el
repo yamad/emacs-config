@@ -282,8 +282,36 @@
 (defvar igor-mode-syntax-table
   (let ((st (make-syntax-table)))
     ;; Single-line comments "//"
-    (modify-syntax-entry ?/ ". 12" st)
+    (modify-syntax-entry ?/  ". 12" st)
     (modify-syntax-entry ?\n ">" st)
+    ;; strings
+    (modify-syntax-entry ?\" "\"" st)   ; string literals
+    (modify-syntax-entry ?\' "\"" st)   ; literal names
+    ;; make underscores part of words
+    (modify-syntax-entry ?_  "w" st)
+    ;; operators
+    (modify-syntax-entry ?$  "." st)
+    (modify-syntax-entry ?&  "." st)
+    (modify-syntax-entry ?=  "." st)
+    (modify-syntax-entry ?^  "." st)
+    (modify-syntax-entry ?*  "." st)
+    (modify-syntax-entry ?+  "." st)
+    (modify-syntax-entry ?-  "." st)
+    (modify-syntax-entry ?!  "." st)
+    (modify-syntax-entry ?~  "." st)
+    (modify-syntax-entry ?<  "." st)
+    (modify-syntax-entry ?>  "." st)
+    (modify-syntax-entry ?%  "." st)
+    (modify-syntax-entry ?|  "." st)
+    (modify-syntax-entry ??  "." st)
+    (modify-syntax-entry ?:  "." st)
+    (modify-syntax-entry ?,  "." st)
+    (modify-syntax-entry ?\; "." st)
+    ;; parens
+    (modify-syntax-entry ?\( "()" st)
+    (modify-syntax-entry ?\) ")(" st)
+    (modify-syntax-entry ?\[ "(]" st)
+    (modify-syntax-entry ?\] ")[" st)
     st)
   "Syntax table used while in `igor-mode'")
 
