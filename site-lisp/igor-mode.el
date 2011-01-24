@@ -689,11 +689,12 @@
 ;; Define this mode
 (define-derived-mode igor-mode fundamental-mode "Igor"
   "Major mode for editing IgorPro procedure files."
-;  (set (make-local-variable 'font-lock-keywords) igor-font-lock-keywords)
+  (set (make-local-variable 'font-lock-defaults) igor-font-lock-defaults)
+  (set-syntax-table igor-mode-syntax-table)
   (set (make-local-variable 'indent-line-function) 'igor-indent-line)
   (set (make-local-variable 'tab-width) igor-tab-width)
-  (set-syntax-table igor-mode-syntax-table)
-  (set (make-local-variable 'font-lock-defaults) igor-font-lock-defaults))
+  (set (make-local-variable 'comment-start) "// ")
+  (set (make-local-variable 'comment-end) ""))
 
 (provide 'igor-mode)
 ;;; igor-mode.el ends here
