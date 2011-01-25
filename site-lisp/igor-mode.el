@@ -320,9 +320,9 @@
     (list
      ;; Function names
      (list igor-defun-re
-           '(1 font-lock-keyword-face nil)       ; modifier and procedure type
-           '(3 font-lock-function-name-face nil) ; procedure name
-           '(7 font-lock-keyword-face))          ; procedure subtype
+           '(1 font-lock-keyword-face t nil)       ; modifier and procedure type
+           '(3 font-lock-function-name-face t nil) ; procedure name
+           '(7 font-lock-keyword-face nil t))      ; procedure subtype
      (cons igor-procdec-keywords-re 'font-lock-keyword-face)
      (cons igor-procsub-keywords-re 'font-lock-keyword-face)
      (cons igor-objrefs-keywords-re 'font-lock-type-face)
