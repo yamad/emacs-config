@@ -269,7 +269,7 @@
   (concat
    "^[ \t]*\\(\\(?:Static[ \t]+\\)?"    ; modifier prefix
    igor-procdec-keywords-re "\\)"       ; procedure type
-   "\\(?:\\/S\\)*[ \t]+"                ; procedure modifier
+   "\\(?:\\/S\\)?[ \t]+"                ; procedure modifier
    "\\(" igor-name-re "\\)[ \t]*"       ; procedure name
    "\\((" "\\(?:[ \t]*" "\\(" igor-name-re "\\)*" "[ \t]*,?[ \t]*\\)*" ")\\)" ; parameter list
    "\\([ \t]*:[ \t]*" igor-procsub-keywords-re "[ \t]*\\)?" ; procedure subtype
@@ -308,10 +308,10 @@
     (modify-syntax-entry ?,  "." st)
     (modify-syntax-entry ?\; "." st)
     ;; parens
-    (modify-syntax-entry ?\( "()" st)
-    (modify-syntax-entry ?\) ")(" st)
-    (modify-syntax-entry ?\[ "(]" st)
-    (modify-syntax-entry ?\] ")[" st)
+    (modify-syntax-entry ?\( "(" st)
+    (modify-syntax-entry ?\) ")" st)
+    (modify-syntax-entry ?[ "(" st)
+    (modify-syntax-entry ?] ")" st)
     st)
   "Syntax table used while in `igor-mode'")
 
@@ -320,9 +320,9 @@
     (list
      ;; Function names
      (list igor-defun-re
-           '(1 font-lock-keyword-face t nil)       ; modifier and procedure type
-           '(3 font-lock-function-name-face t nil) ; procedure name
-           '(7 font-lock-keyword-face nil t))      ; procedure subtype
+           '(7 font-lock-keyword-face nil t)  ; procedure subtype
+           '(1 font-lock-keyword-face)        ; modifier and procedure type
+           '(3 font-lock-function-name-face)) ; procedure name
      (cons igor-procdec-keywords-re 'font-lock-keyword-face)
      (cons igor-procsub-keywords-re 'font-lock-keyword-face)
      (cons igor-objrefs-keywords-re 'font-lock-type-face)
