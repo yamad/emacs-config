@@ -269,7 +269,7 @@
   (concat
    "^[ \t]*\\(\\(?:Static[ \t]+\\)?"    ; modifier prefix
    igor-procdec-keywords-re "\\)"       ; procedure type
-   "\\(?:\\/S\\)?[ \t]+"                ; procedure modifier
+   "\\(?:\\/\\(?:S\\|WAVE\\)\\)?[ \t]+" ; procedure modifier
    "\\(" igor-name-re "\\)[ \t]*"       ; procedure name
    "\\((" "\\(?:[ \t]*" "\\(" igor-name-re "\\)*" "[ \t]*,?[ \t]*\\)*" ")\\)" ; parameter list
    "\\([ \t]*:[ \t]*" igor-procsub-keywords-re "[ \t]*\\)?" ; procedure subtype
