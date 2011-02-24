@@ -102,17 +102,69 @@ are: unix, dos, mac"
 ;; ======================================
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
+(setq TeX-engine 'xetex)
+(setq TeX-PDF-mode t)
 (setq-default TeX-master nil)
 
 (add-hook 'LaTeX-mode-hook 'auto-fill-mode)
 (add-hook 'LaTeX-mode-hook 'flyspell-mode)
 (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
 
-(add-hook 'LaTeX-math-mode 'turn-on-reftex)
+(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
 (setq reftex-plug-into-AUCTeX t)
 
 (setq TeX-open-quote "``")
 (setq TeX-close-quote "''")
+
+(defun my-latex-setup ()
+  (defun LaTeX-word-count ()
+    (interactive)
+    (let* ((this-file (buffer-file-name))
+           (word-count
+            (with-output-to-string
+              (with-current-buffer standard-output
+                (call-process "texcount.pl" nil t nil "-brief" this-file)))))
+      (string-match "\n$" word-count)
+      (message (replace-match "" nil nil word-count))))
+  (define-key LaTeX-mode-map "\C-cw" 'LaTeX-word-count))
+(add-hook 'LaTeX-mode-hook 'my-latex-setup t)
+
+(if (eq system-type 'windows-nt)
+    (progn
+      (require 'tex-mik)
+      (setq preview-image-type 'pnm)))
+
+(eval-after-load "tex"
+  '(add-to-list 'TeX-command-list
+                '("Biber" "biber %s" TeX-run-Biber nil t :help "Run Biber") t))
+
+(defun TeX-run-Biber (name command file)
+  "Create a process for NAME using COMMAND to format FILE with Biber." 
+  (let ((process (TeX-run-command name command file)))
+    (setq TeX-sentinel-function 'TeX-Biber-sentinel)
+    (if TeX-process-asynchronous
+        process
+      (TeX-synchronous-sentinel name file process))))
+
+(defun TeX-Biber-sentinel (process name)
+  "Cleanup TeX output buffer after running Biber."
+  (goto-char (point-max))
+  (cond
+   ;; Check whether Biber reports any warnings or errors.
+   ((re-search-backward (concat
+                         "^(There \\(?:was\\|were\\) \\([0-9]+\\) "
+                         "\\(warnings?\\|error messages?\\))") nil t)
+    ;; Tell the user their number so that she sees whether the
+    ;; situation is getting better or worse.
+    (message (concat "Biber finished with %s %s. "
+                     "Type `%s' to display output.")
+             (match-string 1) (match-string 2)
+             (substitute-command-keys
+              "\\\\[TeX-recenter-output-buffer]")))
+   (t
+    (message (concat "Biber finished successfully. "
+                     "Run LaTeX again to get citations right."))))
+  (setq TeX-command-next TeX-command-default))
 
 ;; C
 ;; ======================================
@@ -538,20 +590,19 @@ BTXT at the beginning and ETXT at the end"
     (setenv "PATH" (concat (getenv "PATH") ";C:\\cygwin\\bin"))))
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(ecb-options-version "2.40")
  '(frame-background-mode (quote dark))
  '(inhibit-startup-screen t)
  '(org-agenda-files (quote ("~/notebook/org/gtd/General.org" "~/notebook/org/gtd/P-Dev.org" "~/notebook/org/gtd/P-Projects.org" "/home/jason/notebook/org/gtd/Lists.org" "/home/jason/notebook/org/gtd/Work.org")))
  '(quack-smart-open-paren-p t)
- '(inhibit-startup-screen t)
  '(rst-level-face-base-light 15))
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
+  ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  )
