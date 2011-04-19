@@ -348,6 +348,13 @@ BTXT at the beginning and ETXT at the end"
 (setq load-path (append load-path (list "~/.emacs.d/site-lisp/icicles/optional")))
 (require 'icicles)
 
+;; Version Control
+;; ======================================
+
+;; ditz
+(add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-ditz")
+(require 'ditz)
+
 ;; Org mode
 ;; ======================================
 (if (eq system-type 'darwin)
