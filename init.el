@@ -139,7 +139,7 @@ are: unix, dos, mac"
                 '("Biber" "biber %s" TeX-run-Biber nil t :help "Run Biber") t))
 
 (defun TeX-run-Biber (name command file)
-  "Create a process for NAME using COMMAND to format FILE with Biber." 
+  "Create a process for NAME using COMMAND to format FILE with Biber."
   (let ((process (TeX-run-command name command file)))
     (setq TeX-sentinel-function 'TeX-Biber-sentinel)
     (if TeX-process-asynchronous
@@ -176,7 +176,7 @@ are: unix, dos, mac"
   (define-key c-mode-base-map "\C-m" 'c-context-line-break))
 (add-hook 'c-initialization-hook 'my-make-CR-do-indent)
 
-;; Compile 
+;; Compile
 ;; ======================================
 (require 'smart-compile)
 (global-set-key [f12] 'smart-compile)
@@ -289,11 +289,11 @@ BTXT at the beginning and ETXT at the end"
                         temp-file
                         (file-name-directory buffer-file-name))))
       (list "epylint" (list local-file))))
-  
+
   (add-to-list 'flymake-allowed-file-name-masks
                '("\\.py\\'" flymake-pylint-init)))
 
-;; Nosetests   
+;; Nosetests
 (defun py-nosetests()
   "Runs nosetests command on current file"
   (interactive)
@@ -541,7 +541,7 @@ BTXT at the beginning and ETXT at the end"
   ("Phi" "Φ" nil 0)
   ("Chi" "Χ" nil 0)
   ("Psi" "Ψ" nil 0)
-  ("Omega" "Ω" nil 0)  
+  ("Omega" "Ω" nil 0)
   ("degC" "°" nil 0)
   ("degreeC" "°" nil 0)
 ))
