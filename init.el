@@ -123,7 +123,7 @@ are: unix, dos, mac"
            (word-count
             (with-output-to-string
               (with-current-buffer standard-output
-                (call-process "texcount.pl" nil t nil "-brief" this-file)))))
+                (call-process "texcount" nil t nil "-brief" this-file)))))
       (string-match "\n$" word-count)
       (message (replace-match "" nil nil word-count))))
   (define-key LaTeX-mode-map "\C-cw" 'LaTeX-word-count))
