@@ -353,6 +353,10 @@
     t                                ; ignore case
     nil))                            ; use buffer syntax table
 
+;; Imenu support
+(setq igor-imenu-generic-expression
+      `(("Procedures" ,igor-defun-re 3)))
+
 ;; Indentation
 (defconst igor-defun-start-words
   '("Function" "Macro" "Picture" "Proc" "Structure" "Window")
@@ -722,7 +726,8 @@
   (set (make-local-variable 'indent-line-function) 'igor-indent-line)
   (set (make-local-variable 'tab-width) igor-tab-width)
   (set (make-local-variable 'comment-start) "// ")
-  (set (make-local-variable 'comment-end) ""))
+  (set (make-local-variable 'comment-end) "")
+  (setq imenu-generic-expression igor-imenu-generic-expression))
 
 (provide 'igor-mode)
 ;;; igor-mode.el ends here
