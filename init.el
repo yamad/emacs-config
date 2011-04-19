@@ -593,9 +593,12 @@ BTXT at the beginning and ETXT at the end"
 	   (setq ps-printer-name "PDFCreator")
 	   (setq ps-printer-name-option "-d")
 	   (setq ps-lpr-command "C:\\cygwin\\bin\\lpr.exe")))
-    
+
     ;; Add cygwin to path
-    (setenv "PATH" (concat (getenv "PATH") ";C:\\cygwin\\bin"))))
+    (setenv "PATH" (concat (getenv "PATH") ";C:\\cygwin\\bin"))
+
+    ;; Add font
+    (set-default-font "Consolas-11")))
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
