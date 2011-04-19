@@ -255,6 +255,7 @@ BTXT at the beginning and ETXT at the end"
 ;; Python
 ;; ======================================
 (require 'python-mode)
+(require 'cython-mode)
 ;; Strip trailing whitespace from python, C, and C++
 (add-hook 'python-mode-hook
           (lambda ()
