@@ -302,7 +302,7 @@
   (concat
    "^[ \t]*" igor-defun-start-re "[ \t]+" ; procedure type
    "\\(" igor-name-re "\\)[ \t]*"         ; procedure name
-   "\\((" "\\(?:[ \t]*" "\\(" igor-name-re "\\)*" "[ \t]*,?[ \t]*\\)*" ")\\)" ; parameter list
+   "\\((" "\\(?:[ \t]*" "\\(" igor-name-re "\\)" "[ \t]*,?[ \t]*\\)*" ")\\)" ; parameter list
    "\\([ \t]*:[ \t]*" igor-procsub-keywords-re "[ \t]*\\)?" ; procedure subtype
    )
   "Regexp for definition line of Igor functions/macros/etc.")
