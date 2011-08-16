@@ -334,7 +334,14 @@ BTXT at the beginning and ETXT at the end"
 
 ;; Igor Pro
 ;; ======================================
+(add-to-list 'load-path "~/.emacs.d/site-lisp/igor-mode")
 (require 'igor-mode)
+
+;; Visual Basic
+;; ======================================
+(autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
+(setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|vbs\\)$" .
+                                 visual-basic-mode)) auto-mode-alist))
 
 ;; Matlab
 ;; ======================================

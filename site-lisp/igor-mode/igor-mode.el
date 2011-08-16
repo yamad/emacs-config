@@ -708,6 +708,37 @@
   (interactive)
   (igor-indent-to-column (igor-calculate-indent)))
 
+(defvar igor-mode-windows-package-reloader
+  "~/.emacs.d/site-lisp/igor-mode/igor_reloadpackage.wsf")
+
+(defun igor-mode-reload-unload-igor-package ()
+  (if (eq system-type 'windows-nt)
+      (eshell-command (format
+                       "cscript %s \/\/B \/\/Job:unload %s"
+                       igor-mode-windows-package-reloader
+                       (igor-mode-current-filename-sans-extension)))))
+
+(defun igor-mode-reload-load-igor-package ()
+  (if (eq system-type 'windows-nt)
+      (eshell-command (format
+                       "cscript %s \/\/B \/\/Job:load %s"
+                       igor-mode-windows-package-reloader
+                       (igor-mode-current-filename-sans-extension)))))
+
+(defun igor-mode-current-filename-sans-extension ()
+  (file-name-nondirectory
+   (file-name-sans-extension
+    (buffer-file-name))))
+
+(add-hook 'igor-mode-hook
+          '(lambda ()
+             (add-hook 'before-save-hook
+                       'igor-mode-reload-unload-igor-package nil t)))
+(add-hook 'igor-mode-hook
+          '(lambda ()
+             (add-hook 'after-save-hook
+                       'igor-mode-reload-load-igor-package nil t)))
+
 ;; Clear memory of keyword lists (which are now saved in regexps)
 (setq igor-procdec-keywords nil)
 (setq igor-procsub-keywords nil)
