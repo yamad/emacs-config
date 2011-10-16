@@ -37,8 +37,6 @@
 (color-theme-initialize)
 (load-file "~/.emacs.d/site-lisp/color-theme-zenburn.el")
 (color-theme-zenburn)
-;(color-theme-standard)
-;(color-theme-arjen)
 (global-font-lock-mode 1)
 
 ;; Set tab behavior
@@ -71,6 +69,13 @@ are: unix, dos, mac"
       (set-buffer-file-coding-system new-coding-system)))
   (message "EOL conversion now %s" new-eol))
 
+
+;; CEDET
+;; ======================================
+(load-file "~/.emacs.d/site-lisp/cedet/common/cedet.el")
+(global-ede-mode 1)
+(semantic-load-enable-code-helpers)
+(global-srecode-minor-mode 1)
 
 ;; Auto-Install
 (require 'auto-install)
@@ -345,9 +350,9 @@ BTXT at the beginning and ETXT at the end"
 
 ;; Matlab
 ;; ======================================
-;(add-to-list 'load-path "~/src/matlab-emacs")
-;(load-library "matlab-load")
-;(matlab-cedet-setup)
+(add-to-list 'load-path "~/.emacs.d/site-lisp/matlab-emacs")
+(load-library "matlab-load")
+(matlab-cedet-setup)
 
 ;; Icicles
 ;; ======================================
