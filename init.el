@@ -80,6 +80,10 @@ are: unix, dos, mac"
 ;; Auto-Install
 (require 'auto-install)
 
+;; ERT (testing suite)
+(require 'ert)
+(require 'ert-x)
+
 ;; YASnippet
 ;; ======================================
 (require 'yasnippet)
