@@ -90,10 +90,7 @@ are: unix, dos, mac"
 ;(add-to-list 'yas/extra-mode-hooks
              ;'mako-mode-hook)
 (yas/initialize)
-(if (or (eq system-type 'windows-nt)
-        (eq system-type 'darwin))
-    (yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/snippets")
-(yas/load-directory "/usr/share/emacs/etc/yasnippet/snippets"))
+(yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/snippets")
 (yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
 
 (require 'dropdown-list)
