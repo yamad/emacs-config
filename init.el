@@ -424,6 +424,50 @@ BTXT at the beginning and ETXT at the end"
 (add-hook 'rst-mode-hook
           'turn-on-orgstruct)
 
+;; lab notebook
+(defun org-export-labnotes-add-table-format ()
+  (insert org-export-labnotes-table-options)
+  (newline))
+
+(defvar org-export-labnotes-table-options
+  "#+ATTR_LaTeX: longtable* align=rclp{5cm}lp{5cm}")
+
+(defvar org-export-labnotes-header
+  "#+LaTeX_HEADER: \\usepackage[margin=0.5in]{geometry}
+#+OPTIONS: toc:nil num:nil H:3
+#+LaTeX_HEADER: \\usepackage{paralist}
+#+LaTeX_HEADER: \\let\\itemize\\compactitem
+#+LaTeX_HEADER: \\let\\description\\compactdesc
+#+LaTeX_HEADER: \\let\\enumerate\\compactenum
+#+LaTeX_HEADER: \\renewcommand\\maketitle{}")
+
+(defun org-export-lab-notebook-as-latex-to-buffer ()
+  (interactive)
+  (let* ((oldbuf (current-buffer))
+        (bufpath (concat
+                  (make-temp-name
+                  (file-name-sans-extension (buffer-file-name)))
+                  ".org"))
+        (bufname (file-name-nondirectory bufpath))
+        (outbuf (get-buffer-create bufname)))
+    (progn
+      (with-current-buffer outbuf
+        (set-visited-file-name bufpath)
+        (insert-buffer oldbuf)
+        (goto-line (point-min))
+        (insert org-export-labnotes-header)
+        (newline)
+        (org-table-map-tables
+         'org-export-labnotes-add-table-format)
+        (org-export-as-latex nil nil '(title "notes") "notes.tex")
+        (set-buffer-modified-p nil))
+      (with-current-buffer "notes.tex"
+        (set-visited-file-name "./notes.tex")
+        (save-buffer))
+      (kill-buffer bufname)
+      (switch-to-buffer-other-window "notes.tex")
+      (latex-mode))))
+
 ;; Constants
 (require 'constants)
 (define-key global-map "\C-cci" 'constants-insert)
