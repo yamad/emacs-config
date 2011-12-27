@@ -1,0 +1,4 @@
+igor-mode/rtglobals
+#name: \#pragma rtGlobals=1
+# --
+#pragma rtGlobals=1		// Use modern global access method.

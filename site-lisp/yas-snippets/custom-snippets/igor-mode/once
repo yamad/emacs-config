@@ -1,0 +1,9 @@
+igor-mode/once
+#name: #ifndef ... #define ... #endif
+# --
+#ifndef ${1:`(upcase (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))`_INCLUDE}
+#define $1
+
+$0
+
+#endif
