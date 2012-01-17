@@ -361,6 +361,23 @@ BTXT at the beginning and ETXT at the end"
 (setq load-path (append load-path (list "~/.emacs.d/site-lisp/icicles/optional")))
 (require 'icicles)
 
+;; Tags
+;; ======================================
+(add-to-list 'load-path "~/.emacs.d/site-lisp/anything-etags-plus")
+(require 'ctags-update)
+(ctags-update-minor-mode 1)
+
+(cond ((eq system-type 'darwin)
+       (setq path-to-ctags "/opt/local/bin/ctags")))
+(defun create-tags (dir-name)
+  "Create tags file."
+  (interactive "DDirectory: ")
+  (shell-command
+   (format "%s -f %s/TAGS -e -R %s"
+           path-to-ctags
+           dir-name
+           (directory-file-name dir-name))))
+
 ;; Version Control
 ;; ======================================
 
