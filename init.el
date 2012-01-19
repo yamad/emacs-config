@@ -368,7 +368,9 @@ BTXT at the beginning and ETXT at the end"
 (ctags-update-minor-mode 1)
 
 (cond ((eq system-type 'darwin)
-       (setq path-to-ctags "/opt/local/bin/ctags")))
+       (setq path-to-ctags "/opt/local/bin/ctags"))
+      ((eq system-type 'windows-nt)
+       (setq path-to-ctags "C:\\cygwin\\bin\\ctags.exe")))
 (defun create-tags (dir-name)
   "Create tags file."
   (interactive "DDirectory: ")
