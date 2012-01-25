@@ -185,6 +185,10 @@ are: unix, dos, mac"
           (lambda()
             (local-set-key (kbd "C-c o") 'ff-find-other-file)))
 
+;; Fortran
+;; ======================================
+(add-to-list 'auto-mode-alist '("\\.f\\'" . f90-mode))
+
 ;; Compile
 ;; ======================================
 (require 'smart-compile)
@@ -370,8 +374,12 @@ BTXT at the beginning and ETXT at the end"
 (require 'ctags-update)
 (ctags-update-minor-mode 1)
 
-(cond ((eq system-type 'darwin)
-       (setq path-to-ctags "/opt/local/bin/ctags")))
+(cond ((eq system-type 'linux)
+       (setq path-to-ctags "/usr/bin/ctags"))
+      ((eq system-type 'darwin)
+       (setq path-to-ctags "/opt/local/bin/ctags"))
+      ((eq system-type 'windows-nt)
+       (setq path-to-ctags "C:\\cygwin\\bin\\ctags.exe")))
 (defun create-tags (dir-name)
   "Create tags file."
   (interactive "DDirectory: ")
