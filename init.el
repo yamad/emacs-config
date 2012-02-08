@@ -446,8 +446,38 @@ BTXT at the beginning and ETXT at the end"
       '((?t "* %^{Title}\n %U\n %i\n %a" "~/notebook/org/gtd/General.org")))
 
 ;; OrgStruct Mode
-(add-hook 'rst-mode-hook
-          'turn-on-orgstruct)
+(add-hook 'rst-mode-hook 'turn-on-orgstruct)
+(add-hook 'rst-mode-hook 'turn-on-orgtbl)
+
+;; rst export for orgtbl
+(defun tbl-line (start end sep width-list field-func)
+  (concat
+   start
+   (mapconcat (lambda (width) (funcall field-func width))
+              width-list sep)
+   end))
+(defun tbl-hline (start end sep line-mark width-list)
+  (tbl-line start end sep width-list
+            (lambda (width)
+              (apply 'string (make-list width line-mark)))))
+
+(defun orgtbl-to-rst (table params)
+  (let* ((hline (tbl-hline "+-" "-+" "-+-" ?- org-table-last-column-widths))
+         (hlline (tbl-hline "+=" "=+" "=+=" ?= org-table-last-column-widths))
+         (rst-fmt (tbl-line "| " " |" " | " org-table-last-column-widths
+                            (lambda (width) (format "%%-%ss" width))))
+         (rst-lfmt (concat
+                    rst-fmt "\n" hline))
+         (rst-hlfmt (concat
+                     rst-fmt "\n" hlline))
+         (params_default
+          (list
+           :tstart hline
+           :lfmt (lambda (line) (apply 'format (cons rst-lfmt line)))
+           :hlfmt (lambda (line) (apply 'format (cons rst-hlfmt line)))
+           ))
+         )
+    (orgtbl-to-generic table (org-combine-plists params_default params))))
 
 ;; lab notebook
 (defun org-export-labnotes-add-table-format ()
