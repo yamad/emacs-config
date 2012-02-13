@@ -185,6 +185,17 @@ are: unix, dos, mac"
           (lambda()
             (local-set-key (kbd "C-c o") 'ff-find-other-file)))
 
+;;(autoload 'yacc-mode "yacc.el")
+;;(autoload 'flex-mode "flex-mode.el")
+(require 'yacc)
+(require 'flex-mode)
+(require 'ebnf-mode)
+(add-to-list 'auto-mode-alist '("\\.y\\'" . yacc-mode))
+(add-to-list 'auto-mode-alist '("\\.yy\\'" . yacc-mode))
+(add-to-list 'auto-mode-alist '("\\.l\\'" . flex-mode))
+(add-to-list 'auto-mode-alist '("\\.ll\\'" . flex-mode))
+(add-to-list 'auto-mode-alist '("\\.bnf\\'" . ebnf-mode))
+
 ;; Fortran
 ;; ======================================
 (add-to-list 'auto-mode-alist '("\\.f\\'" . f90-mode))
