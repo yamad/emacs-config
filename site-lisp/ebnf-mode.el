@@ -29,7 +29,7 @@
 (defun ebnf-remove (object-list list)
   (if (equal (car object-list) nil)
       list
-    (delete
+    (remove
      (car object-list)
      (ebnf-remove (cdr object-list) list))))
 
@@ -121,13 +121,32 @@
    ebnf-terminal-character)
   "see section 4.20")
 
+(defvar ebnf-punctuation-character
+  (ebnf-remove
+   (append ebnf-letter
+           ebnf-decimal-digit
+           (ebnf-get-syntax-char 'first-quote-symbol)
+           (ebnf-get-syntax-char 'second-quote-symbol)
+           (ebnf-get-syntax-char 'start-comment-symbol)
+           (ebnf-get-syntax-char 'end-comment-symbol)
+           (ebnf-get-syntax-char 'special-sequence-symbol)
+           ebnf-other-character)
+   ebnf-terminal-character)
+  "see section 6.5.a")
+
+(defun ebnf-commentless-symbol-re-defun ()
+  (concat (regexp-opt ebnf-punctuation-character)
+          "\\|" (ebnf-meta-identifier-re-defun)
+          "\\|" ebnf-integer-re
+          "\\|" ebnf-terminal-string-re
+          "\\|" ebnf-special-sequence-re))
+
 (defvar ebnf-new-line-re
   "\r*\n\r*"
   "see section 7.6.c")
 
 (defvar ebnf-gap-separator-re
-  (concat
-   "\\(?:"
+  (concat "\\(?:"
    (regexp-opt
     (append ebnf-space-character
             ebnf-horizontal-tabulation-character
@@ -136,13 +155,27 @@
    "\\|\\(?:" ebnf-new-line-re "\\)\\)")
   "see section 7.6")
 
+(defvar ebnf-first-terminal-string-re
+  (let* ((first-quote-symbol
+          (regexp-opt (ebnf-get-syntax-char 'first-quote-symbol))))
+    (concat first-quote-symbol
+            (regexp-opt ebnf-first-terminal-character) "*"
+            first-quote-symbol))
+  "see section 4.16")
+
+(defvar ebnf-second-terminal-string-re
+  (let* ((second-quote-symbol
+          (regexp-opt (ebnf-get-syntax-char 'second-quote-symbol))))
+    (concat second-quote-symbol
+            (regexp-opt ebnf-second-terminal-character) "*"
+            second-quote-symbol))
+  "see section 4.16")
+
 (defvar ebnf-terminal-string-re
-  (let* ((first-quote-symbol (regexp-opt (ebnf-get-syntax-char 'first-quote-symbol)))
-         (second-quote-symbol (regexp-opt (ebnf-get-syntax-char 'second-quote-symbol))))
     (concat
-     "\\(?:" first-quote-symbol (regexp-opt ebnf-first-terminal-character) first-quote-symbol "\\)"
+     "\\(?:" ebnf-first-terminal-string-re "\\)"
      "\\|"
-     "\\(?:" second-quote-symbol (regexp-opt ebnf-second-terminal-character) second-quote-symbol "\\)"))
+     "\\(?:" ebnf-second-terminal-string-re "\\)")
   "see section 4.16")
 
 (defvar ebnf-gap-free-symbol-re
@@ -153,15 +186,15 @@
                         (ebnf-get-syntax-char 'second-quote-symbol))
                 ebnf-terminal-character))
    "\\)\\|\\(?:"
-   ebnf-terminal-string-re)
+   ebnf-terminal-string-re "\\)")
   "see section 6.3")
 
 (defvar ebnf-special-sequence-re
-  (let ((special-sequence-symbol (regexp-opt (ebnf-get-syntax-char 'special-sequence-symbol))))
-    (concat
-     "\\(?:" special-sequence-symbol
+  (let ((special-sequence-symbol
+         (regexp-opt (ebnf-get-syntax-char 'special-sequence-symbol))))
+    (concat special-sequence-symbol
      (regexp-opt ebnf-special-sequence-character)
-     special-sequence-symbol "\\)"))
+     special-sequence-symbol))
   "see section 4.19")
 
 (defvar ebnf-meta-character
@@ -171,21 +204,106 @@
   "see section 4.15")
 
 (defun ebnf-meta-identifier-re-defun ()
-  (let ((non-gap-char-re (regexp-opt ebnf-meta-character)))
-    (concat (regexp-opt ebnf-letter)
-            "\\(?:" non-gap-char-re
-            (if (not ebnf-spaces-in-idents)
-                "\\)+"
-              (concat "\\|" ebnf-gap-separator-re "\\)+"
-                      non-gap-char-re)))))
+  (let ((non-gap-char-re
+         (regexp-opt ebnf-meta-character)))
+    (concat (regexp-opt ebnf-letter) non-gap-char-re "*"
+            (if ebnf-spaces-in-idents
+                (concat "\\(?:" ebnf-gap-separator-re "+"
+                        non-gap-char-re "+\\)*")
+              nil))))
+
 (defun ebnf-all-meta-character-defun ()
   (append ebnf-meta-character
           (if (not ebnf-spaces-in-idents)
               '()
             ebnf-gap-separator-character)))
 
+(defun ebnf-bracketed-textual-comment-re-defun ()
+  (let ((start (car (ebnf-get-syntax-char 'start-comment-symbol)))
+        (end (car (ebnf-get-syntax-char 'end-comment-symbol))))
+    (ebnf-delimited-comment-re-build start end)))
+
+(defun ebnf-forward-bracketed-textual-comment ()
+  (let ((beg (point))
+        (end (point)))
+    (if (looking-at (regexp-opt
+                     (ebnf-get-syntax-char 'start-comment-symbol)))
+        (progn
+          (goto-char (match-beginning 0))
+          (setq beg (point))
+          (ebnf-bracketed-textual-comment-find-end)
+          (setq end (point))
+          (buffer-substring beg end)))))
+
+(defun ebnf-backward-bracketed-textual-comment ()
+  (let ((beg (point))
+        (end (point)))
+    (if (looking-back (regexp-opt
+                     (ebnf-get-syntax-char 'end-comment-symbol)))
+        (progn
+          (goto-char (match-end 0))
+          (setq end (point))
+          (ebnf-bracketed-textual-comment-find-start)
+          (setq beg (point))
+          (buffer-substring beg end)))))
+
+(defun ebnf-bracketed-textual-comment-find-end ()
+  (let* ((nesting 0)
+         (start
+          (car (ebnf-get-syntax-char 'start-comment-symbol)))
+         (end
+          (car (ebnf-get-syntax-char 'end-comment-symbol)))
+         (start-re (regexp-quote start))
+         (end-re (regexp-quote end))
+         (both-re (concat start-re "\\|" end-re)))
+    (if (re-search-forward start-re)
+        (setq nesting (1+ nesting)))
+    (while (and (not (= nesting 0))
+                (not (eobp)))
+      (if (re-search-forward both-re nil t nil)
+          (if (string= start (match-string 0))
+              (setq nesting (1+ nesting))
+            (setq nesting (1- nesting)))
+        (goto-char (point-max))))))
+
+(defun ebnf-bracketed-textual-comment-find-start ()
+  (let* ((nesting 0)
+         (start
+          (car (ebnf-get-syntax-char 'start-comment-symbol)))
+         (end
+          (car (ebnf-get-syntax-char 'end-comment-symbol)))
+         (start-re (regexp-quote start))
+         (end-re (regexp-quote end))
+         (both-re (concat start-re "\\|" end-re)))
+    (if (re-search-backward end-re)
+        (setq nesting (1+ nesting)))
+    (while (and (not (= nesting 0))
+                (not (bobp)))
+      (if (re-search-backward both-re nil t nil)
+          (if (string= end (match-string 0))
+              (setq nesting (1+ nesting))
+            (setq nesting (1- nesting)))
+        (goto-char (point-min))))))
+
+(defun ebnf-delimited-comment-re-build (start end)
+  (let* ((start-first (regexp-quote (substring start 0 1)))
+        (start-last (regexp-quote (substring start 1 2)))
+        (end-first (substring end 0 1))
+        (end-first-quoted (regexp-quote end-first))
+        (end-last (regexp-quote (substring end 1 2)))
+        (opening (concat start-first start-last))
+        (normal (concat "[^" end-first "]*" end-first-quoted "+"))
+        (special (concat "[^" end-last end-first "]"))
+        (closing end-last))
+    (ebnf-unrolled-re-build opening normal special closing)))
+
+(defun ebnf-unrolled-re-build (open normal special close)
+  "Build an unrolled regular expression, as in Friedl (Mastering
+Regular Expressions)"
+  (concat open normal "\\(" special normal "\\)*" close))
+
 (defvar ebnf-integer-re
-  (concat "\\(?:" (regexp-opt ebnf-decimal-digit) "\\)+"))
+  (concat (regexp-opt ebnf-decimal-digit) "+"))
 
 ;; Syntax Table
 (defvar ebnf-syntax-table
@@ -218,18 +336,42 @@
 
 ;; Lexer
 (defun ebnf-smie-forward-token ()
-  (ebnf-forward-whitespace))
+  (ebnf-forward-whitespace)
+  (cond
+   ((looking-at (ebnf-bracketed-textual-comment-re-defun))
+    (ebnf-forward-bracketed-textual-comment))
+   ((looking-at (ebnf-commentless-symbol-re-defun))
+    (goto-char (match-end 0))
+    (match-string-no-properties 0))))
+
+(defun ebnf-smie-backward-token ()
+  (ebnf-backward-whitespace)
+  (cond
+   ((looking-back (regexp-opt (ebnf-get-syntax-char 'end-comment-symbol)))
+    (ebnf-backward-bracketed-textual-comment))
+   ((looking-back (ebnf-meta-identifier-re-defun))
+    (let ((end (point)))
+      (ebnf-goto-meta-identifier-start)
+      (buffer-substring (point) end)))
+   ((looking-back ebnf-integer-re)
+    (let ((end (point)))
+      (re-search-backward "[^0-9]+")
+      (forward-char)
+      (buffer-substring (point) end)))
+   ((or (looking-back (regexp-opt ebnf-punctuation-character))
+        (looking-back ebnf-terminal-string-re)
+        (looking-back ebnf-special-sequence-re))
+    (goto-char (match-beginning 0))
+    (match-string-no-properties 0))))
 
 (defun ebnf-forward-whitespace ()
   (if (looking-at (concat ebnf-gap-separator-re "+"))
       (goto-char (match-end 0))
     nil))
 (defun ebnf-backward-whitespace ()
-  (progn
-    (skip-chars-backward (ebnf-list-to-string ebnf-gap-separator-character))
-    (backward-char)))
+  (skip-chars-backward (ebnf-list-to-string ebnf-gap-separator-character)))
 
-(defun ebnf-move-to-meta-identifier-start ()
+(defun ebnf-goto-meta-identifier-start ()
   (let ((meta-character (ebnf-list-to-string
                          (ebnf-all-meta-character-defun)))
         (meta-identifier-re (ebnf-meta-identifier-re-defun)))
@@ -241,24 +383,20 @@
   "Returns t if the point is at or within a
 meta-identifier. Returns nil if in whitespace before or after a
 meta-identifier"
-  (let* ((meta-character (ebnf-list-to-string
-                          (ebnf-all-meta-character-defun)))
-         (meta-character-re (concat
-                             (regexp-opt (ebnf-all-meta-character-defun))
-                             "+"))
-         (meta-identifier-re (ebnf-meta-identifier-re-defun)))
-    (save-excursion
-      (or (looking-at meta-identifier-re)
-          (if (not ebnf-spaces-in-idents)
-              (and (looking-at meta-character-re)
-                   (looking-back meta-character-re))
-            (and
-             (progn
-               (ebnf-forward-whitespace)
-               (looking-at (regexp-opt ebnf-meta-character)))
-             (progn
-               (ebnf-backward-whitespace)
-               (looking-at (regexp-opt ebnf-meta-character)))))))))
+  (let* ((meta-character-re
+          (concat (regexp-opt (ebnf-all-meta-character-defun)) "+"))
+         (meta-identifier-re
+          (ebnf-meta-identifier-re-defun)))
+    (or (looking-at meta-identifier-re)
+        (and
+         (save-excursion
+           (if ebnf-spaces-in-idents
+               (ebnf-forward-whitespace) nil)
+           (looking-at meta-character-re))
+         (save-excursion
+           (if ebnf-spaces-in-idents
+               (ebnf-backward-whitespace) nil)
+           (looking-at meta-character-re))))))
  
 (define-derived-mode ebnf-mode fundamental-mode "EBNF"
   "Major mode for editing EBNF (ISO) grammars."
