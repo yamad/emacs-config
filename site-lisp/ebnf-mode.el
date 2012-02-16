@@ -36,6 +36,14 @@
 (defun ebnf-get-syntax-char (type)
   (cdr (assoc type ebnf-other-terminal-characters)))
 
+(defun ebnf-list-to-string (list)
+  (mapconcat 'identity list ""))
+
+(defcustom ebnf-spaces-in-idents t
+  "If non-nil (default in ISO EBNF), allow spaces in identifiers (non-terminals)"
+  :type 'boolean
+  :group 'ebnf)
+
 (defvar ebnf-other-terminal-characters
   '((concatentate-symbol         ",")
     (defining-symbol             "=")
@@ -74,6 +82,23 @@
   '("\v"))
 (defvar ebnf-form-feed
   '("\f"))
+(defvar ebnf-new-line-character
+  '("\n" "\r")
+  "Helper for motion functions. Carriage returns cannot
+  appear without \n. see `ebnf-new-line-re' for appropriate
+  syntax.")
+(defvar ebnf-gap-separator-character
+  (append ebnf-space-character
+          ebnf-horizontal-tabulation-character
+          ebnf-vertical-tabulation-character
+          ebnf-form-feed
+          ebnf-new-line-character)
+  "Helper list for motion functions. For correct syntax, see
+  `ebnf-gap-separator-re'. This list is only to recognize
+  characters that *might* appear in a valid whitespace string,
+  but cannot be used to verify that a string of whitespace is
+  actually valid.")
+
 (defvar ebnf-terminal-character
   (append ebnf-letter
           ebnf-decimal-digit
@@ -145,10 +170,19 @@
    ebnf-decimal-digit)
   "see section 4.15")
 
-(defvar ebnf-meta-identifier-re
-  (concat (regexp-opt ebnf-letter)
-          "\\(?:" (regexp-opt ebnf-meta-character)
-          "\\|" ebnf-gap-separator-re "\\)+"))
+(defun ebnf-meta-identifier-re-defun ()
+  (let ((non-gap-char-re (regexp-opt ebnf-meta-character)))
+    (concat (regexp-opt ebnf-letter)
+            "\\(?:" non-gap-char-re
+            (if (not ebnf-spaces-in-idents)
+                "\\)+"
+              (concat "\\|" ebnf-gap-separator-re "\\)+"
+                      non-gap-char-re)))))
+(defun ebnf-all-meta-character-defun ()
+  (append ebnf-meta-character
+          (if (not ebnf-spaces-in-idents)
+              '()
+            ebnf-gap-separator-character)))
 
 (defvar ebnf-integer-re
   (concat "\\(?:" (regexp-opt ebnf-decimal-digit) "\\)+"))
@@ -182,11 +216,55 @@
     st)
   "Syntax table used while in `ebnf-mode'")
 
+;; Lexer
+(defun ebnf-smie-forward-token ()
+  (ebnf-forward-whitespace))
+
+(defun ebnf-forward-whitespace ()
+  (if (looking-at (concat ebnf-gap-separator-re "+"))
+      (goto-char (match-end 0))
+    nil))
+(defun ebnf-backward-whitespace ()
+  (progn
+    (skip-chars-backward (ebnf-list-to-string ebnf-gap-separator-character))
+    (backward-char)))
+
+(defun ebnf-move-to-meta-identifier-start ()
+  (let ((meta-character (ebnf-list-to-string
+                         (ebnf-all-meta-character-defun)))
+        (meta-identifier-re (ebnf-meta-identifier-re-defun)))
+    (skip-chars-backward meta-character)
+    (re-search-forward meta-identifier-re)
+    (goto-char (match-beginning 0))))
+
+(defun ebnf-meta-identifier-p-strict ()
+  "Returns t if the point is at or within a
+meta-identifier. Returns nil if in whitespace before or after a
+meta-identifier"
+  (let* ((meta-character (ebnf-list-to-string
+                          (ebnf-all-meta-character-defun)))
+         (meta-character-re (concat
+                             (regexp-opt (ebnf-all-meta-character-defun))
+                             "+"))
+         (meta-identifier-re (ebnf-meta-identifier-re-defun)))
+    (save-excursion
+      (or (looking-at meta-identifier-re)
+          (if (not ebnf-spaces-in-idents)
+              (and (looking-at meta-character-re)
+                   (looking-back meta-character-re))
+            (and
+             (progn
+               (ebnf-forward-whitespace)
+               (looking-at (regexp-opt ebnf-meta-character)))
+             (progn
+               (ebnf-backward-whitespace)
+               (looking-at (regexp-opt ebnf-meta-character)))))))))
+ 
 (define-derived-mode ebnf-mode fundamental-mode "EBNF"
   "Major mode for editing EBNF (ISO) grammars."
-  (set (make-local-variable 'font-lock-defaults) ebnf-font-lock-defaults)
+;;  (set (make-local-variable 'font-lock-defaults) ebnf-font-lock-defaults)
   (set-syntax-table ebnf-syntax-table)
-  (set (make-local-variable 'indent-line-function) 'ebnf-indent-line)
+;;  (set (make-local-variable 'indent-line-function) 'ebnf-indent-line)
   (set (make-local-variable 'comment-start) "(*")
   (set (make-local-variable 'comment-end) "*)"))
 
