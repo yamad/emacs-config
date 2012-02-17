@@ -195,6 +195,7 @@ are: unix, dos, mac"
 (add-to-list 'auto-mode-alist '("\\.l\\'" . flex-mode))
 (add-to-list 'auto-mode-alist '("\\.ll\\'" . flex-mode))
 (add-to-list 'auto-mode-alist '("\\.bnf\\'" . ebnf-mode))
+(add-to-list 'auto-mode-alist '("\\.ebnf\\'" . ebnf-mode))
 
 ;; Fortran
 ;; ======================================

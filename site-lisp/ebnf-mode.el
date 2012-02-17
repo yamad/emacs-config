@@ -41,10 +41,14 @@
   (mapconcat 'identity list ""))
 
 (defcustom ebnf-spaces-in-idents t
-  "If non-nil (default in ISO EBNF), allow spaces in identifiers (non-terminals)"
+  "If non-nil (default in ISO EBNF), allow spaces in
+identifiers (non-terminals)"
   :type 'boolean
   :group 'ebnf)
 
+ 
+;; Tokens
+;; ===========================================
 (defvar ebnf-other-terminal-characters
   '((concatentate-symbol         ",")
     (defining-symbol             "=")
@@ -204,6 +208,9 @@
    ebnf-decimal-digit)
   "see section 4.15")
 
+(defvar ebnf-integer-re
+  (concat (regexp-opt ebnf-decimal-digit) "+"))
+
 (defun ebnf-meta-identifier-re-defun ()
   (let ((non-gap-char-re
          (regexp-opt ebnf-meta-character)))
@@ -353,25 +360,29 @@
             (setq nesting (1- nesting)))
         (goto-char (point-min))))))
 
-(defun ebnf-delimited-comment-re-build (start end)
-  (let* ((start-first (regexp-quote (substring start 0 1)))
-        (start-last (regexp-quote (substring start 1 2)))
-        (end-first (substring end 0 1))
-        (end-first-quoted (regexp-quote end-first))
-        (end-last (regexp-quote (substring end 1 2)))
-        (opening (concat start-first start-last))
-        (normal (concat "[^" end-first "]*" end-first-quoted "+"))
-        (special (concat "[^" end-last end-first "]"))
-        (closing end-last))
-    (ebnf-unrolled-re-build opening normal special closing)))
+(defvar ebnf-font-lock-keywords-1
+  (list
+   `(,ebnf-syntax-rule-start-re (1 font-lock-variable-name-face)
+                                (2 font-lock-keyword-face))))
 
-(defun ebnf-unrolled-re-build (open normal special close)
-  "Build an unrolled regular expression, as in Friedl (Mastering
-Regular Expressions)"
-  (concat open normal "\\(" special normal "\\)*" close))
+(defvar ebnf-font-lock-keywords-2
+  (append ebnf-font-lock-keywords-1
+          `(,(regexp-opt ebnf-punctuation-character) font-lock-keyword-face)))
 
-(defvar ebnf-integer-re
-  (concat (regexp-opt ebnf-decimal-digit) "+"))
+(defvar ebnf-font-lock-keywords-default
+  ebnf-font-lock-keywords-1)
+
+(defvar ebnf-font-lock-keywords
+  '(ebnf-font-lock-keywords-default     ; mode default
+    ebnf-font-lock-keywords-1           ; level 1
+    ebnf-font-lock-keywords-2           ; level 2
+    ))
+
+(defvar ebnf-font-lock-defaults
+  '(ebnf-font-lock-keywords-1        ; keyword list
+    nil                              ; perform syntactic fontification
+    t                                ; ignore case
+    nil))                            ; use buffer syntax table
 
 ;; Syntax Table
 (defvar ebnf-syntax-table
@@ -435,12 +446,11 @@ meta-identifier"
            (if ebnf-spaces-in-idents
                (ebnf-backward-whitespace) nil)
            (looking-at meta-character-re))))))
- 
+
 (define-derived-mode ebnf-mode fundamental-mode "EBNF"
   "Major mode for editing EBNF (ISO) grammars."
-;;  (set (make-local-variable 'font-lock-defaults) ebnf-font-lock-defaults)
+  (set (make-local-variable 'font-lock-defaults) ebnf-font-lock-defaults)
   (set-syntax-table ebnf-syntax-table)
-;;  (set (make-local-variable 'indent-line-function) 'ebnf-indent-line)
   (set (make-local-variable 'comment-start) "(*")
   (set (make-local-variable 'comment-end) "*)")
   (smie-setup ebnf-smie-grammar
