@@ -310,9 +310,9 @@ Regular Expressions)"
 (defvar ebnf-syntax-table
   (let ((st (make-syntax-table)))
     ;; comments "(* *)"
-    (modify-syntax-entry ?\( ". 1" st)
-    (modify-syntax-entry ?\* ". 23" st)
-    (modify-syntax-entry ?\) ". 4" st)
+    (modify-syntax-entry ?\( "( 1n" st)
+    (modify-syntax-entry ?\) ") 4n" st)
+    (modify-syntax-entry ?\* ". 23n" st)
     ;; strings
     (modify-syntax-entry ?\" "\"" st)
     (modify-syntax-entry ?\' "\"" st)
@@ -325,14 +325,11 @@ Regular Expressions)"
     (modify-syntax-entry ?\;  "." st)
     
     ;; parens
-    (modify-syntax-entry ?\( "(" st)
-    (modify-syntax-entry ?\) ")" st)
     (modify-syntax-entry ?[ "(" st)
     (modify-syntax-entry ?] ")" st)
     (modify-syntax-entry ?{ "(" st)
     (modify-syntax-entry ?} ")" st)
-    (modify-syntax-entry ?\?  "(" st)
-    (modify-syntax-entry ?\?  ")" st)
+    (modify-syntax-entry ?\?  "$" st)
     st)
   "Syntax table used while in `ebnf-mode'")
 
