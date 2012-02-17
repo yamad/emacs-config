@@ -187,7 +187,7 @@ are: unix, dos, mac"
 
 ;;(autoload 'yacc-mode "yacc.el")
 ;;(autoload 'flex-mode "flex-mode.el")
-(require 'yacc)
+(require 'yacc-mode)
 (require 'flex-mode)
 (require 'ebnf-mode)
 (add-to-list 'auto-mode-alist '("\\.y\\'" . yacc-mode))
