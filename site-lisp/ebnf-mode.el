@@ -25,6 +25,7 @@
 ;; variants of EBNF that are in common use.
 
 ;;; Code:
+(require 'smie)
 
 (defun ebnf-remove (object-list list)
   (if (equal (car object-list) nil)
@@ -322,7 +323,6 @@ Regular Expressions)"
     (modify-syntax-entry ?|   "." st)
     (modify-syntax-entry ?=   "." st)
     (modify-syntax-entry ?\;  "." st)
-    (modify-syntax-entry ?\?  "." st)
     
     ;; parens
     (modify-syntax-entry ?\( "(" st)
@@ -331,6 +331,8 @@ Regular Expressions)"
     (modify-syntax-entry ?] ")" st)
     (modify-syntax-entry ?{ "(" st)
     (modify-syntax-entry ?} ")" st)
+    (modify-syntax-entry ?\?  "(" st)
+    (modify-syntax-entry ?\?  ")" st)
     st)
   "Syntax table used while in `ebnf-mode'")
 
@@ -379,6 +381,41 @@ Regular Expressions)"
     (re-search-forward meta-identifier-re)
     (goto-char (match-beginning 0))))
 
+(defvar ebnf-smie-grammar
+  (smie-prec2->grammar
+   (smie-bnf->prec2
+    '((id)
+      (syntax (syntax ";" syntax)
+              (syntax-rule))
+      (syntax-rule (id "=" definitions-list))
+      (definitions-list (definitions-list "," definitions-list)
+        (single-definition))
+      (single-definition (single-definition "," single-definition)
+                         (syntactic-term))
+      (syntactic-term (syntactic-factor "-" syntactic-exception)
+                      (syntactic-factor))
+      (syntactic-exception (syntactic-factor))
+      (syntactic-factor (integer "*" syntactic-primary)
+                        (syntactic-primary))
+      (syntactic-primary (optional-sequence)
+                         (repeated-sequence)
+                         (grouped-sequence)
+                         (id)
+                         (special-sequence))
+      (optional-sequence ("[" definitions-list "]"))
+      (repeated-sequence ("{" definitions-list "}"))
+      (grouped-sequence ("(" definitions-list ")"))
+      (special-sequence (definitions-list "?" definitions-list)))
+    ;; see section 4
+    '((assoc "*"))
+    '((assoc "-"))
+    '((assoc ","))
+    '((assoc "|"))
+    '((assoc "="))
+    '((assoc ";")))))
+
+(defun ebnf-smie-rules (kind token))
+
 (defun ebnf-meta-identifier-p-strict ()
   "Returns t if the point is at or within a
 meta-identifier. Returns nil if in whitespace before or after a
@@ -404,7 +441,11 @@ meta-identifier"
   (set-syntax-table ebnf-syntax-table)
 ;;  (set (make-local-variable 'indent-line-function) 'ebnf-indent-line)
   (set (make-local-variable 'comment-start) "(*")
-  (set (make-local-variable 'comment-end) "*)"))
+  (set (make-local-variable 'comment-end) "*)")
+  (smie-setup ebnf-smie-grammar
+              'ebnf-smie-rules
+              :forward-token 'ebnf-smie-forward-token
+              :backward-token 'ebnf-smie-backward-token))
 
 (provide 'ebnf-mode)
 ;;; ebnf-mode.el ends here
