@@ -224,6 +224,73 @@
         (end (car (ebnf-get-syntax-char 'end-comment-symbol))))
     (ebnf-delimited-comment-re-build start end)))
 
+
+;; Grammar
+;; ===========================================
+
+;; Lexer
+(defun ebnf-smie-forward-token ()
+  (ebnf-forward-whitespace)
+  (cond
+   ((looking-at (ebnf-bracketed-textual-comment-re-defun))
+    (ebnf-forward-bracketed-textual-comment))
+   ((looking-at (ebnf-commentless-symbol-re-defun))
+    (goto-char (match-end 0))
+    (match-string-no-properties 0))))
+
+(defun ebnf-smie-backward-token ()
+  (ebnf-backward-whitespace)
+  (cond
+   ((looking-back (regexp-opt (ebnf-get-syntax-char 'end-comment-symbol)))
+    (ebnf-backward-bracketed-textual-comment))
+   ((looking-back (ebnf-meta-identifier-re-defun))
+    (let ((end (point)))
+      (ebnf-goto-meta-identifier-start)
+      (buffer-substring (point) end)))
+   ((looking-back ebnf-integer-re)
+    (let ((end (point)))
+      (re-search-backward "[^0-9]+")
+      (forward-char)
+      (buffer-substring (point) end)))
+   ((or (looking-back (regexp-opt ebnf-punctuation-character))
+        (looking-back ebnf-terminal-string-re)
+        (looking-back ebnf-special-sequence-re))
+    (goto-char (match-beginning 0))
+    (match-string-no-properties 0))))
+
+(defvar ebnf-smie-grammar
+  (smie-prec2->grammar
+   (smie-bnf->prec2
+    '((id)
+      (syntax (syntax ";" syntax)
+              (syntax-rule))
+      (syntax-rule (id "=" definitions-list))
+      (definitions-list (definitions-list "|" definitions-list)
+        (single-definition))
+      (single-definition (single-definition "," single-definition)
+                         (syntactic-term))
+      (syntactic-term (syntactic-factor "-" syntactic-exception)
+                      (syntactic-factor))
+      (syntactic-exception (syntactic-factor))
+      (syntactic-factor (syntactic-primary))
+      (syntactic-primary (id))
+      )
+    ;; see section 4
+    '((assoc "-"))
+    '((assoc ","))
+    '((assoc "|"))
+    '((non-assoc "="))
+    '((assoc ";"))
+)))
+
+(defvar ebnf-syntax-rule-start-re
+  (concat
+   "\\(" (ebnf-meta-identifier-re-defun) "\\)"
+   ebnf-gap-separator-re "+"
+   "\\(=\\)"))
+
+(defun ebnf-smie-rules (kind token))
+
 (defun ebnf-forward-bracketed-textual-comment ()
   (let ((beg (point))
         (end (point)))
@@ -333,40 +400,12 @@ Regular Expressions)"
     st)
   "Syntax table used while in `ebnf-mode'")
 
-;; Lexer
-(defun ebnf-smie-forward-token ()
-  (ebnf-forward-whitespace)
-  (cond
-   ((looking-at (ebnf-bracketed-textual-comment-re-defun))
-    (ebnf-forward-bracketed-textual-comment))
-   ((looking-at (ebnf-commentless-symbol-re-defun))
-    (goto-char (match-end 0))
-    (match-string-no-properties 0))))
-
-(defun ebnf-smie-backward-token ()
-  (ebnf-backward-whitespace)
-  (cond
-   ((looking-back (regexp-opt (ebnf-get-syntax-char 'end-comment-symbol)))
-    (ebnf-backward-bracketed-textual-comment))
-   ((looking-back (ebnf-meta-identifier-re-defun))
-    (let ((end (point)))
-      (ebnf-goto-meta-identifier-start)
-      (buffer-substring (point) end)))
-   ((looking-back ebnf-integer-re)
-    (let ((end (point)))
-      (re-search-backward "[^0-9]+")
-      (forward-char)
-      (buffer-substring (point) end)))
-   ((or (looking-back (regexp-opt ebnf-punctuation-character))
-        (looking-back ebnf-terminal-string-re)
-        (looking-back ebnf-special-sequence-re))
-    (goto-char (match-beginning 0))
-    (match-string-no-properties 0))))
 
 (defun ebnf-forward-whitespace ()
   (if (looking-at (concat ebnf-gap-separator-re "+"))
       (goto-char (match-end 0))
     nil))
+
 (defun ebnf-backward-whitespace ()
   (skip-chars-backward (ebnf-list-to-string ebnf-gap-separator-character)))
 
@@ -377,41 +416,6 @@ Regular Expressions)"
     (skip-chars-backward meta-character)
     (re-search-forward meta-identifier-re)
     (goto-char (match-beginning 0))))
-
-(defvar ebnf-smie-grammar
-  (smie-prec2->grammar
-   (smie-bnf->prec2
-    '((id)
-      (syntax (syntax ";" syntax)
-              (syntax-rule))
-      (syntax-rule (id "=" definitions-list))
-      (definitions-list (definitions-list "," definitions-list)
-        (single-definition))
-      (single-definition (single-definition "," single-definition)
-                         (syntactic-term))
-      (syntactic-term (syntactic-factor "-" syntactic-exception)
-                      (syntactic-factor))
-      (syntactic-exception (syntactic-factor))
-      (syntactic-factor (integer "*" syntactic-primary)
-                        (syntactic-primary))
-      (syntactic-primary (optional-sequence)
-                         (repeated-sequence)
-                         (grouped-sequence)
-                         (id)
-                         (special-sequence))
-      (optional-sequence ("[" definitions-list "]"))
-      (repeated-sequence ("{" definitions-list "}"))
-      (grouped-sequence ("(" definitions-list ")"))
-      (special-sequence (definitions-list "?" definitions-list)))
-    ;; see section 4
-    '((assoc "*"))
-    '((assoc "-"))
-    '((assoc ","))
-    '((assoc "|"))
-    '((assoc "="))
-    '((assoc ";")))))
-
-(defun ebnf-smie-rules (kind token))
 
 (defun ebnf-meta-identifier-p-strict ()
   "Returns t if the point is at or within a
