@@ -24,6 +24,9 @@
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
 
+;; always remove trailing whitespace before saving
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
 ;; Alternate bindings for M-x
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\C-c\C-m" 'execute-extended-command)
@@ -185,8 +188,6 @@ are: unix, dos, mac"
           (lambda()
             (local-set-key (kbd "C-c o") 'ff-find-other-file)))
 
-;;(autoload 'yacc-mode "yacc.el")
-;;(autoload 'flex-mode "flex-mode.el")
 (require 'yacc-mode)
 (require 'flex-mode)
 (require 'ebnf-mode)
@@ -275,7 +276,9 @@ BTXT at the beginning and ETXT at the end"
 ;; Scheme
 ;; ======================================
 (require 'quack)
+(add-to-list 'auto-mode-alist '("\\.rkt\\'" . scheme-mode)) ; racket files
 (setq scheme-program-name "mzscheme")
+(setq quack-fontify-style nil)
 
 ;; Python
 ;; ======================================
