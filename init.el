@@ -273,6 +273,12 @@ BTXT at the beginning and ETXT at the end"
     (my-rng-complete-tag)))
   (nxml-wrap-thing 'word tag))
 
+;; HTML/CSS
+;; ======================================
+(require 'scss-mode)
+(add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode))
+(setq scss-compile-at-save nil)
+
 ;; Scheme
 ;; ======================================
 (require 'quack)
@@ -745,6 +751,7 @@ BTXT at the beginning and ETXT at the end"
  '(frame-background-mode (quote dark))
  '(inhibit-startup-screen t)
  '(org-agenda-files (quote ("~/notebook/org/gtd/General.org" "~/notebook/org/gtd/P-Dev.org" "~/notebook/org/gtd/P-Projects.org" "/home/jason/notebook/org/gtd/Lists.org" "/home/jason/notebook/org/gtd/Work.org")))
+ '(quack-fontify-style nil)
  '(quack-smart-open-paren-p t)
  '(rst-level-face-base-light 15))
 (custom-set-faces
