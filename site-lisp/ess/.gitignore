@@ -1,0 +1,9 @@
+*~
+doc/ess.*
+doc/info/ess.info
+doc/readme.*
+doc/refcard/refcard.*
+.Rhistory
+*NEWS
+VERSION
+lisp/*.elc

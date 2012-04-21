@@ -374,6 +374,12 @@ BTXT at the beginning and ETXT at the end"
 (load-library "matlab-load")
 (matlab-cedet-setup)
 
+;; ESS (R), statistics
+;; ======================================
+(add-to-list 'load-path "~/.emacs.d/site-lisp/ess")
+(add-to-list 'load-path "~/.emacs.d/site-lisp/ess/lisp")
+(require 'ess-site)
+
 ;; Icicles
 ;; ======================================
 (setq load-path (append load-path (list "~/.emacs.d/site-lisp/icicles")))
