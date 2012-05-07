@@ -48,8 +48,12 @@
 (setq-default py-indent-offset 4)
 (setq tab-width 4)
 
-;; Line endings
+;; Unique buffer names
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+(setq uniquify-ignore-buffers-re "^\\*")
 
+;; Line endings
 (defun set-eol-conversion (new-eol)
   "Specify new end-of-line conversion NEW-EOL for the buffer's
 file coding system.  This marks the buffer as modified.  Choices
