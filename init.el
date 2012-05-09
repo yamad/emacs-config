@@ -211,6 +211,12 @@ are: unix, dos, mac"
 (require 'smart-compile)
 (global-set-key [f12] 'smart-compile)
 
+;; CMake
+;; ======================================
+(require 'cmake-mode)
+(add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
+(add-to-list 'auto-mode-alist '("\\.cmake\\''" . cmake-mode))
+
 ;; XML
 ;; ======================================
 (eval-after-load 'rng-loc
