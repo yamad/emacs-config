@@ -296,6 +296,12 @@ BTXT at the beginning and ETXT at the end"
 (setq scheme-program-name "mzscheme")
 (setq quack-fontify-style nil)
 
+;; Lua
+;; ======================================
+(require 'lua-mode)
+(add-to-list 'auto-mode-alist '("\\.lua\\'" . lua-mode))
+(add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
+
 ;; Python
 ;; ======================================
 (require 'python-mode)
