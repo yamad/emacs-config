@@ -5,14 +5,90 @@
 (setq load-path (append load-path (list "~/.emacs.d")))
 (setq load-path (append load-path (list "~/.emacs.d/site-lisp")))
 
+;; Package manager
+(require 'package)
+(add-to-list 'package-archives
+            '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives
+            '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(package-initialize)
+
+;; (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+;; ;; complicated package sources from el-get here
+;; (setq el-get-sources '())
+;; ;; simple package names from el-get here
+;; (setq el-get-sources-names '())
+;; (defun sync-el-get-packages ()
+;;   "Synchronize el-get packages"
+;;   (interactive)
+;;   (el-get 'sync '(el-get))
+;;   (let ((all-packages
+;; 	 (if (= 0 (length el-get-sources))
+;; 	     el-get-sources-names
+;; 	   (append el-get-sources-names
+;; 		   (mapcar 'el-get-source-name
+;; 			   el-get-sources)))))
+;;     (el-get 'sync all-packages)))
+
+;; (unless (require 'el-get nil t)
+;;   (url-retrieve
+;;    "https://raw.github.com/dimitri/el-get/master/el-get-install.el"
+;;    (lambda (s)
+;;      (let (el-get-master-branch)
+;;        (goto-char (point-max))
+;;        (eval-print-last-sexp)
+;;        (setq el-get-verbose t)))))
+;; (unless (and (= 0 (length el-get-sources))
+;; 	     (= 0 (length el-get-sources-names)))
+;;   (sync-el-get-packages))
+
+;; Required Packages
+(defvar jyh-required-packages
+  '(anything-exuberant-ctags
+    auctex cmake-mode ctags ctags-update
+    ert ert-x ess haskell-mode icicles
+    magit magithub n3-mode lua-mode org
+    quack scss-mode smarter-compile
+    sr-speedbar yasnippet zenburn-theme)
+  "List of required packages to ensure are installed at launch")
+
+(defun jyh-packages-installed-p (package-list)
+  (let ((all-p t))
+    (dolist (p package-list)
+      (if (not (package-installed-p p))
+	  (setq all-p nil)
+	nil))
+    all-p))
+
+;; install missing packages
+(if (not (jyh-packages-installed-p jyh-required-packages))
+    (progn
+      ;; check for new packages
+      (message "%s" "Refreshing package database...")
+      (package-refresh-contents)
+      (message "%s" " done.")
+      (dolist (p jyh-required-packages)
+	(if (not (package-installed-p p))
+	  (package-install p)))))
+
+;; CEDET
+;; ======================================
+(load-file "~/.emacs.d/site-lisp/cedet/common/cedet.el")
+(global-ede-mode 1)
+(semantic-load-enable-code-helpers)
+(global-srecode-minor-mode 1)
 
 ;; General requires
-(require 'find-files)
-(require 'rst)
+;(require 'find-files)
+
 (setq auto-mode-alist
       (append '(("\\.rst$" . rst-mode)
-                ("\\.rest$" . rst-mode)) auto-mode-alist))
-
+                ("\\.rest$" . rst-mode)
+                ("\\.f$" . f90-mode))
+              auto-mode-alist))
+(setq interpreter-mode-alist
+      (append '(("lua" . lua-mode))
+              interpreter-mode-alist))
 
 ;; General Options
 (setq visible-bell 1)
@@ -36,10 +112,7 @@
 (global-set-key (kbd "C-x g q") 'query-replace-regexp)
 
 ;; Set syntax highlighting and default color scheme
-(require 'color-theme)
-(color-theme-initialize)
-(load-file "~/.emacs.d/site-lisp/color-theme-zenburn.el")
-(color-theme-zenburn)
+(load-theme 'zenburn t)
 (global-font-lock-mode 1)
 
 ;; Set tab behavior
@@ -53,40 +126,6 @@
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 (setq uniquify-ignore-buffers-re "^\\*")
 
-;; Line endings
-(defun set-eol-conversion (new-eol)
-  "Specify new end-of-line conversion NEW-EOL for the buffer's
-file coding system.  This marks the buffer as modified.  Choices
-are: unix, dos, mac"
-  (interactive "End-of-line conversion for visited file: \n")
-  ;; Check for valid input
-  (unless (or (string-equal new-eol "unix")
-              (string-equal new-eol "dos")
-              (string-equal new-eol "mac"))
-    (error "Invalid EOL type, %s" new-eol))
-
-  (if buffer-file-coding-system
-      (let ((new-coding-system
-             (coding-system-change-eol-conversion
-              buffer-file-coding-system new-eol)))
-        (set-buffer-file-coding-system new-coding-system))
-    (let ((new-coding-system
-           (coding-system-change-eol-conversion
-            'undecided new-eol)))
-      (set-buffer-file-coding-system new-coding-system)))
-  (message "EOL conversion now %s" new-eol))
-
-
-;; CEDET
-;; ======================================
-(load-file "~/.emacs.d/site-lisp/cedet/common/cedet.el")
-(global-ede-mode 1)
-(semantic-load-enable-code-helpers)
-(global-srecode-minor-mode 1)
-
-;; Auto-Install
-(require 'auto-install)
-
 ;; ERT (testing suite)
 (require 'ert)
 (require 'ert-x)
@@ -94,22 +133,12 @@ are: unix, dos, mac"
 ;; YASnippet
 ;; ======================================
 (require 'yasnippet)
-;(add-to-list 'yas/extra-mode-hooks
-             ;'mako-mode-hook)
-(yas/initialize)
-(yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/snippets")
-(yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
-
 (require 'dropdown-list)
+(yas/initialize)
+(yas/global-mode 1)
+(yas/load-directory "~/.emacs.d/elpa/yasnippet-20120627/snippets")
+(yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
 (setq yas/prompt-functions '(yas/dropdown-prompt))
-
-;; Auto Insert Mode
-;; ======================================
-(require 'autoinsert)
-(auto-insert-mode)
-(setq auto-insert-directory "~/.emacs.d/templates/")
-(setq auto-insert-query nil)
-(define-auto-insert "\.org" "gtd-header.org")
 
 ;; LaTeX
 ;; ======================================
@@ -194,22 +223,18 @@ are: unix, dos, mac"
 
 (require 'yacc-mode)
 (require 'flex-mode)
-(require 'ebnf-mode)
+;(require 'ebnf-mode)
 (add-to-list 'auto-mode-alist '("\\.y\\'" . yacc-mode))
 (add-to-list 'auto-mode-alist '("\\.yy\\'" . yacc-mode))
 (add-to-list 'auto-mode-alist '("\\.l\\'" . flex-mode))
 (add-to-list 'auto-mode-alist '("\\.ll\\'" . flex-mode))
-(add-to-list 'auto-mode-alist '("\\.bnf\\'" . ebnf-mode))
-(add-to-list 'auto-mode-alist '("\\.ebnf\\'" . ebnf-mode))
-
-;; Fortran
-;; ======================================
-(add-to-list 'auto-mode-alist '("\\.f\\'" . f90-mode))
+;(add-to-list 'auto-mode-alist '("\\.bnf\\'" . ebnf-mode))
+;(add-to-list 'auto-mode-alist '("\\.ebnf\\'" . ebnf-mode))
 
 ;; Compile
 ;; ======================================
-(require 'smart-compile)
-(global-set-key [f12] 'smart-compile)
+(require 'smarter-compile)
+(global-set-key [f12] 'smarter-compile)
 
 ;; CMake
 ;; ======================================
@@ -224,8 +249,7 @@ are: unix, dos, mac"
 		"~/.schemas/nxml-schemas.xml"))
 
 ;; N3-Mode
-(add-to-list 'load-path "~/.emacs.d/site-lisp/n3-mode.el")
-(autoload 'n3-mode "n3-mode" "Major mode for OWL and N3 files" t)
+;(require 'n3-mode)
 (add-to-list 'auto-mode-alist '("\\.n3\\'" . n3-mode))
 (add-to-list 'auto-mode-alist '("\\.owl\\'" . n3-mode))
 
@@ -286,7 +310,6 @@ BTXT at the beginning and ETXT at the end"
 ;; HTML/CSS
 ;; ======================================
 (require 'scss-mode)
-(add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode))
 (setq scss-compile-at-save nil)
 
 ;; Scheme
@@ -296,53 +319,9 @@ BTXT at the beginning and ETXT at the end"
 (setq scheme-program-name "mzscheme")
 (setq quack-fontify-style nil)
 
-;; Lua
-;; ======================================
-(require 'lua-mode)
-(add-to-list 'auto-mode-alist '("\\.lua\\'" . lua-mode))
-(add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
-
 ;; Python
 ;; ======================================
-(require 'python-mode)
 (require 'cython-mode)
-;; Strip trailing whitespace from python, C, and C++
-(add-hook 'python-mode-hook
-          (lambda ()
-            (add-hook 'write-file-functions 'delete-trailing-whitespace)))
-
-;; IPython
-(setq ipythoncommand "/usr/bin/ipython")
-(require 'ipython)
-
-;; Anything-IPython
-(require 'anything-ipython)
-(add-hook 'python-mode-hook #'(lambda ()
-                                (define-key py-mode-map (kbd "M-<tab>") 'anything-ipython-complete)))
-(add-hook 'ipython-shell-hook #'(lambda ()
-                                  (define-key py-mode-map (kbd "M-<tab>") 'anything-ipython-complete)))
-
-;; Rope
-;(setq pymacs-load-path '("~/.emacs.d/site-lispropemacs"))
-;(pymacs-load "ropemacs" "rope-")
-
-;; Eldoc
-(add-hook 'python-mode-hook
-          '(lambda () (eldoc-mode 1)) t)
-
-;; Flymake and PyLint
-(when (load "flymake" t)
-  (defun flymake-pylint-init ()
-    (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                       'flymake-create-temp-inplace))
-           (local-file (file-relative-name
-                        temp-file
-                        (file-name-directory buffer-file-name))))
-      (list "epylint" (list local-file))))
-
-  (add-to-list 'flymake-allowed-file-name-masks
-               '("\\.py\\'" flymake-pylint-init)))
-
 ;; Nosetests
 (defun py-nosetests()
   "Runs nosetests command on current file"
@@ -401,20 +380,10 @@ BTXT at the beginning and ETXT at the end"
 
 ;; ESS (R), statistics
 ;; ======================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/ess")
-(add-to-list 'load-path "~/.emacs.d/site-lisp/ess/lisp")
 (require 'ess-site)
-
-;; Icicles
-;; ======================================
-(setq load-path (append load-path (list "~/.emacs.d/site-lisp/icicles")))
-(setq load-path (append load-path (list "~/.emacs.d/site-lisp/icicles/optional")))
-(require 'icicles)
 
 ;; Tags
 ;; ======================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/anything-etags-plus")
-(require 'ctags-update)
 (ctags-update-minor-mode 1)
 
 (cond ((eq system-type 'linux)
@@ -423,7 +392,7 @@ BTXT at the beginning and ETXT at the end"
        (setq path-to-ctags "/opt/local/bin/ctags"))
       ((eq system-type 'windows-nt)
        (setq path-to-ctags "C:\\cygwin\\bin\\ctags.exe")))
-(defun create-tags (dir-name)
+(defun create-tags(dir-name)
   "Create tags file."
   (interactive "DDirectory: ")
   (shell-command
@@ -431,13 +400,6 @@ BTXT at the beginning and ETXT at the end"
            path-to-ctags
            dir-name
            (directory-file-name dir-name))))
-
-;; Version Control
-;; ======================================
-
-;; ditz
-(add-to-list 'load-path "~/.emacs.d/site-lisp/emacs-ditz")
-(require 'ditz)
 
 ;; Org mode
 ;; ======================================
@@ -714,12 +676,6 @@ BTXT at the beginning and ETXT at the end"
 ;; Other
 ;; ======================================
 
-;; immediate access to GTD through 'M-x gtd'
-(defun gtd ()
-  (interactive)
-  (find-files-glob "~/notebook/org/gtd/*.org")
-)
-
 ;; Date-Time Functions
 (defvar current-date-format "%Y-%m-%d %a"
   "Format of date to insert with `insert-current-date` func")
@@ -739,6 +695,29 @@ BTXT at the beginning and ETXT at the end"
         (unload-feature 'igor-mode t)
         (load-library "igor-mode")
         (igor-mode))))
+
+;; Line endings
+(defun set-eol-conversion (new-eol)
+  "Specify new end-of-line conversion NEW-EOL for the buffer's
+file coding system.  This marks the buffer as modified.  Choices
+are: unix, dos, mac"
+  (interactive "End-of-line conversion for visited file: \n")
+  ;; Check for valid input
+  (unless (or (string-equal new-eol "unix")
+              (string-equal new-eol "dos")
+              (string-equal new-eol "mac"))
+    (error "Invalid EOL type, %s" new-eol))
+
+  (if buffer-file-coding-system
+      (let ((new-coding-system
+             (coding-system-change-eol-conversion
+              buffer-file-coding-system new-eol)))
+        (set-buffer-file-coding-system new-coding-system))
+    (let ((new-coding-system
+           (coding-system-change-eol-conversion
+            'undecided new-eol)))
+      (set-buffer-file-coding-system new-coding-system)))
+  (message "EOL conversion now %s" new-eol))
 
 ;; Windows(OS)-specific Configuration
 ;; ======================================
