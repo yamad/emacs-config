@@ -44,12 +44,12 @@
 
 ;; Required Packages
 (defvar jyh-required-packages
-  '(anything-exuberant-ctags
-    auctex cmake-mode ctags ctags-update
-    ert ert-x ess haskell-mode icicles
-    magit magithub n3-mode lua-mode org
-    quack scss-mode smarter-compile
-    sr-speedbar yasnippet zenburn-theme)
+  '(anything anything-exuberant-ctags
+	     auctex cmake-mode ctags ctags-update
+	     ert ert-x ess haskell-mode icicles
+	     magit magithub n3-mode lua-mode org
+	     quack scss-mode smarter-compile
+	     sr-speedbar yasnippet zenburn-theme)
   "List of required packages to ensure are installed at launch")
 
 (defun jyh-packages-installed-p (package-list)
