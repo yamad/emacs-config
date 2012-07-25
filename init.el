@@ -96,6 +96,8 @@
 (line-number-mode 1)
 (column-number-mode 1)
 (setq kill-whole-line t)
+(desktop-save-mode 1)
+(setq desktop-restore-eager 3)
 
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
