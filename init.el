@@ -1,5 +1,12 @@
 ;; General Options
 ;; ======================================
+;
+;; CEDET
+;; ======================================
+(load-file "~/.emacs.d/site-lisp/cedet/common/cedet.el")
+(global-ede-mode 1)
+(semantic-load-enable-code-helpers)
+(global-srecode-minor-mode 1)
 
 ;; Append main load-path directories
 (setq load-path (append load-path (list "~/.emacs.d")))
@@ -71,16 +78,8 @@
 	(if (not (package-installed-p p))
 	  (package-install p)))))
 
-;; CEDET
-;; ======================================
-(load-file "~/.emacs.d/site-lisp/cedet/common/cedet.el")
-(global-ede-mode 1)
-(semantic-load-enable-code-helpers)
-(global-srecode-minor-mode 1)
-
 ;; General requires
 ;(require 'find-files)
-
 (setq auto-mode-alist
       (append '(("\\.rst$" . rst-mode)
                 ("\\.rest$" . rst-mode)
