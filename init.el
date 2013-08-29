@@ -20,35 +20,6 @@
             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
-;; (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-;; ;; complicated package sources from el-get here
-;; (setq el-get-sources '())
-;; ;; simple package names from el-get here
-;; (setq el-get-sources-names '())
-;; (defun sync-el-get-packages ()
-;;   "Synchronize el-get packages"
-;;   (interactive)
-;;   (el-get 'sync '(el-get))
-;;   (let ((all-packages
-;; 	 (if (= 0 (length el-get-sources))
-;; 	     el-get-sources-names
-;; 	   (append el-get-sources-names
-;; 		   (mapcar 'el-get-source-name
-;; 			   el-get-sources)))))
-;;     (el-get 'sync all-packages)))
-
-;; (unless (require 'el-get nil t)
-;;   (url-retrieve
-;;    "https://raw.github.com/dimitri/el-get/master/el-get-install.el"
-;;    (lambda (s)
-;;      (let (el-get-master-branch)
-;;        (goto-char (point-max))
-;;        (eval-print-last-sexp)
-;;        (setq el-get-verbose t)))))
-;; (unless (and (= 0 (length el-get-sources))
-;; 	     (= 0 (length el-get-sources-names)))
-;;   (sync-el-get-packages))
-
 ;; Required Packages
 (defvar jyh-required-packages
   '(anything anything-exuberant-ctags
