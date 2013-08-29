@@ -53,7 +53,7 @@
 (defvar jyh-required-packages
   '(anything anything-exuberant-ctags
 	     auctex cmake-mode ctags ctags-update
-	     ert ert-x ess haskell-mode icicles
+	     edit-server ert ert-x ess haskell-mode icicles
 	     magit magithub n3-mode lua-mode org
 	     quack scss-mode smarter-compile
 	     sr-speedbar yasnippet zenburn-theme)
@@ -147,6 +147,10 @@ of text"
 ;; ERT (testing suite)
 (require 'ert)
 (require 'ert-x)
+
+;; Edit server (runs client-server emacs system)
+(require 'edit-server)
+(edit-server-start)
 
 ;; News
 (setq gnus-select-method '(nntp "news.eternal-september.org"))
