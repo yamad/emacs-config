@@ -430,7 +430,7 @@ BTXT at the beginning and ETXT at the end"
 
 ;; Tags
 ;; ======================================
-(ctags-update-minor-mode 1)
+(ctags-auto-update-mode 1)
 
 (cond ((eq system-type 'linux)
        (setq path-to-ctags "/usr/bin/ctags"))
