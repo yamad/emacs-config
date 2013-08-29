@@ -175,10 +175,9 @@ of text"
 ;; ======================================
 (require 'yasnippet)
 (require 'dropdown-list)
-(yas/initialize)
 (yas/global-mode 1)
-(yas/load-directory "~/.emacs.d/elpa/yasnippet-20120627/snippets")
-(yas/load-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
+(setq yas/root-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
+(yas/load-directory yas/root-directory)
 (setq yas/prompt-functions '(yas/dropdown-prompt))
 
 ;; LaTeX
@@ -571,6 +570,17 @@ BTXT at the beginning and ETXT at the end"
       (kill-buffer bufname)
       (switch-to-buffer-other-window "notes.tex")
       (latex-mode))))
+
+(defun yas/org-very-safe-expand ()
+  (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            ;; yasnippet (using the new org-cycle hooks)
+            (make-variable-buffer-local 'yas/trigger-key)
+            (setq yas/trigger-key [tab])
+            (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
+            (define-key yas/keymap [tab] 'yas/next-field)))
 
 ;; Constants
 (require 'constants)

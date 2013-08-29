@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: meeting-notes-entry
+# key: [
+# --
+[`(format-time-string "%Y/%m/%d %k:%M:%S")`] (${1:}) $0
