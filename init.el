@@ -422,6 +422,12 @@ BTXT at the beginning and ETXT at the end"
 ;; ======================================
 (require 'ess-site)
 
+;; Ledger (accounting program)
+(setq load-path
+      (append load-path (list "~/.emacs.d/site-lisp/ledger-mode")))
+(load-file "~/.emacs.d/site-lisp/ledger-mode/ledger-mode.el")
+(require 'ledger)
+
 ;; Tags
 ;; ======================================
 (ctags-update-minor-mode 1)
