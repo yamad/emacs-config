@@ -1,16 +1,9 @@
 ;;; cedet-integ-test.el --- CEDET full integration tests.
 
-;; Copyright (C) 2008, 2009, 2010, 2011 Eric M. Ludlam
+;; Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
 
-(eval-and-compile
-  ;; Other package depend on this value at compile time via inversion.
-
-  (defvar cit-version "1.0"
-    "Current version of Semantic.")
-
-  )
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
 ;; published by the Free Software Foundation; either version 2, or (at
@@ -96,8 +89,9 @@
 (require 'semantic)
 (require 'ede)
 (require 'data-debug)
-(require 'ede-make)
+(require 'ede/make)
 (require 'cogre)
+(require 'srecode/find)
 
 (eval-and-compile
   (defvar cedet-integ-base
@@ -113,9 +107,12 @@
 (require 'cit-srec)
 (require 'cit-el)
 (require 'cit-texi)
+(require 'cit-projvar)
 (require 'cit-externaldb)
-(require 'cit-gnustep)
 (require 'cit-android)
+(require 'cit-arduino)
+(require 'cit-cpproot)
+(require 'cit-javaroot)
 (require 'cit-dist)
 
 (defvar cedet-integ-target (expand-file-name "edeproj" cedet-integ-base)
@@ -180,14 +177,14 @@ Optional argument MAKE-TYPE is the style of EDE project to test."
     ;; 8 a) Try out gnu-global and other external databases.
     (cit-externaldb-test)
 
-    ;; 2 e) srecode map manipulation
-    (cit-srecode-map-test)
-
     ;; Do some more with Emacs Lisp.
     (cit-srecode-fill-el make-type)
 
     ;; Do some texinfo documentation.
     (cit-srecode-fill-texi)
+
+    ;; Test out EDE project local variables
+    (cit-proj-variables)
 
     ;; Create a distribution
     (find-file (expand-file-name "README" cedet-integ-target))
@@ -195,19 +192,6 @@ Optional argument MAKE-TYPE is the style of EDE project to test."
 
     (cit-finish-message "PASSED" make-type)
     ))
-
-(defun cedet-integ-test-GNUStep ()
-  "Run the CEDET integration test using GNUStep style project."
-  (interactive)
-
-  ;; Do an EDE GNUstep-Make Project
-  (make-directory (concat cedet-integ-target "_ede_GSMake") t)
-  (find-file (expand-file-name "README" (concat cedet-integ-target "_ede_GSMake"))) ;; only to change dir
-  (let ((ede-auto-add-method 'always))
-    (cit-ede-step-test))
-
-  (cit-finish-message "PASSED" "GNUStep")
-  )
 
 (defun cedet-integ-test-Android ()
   "Run the CEDET integration test using the Android style project."
@@ -221,21 +205,66 @@ Optional argument MAKE-TYPE is the style of EDE project to test."
     (cit-finish-message "PASSED" "Android")
     ))
 
+(defun cedet-integ-test-Arduino ()
+  "Run the CEDET integration test using the Android style project."
+  (interactive)
+
+  (let ((ede-auto-add-method 'never))
+    (global-ede-mode 1)
+    ;; Do an EDE Arduino project.
+    (cit-ede-arduino-test)
+
+    (cit-finish-message "PASSED" "Arduino")
+    ))
+
+(defun cedet-integ-test-cpproot ()
+  "Run the CEDET integration test using the Android style project."
+  (interactive)
+
+  (let ((ede-auto-add-method 'never))
+    (global-ede-mode 1)
+    ;; Do an EDE cpproot project. 
+    (cit-ede-cpproot-test)
+
+    ;; 2 e) srecode map manipulation
+    ;; Note on this:  This test used to be in the test for Makefile or
+    ;; Automake projects, but it does not depend on that project
+    ;; type.  Moving it here so it is faster to get to.
+    (cit-srecode-map-test)
+
+    (cit-finish-message "PASSED" "cpproot")
+    ))
+
+(defun cedet-integ-test-javaroot ()
+  "Run the CEDET integration test using the Android style project."
+  (interactive)
+
+  (let ((ede-auto-add-method 'never))
+    (global-ede-mode 1)
+    ;; Do an EDE cpproot project. 
+    (cit-ede-javaroot-test)
+
+    (cit-finish-message "PASSED" "javaroot")
+    ))
+
 (defun cit-finish-message (message style)
   "Display a MESSAGE that some test is now finished.
 Argument STYLE is the type of build done."
-  (let ((b (set-buffer (get-buffer-create "*PASSED*"))))
-    (erase-buffer)
-    (insert "\n\n  PASSED!\n\n  Make Style: ")
-    (insert (format "%S" style) "\n")
-    (insert "\n\nWaiting 5 seconds before exiting with positive exit status.\n")
-    (switch-to-buffer b)
-    ;; Now wait.
-    (sit-for 5)
-    ;; 1 means GOOD to the shell script, since any other emacs exit
-    ;; mechanism will be 0. (ie - click on the X in the corner.)
-    (kill-emacs 1)
-    ))
+  ;; Do a message in case we're in batch mode
+  (message "PASSED! -- Make Style: %S" style)
+  (unless noninteractive
+    (let ((b (set-buffer (get-buffer-create "*PASSED*"))))
+      (erase-buffer)
+      (insert "\n\n  PASSED!\n\n  Make Style: ")
+      (insert (format "%S" style) "\n")
+      (insert "\n\nWaiting 5 seconds before exiting with positive exit status.\n")
+      (switch-to-buffer b)
+      ;; Now wait.
+      (sit-for 5)))
+  ;; 1 means GOOD to the shell script, since any other emacs exit
+  ;; mechanism will be 0. (ie - click on the X in the corner.)
+  (kill-emacs 1)
+  )
 
 (defun cit-make-dir (dir)
   "Make directory DIR if it doesn't exist."
@@ -249,7 +278,24 @@ Append FILENAME to the target directory."
 
 (defun cit-srecode-fill-with-stuff (filename tags &rest
 					     empty-dict-entries)
-  "Fill up FILENAME with some TAGS.
+  "Fill up FILENAME with some TAGS, and check the results.
+Argument FILENAME is the file to fill up.
+Argument TAGS is the list of tags to insert into FILENAME.
+EMPTY-DICT-ENTRIES are dictionary entries for the EMPTY fill macro."
+  (let ((post-empty-tags (apply 'cit-srecode-fill-with-stuff-notest
+				filename tags
+				empty-dict-entries)))
+
+    ;; Make sure the tags we have are the same as the tags we tried
+    ;; to insert.
+    (cit-srecode-verify-tags (semantic-fetch-tags)
+			     tags
+			     post-empty-tags)
+    ))
+
+(defun cit-srecode-fill-with-stuff-notest (filename tags &rest
+						    empty-dict-entries)
+  "Fill up FILENAME with some TAGS.  Do not check the results.
 Argument FILENAME is the file to fill up.
 Argument TAGS is the list of tags to insert into FILENAME.
 EMPTY-DICT-ENTRIES are dictionary entries for the EMPTY fill macro."
@@ -275,33 +321,32 @@ EMPTY-DICT-ENTRIES are dictionary entries for the EMPTY fill macro."
     (setq post-empty-tags (semantic-fetch-tags))
 
     (sit-for 0)
+
     ;;
     ;; Add in our tags
     ;;
-    (dolist (tag tags)
+    (cit-srecode-insert-taglist tags)
 
-      ;; 3 b) Srecode to make more sources
-      ;; 3 c) Test incremental parsers (by side-effect)
-      (let ((e (srecode-semantic-insert-tag tag))
-	    (code (semantic-tag-get-attribute tag :code)))
+    post-empty-tags))
+
+(defun cit-srecode-insert-taglist (tags)
+  "Insert the list of TAGS at point in buffer."
+  (dolist (tag tags)
+
+    ;; 3 b) Srecode to make more sources
+    ;; 3 c) Test incremental parsers (by side-effect)
+    (let ((e (srecode-semantic-insert-tag tag))
+	  (code (semantic-tag-get-attribute tag :code)))
       
-	(when code (insert code))
+      (when code (insert code))
 
-	(goto-char e)
-	(sit-for 0)
-	)
+      (goto-char e)
+      (sit-for 0)
       )
-
-    (save-buffer)
-
-    ;; Make sure the tags we have are the same as the tags we tried
-    ;; to insert.
-    (cit-srecode-verify-tags (semantic-fetch-tags)
-			     tags
-			     post-empty-tags)
-
-
-    ))
+    )
+  
+  (save-buffer)
+  )
 
 (defclass cit-tag-verify-error-debug ()
   ((actual :initarg :actual
@@ -359,7 +404,13 @@ are found, but don't error if they are not their."
        ))
     
     (setq actual (cdr actual))
-    ))
+    )
+  (when expected
+    (data-debug-new-buffer "*Test Failure*")
+    (data-debug-insert-thing expected ">" "")
+    (error "After scanning Actual tags, %d expected tags were still left!"
+	   (length expected)))
+  )
 
 (defun cit-compile-and-wait (&optional ARGS)
   "Compile our current project, but wait for it to finish.
@@ -435,7 +486,7 @@ Use COMMAND to run the program."
 	  (while (not (re-search-forward "MOOSE" nil t))
 	    (setq cnt (1+ cnt))
 	    (when (> cnt 10) (error "Program output not detected"))
-	    (sit-for .1))
+	    (sit-for .3))
 	;; Show program output
 	(sit-for .2)
 	)

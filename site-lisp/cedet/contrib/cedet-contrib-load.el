@@ -1,9 +1,8 @@
 ;;; cedet-contrib-load.el --- Autoload definitions for cedet contrib
 
-;;; Copyright (C) 2004 Eric Ludlam
+;;; Copyright (C) 2004, 2012, 2013 Eric Ludlam
 
 ;; Author: Eric Ludlam <zappo@gnu.org>
-;; X-RCS: $Id: cedet-contrib-load.el,v 1.2 2005-09-30 20:15:51 zappo Exp $
 
 ;; CEDET is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -30,6 +29,20 @@
 
 ;;; Contrib autoloads
 ;;
+(unless (featurep 'cedet-devel-load)
+  (error "CEDET must be loaded to use CEDET's contrib utilities."))
+
+;; This file must be in the same directory as all the files that
+;; it is preparing for use.
+(let ((CEDETCONTRIBDIR (file-name-directory
+			(or load-file-name (buffer-file-name)))))
+
+  (add-to-list 'load-path CEDETCONTRIBDIR)
+
+  (message "Installing CEDET contrib packages in %s" CEDETCONTRIBDIR)
+
+)
+
 (load "contrib-loaddefs" nil t)
 
 (provide 'cedet-contrib-load)

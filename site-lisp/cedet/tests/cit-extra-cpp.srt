@@ -1,9 +1,8 @@
-;; cit-extra-cpp.srt --- 
+;; cit-extra-cpp.srt --- Extra templates for teseting.
 
-;; Copyright (C) 2008 Eric M. Ludlam
+;; Copyright (C) 2008, 2013 Eric M. Ludlam
 
 ;; Author: Eric M. Ludlam <eric@siege-engine.com>
-;; X-RCS: $Id: cit-extra-cpp.srt,v 1.1 2008-02-24 18:21:37 zappo Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -24,6 +23,9 @@ set mode "c++-mode"
 set escape_start "{{"
 set escape_end "}}"
 
+;; mimic being in the core template set.
+set priority 30
+
 set application "cit-test"
 
 context test
@@ -36,5 +38,10 @@ int moose() {
 }
 ----
 
+template cit-project-template :blank
+"A project based template."
+----
+THIS IS NOT IN A PROJECT
+----
 
 ;; end

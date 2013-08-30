@@ -3,7 +3,7 @@
 ;
 ;; CEDET
 ;; ======================================
-(load-file "~/.emacs.d/site-lisp/cedet/common/cedet.el")
+(load-file "~/.emacs.d/site-lisp/cedet/cedet-devel-load.el")
 (global-ede-mode 1)
 (semantic-load-enable-code-helpers)
 (global-srecode-minor-mode 1)
@@ -15,19 +15,20 @@
 ;; Package manager
 (require 'package)
 (add-to-list 'package-archives
-            '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives
             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives
+            '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (package-initialize)
 
 ;; Required Packages
 (defvar jyh-required-packages
-  '(anything anything-exuberant-ctags
-	     auctex cmake-mode ctags ctags-update
-	     edit-server ert ert-x ess haskell-mode icicles
-	     magit magithub n3-mode lua-mode org
-	     quack scss-mode smarter-compile
-	     sr-speedbar yasnippet zenburn-theme)
+  '(ack-and-a-half anything anything-exuberant-ctags
+                   auctex cmake-mode ctags ctags-update
+                   edit-server ert ert-x geiser haskell-mode icicles
+                   magit magithub markdown-mode markdown-mode+
+                   n3-mode lua-mode org
+                   quack scss-mode smarter-compile
+                   sr-speedbar yasnippet zenburn-theme)
   "List of required packages to ensure are installed at launch")
 
 (defun jyh-packages-installed-p (package-list)
@@ -68,6 +69,7 @@
 (setq kill-whole-line t)
 (desktop-save-mode 1)
 (setq desktop-restore-eager 3)
+(setq inhibit-startup-screen t)
 
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
@@ -129,6 +131,14 @@ of text"
 (setq user-full-name "Jason Yamada-Hanff")
 (setq user-mail-address "jyamada1@gmail.com")
 
+(setq gnus-face-0 'font-lock-type-face)
+(setq gnus-face-1 'font-lock-string-face)
+(setq gnus-face-2 'font-lock-variable-name-face)
+(setq gnus-face-3 'font-lock-keyword-face)
+
+(setq gnus-group-line-format "%2{%M%S%p%} %0{%5y%} %P%1{%G%}\n")
+(setq gnus-topic-line-format "%i%3{[ %n -- %A ]%}%v\n")
+
 (setq gnus-summary-line-format "%O%U%R%z%d %B%(%[%4L: %-22,22f%]%) %s\n")
 (setq gnus-summary-mode-line-format "Gnus: %p [%A / Sc:%4z] %Z")
 (setq gnus-summary-same-subject "")
@@ -151,7 +161,7 @@ of text"
 (yas/load-directory yas/root-directory)
 (setq yas/prompt-functions '(yas/dropdown-prompt))
 
-;; LaTeX
+;; TeX/LaTeX/ConTeXt
 ;; ======================================
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
@@ -168,6 +178,88 @@ of text"
 
 (setq TeX-open-quote "``")
 (setq TeX-close-quote "''")
+
+
+; for outline views (hide/show sections, chapters, etc.)
+(add-hook 'TeX-mode-hook '(lambda () (TeX-fold-mode 1)))
+(add-hook 'TeX-mode-hook '(lambda () (outline-minor-mode 1)))
+; make PDF by default (can toggle with C-c C-t C-p
+(add-hook 'TeX-mode-hook '(lambda () (TeX-PDF-mode 1)))
+; these math abbrevs (` as prefix char) are also useful in TeX/ConTeXt files
+(require 'latex); defines LaTeX-math-mode
+(add-hook 'TeX-mode-hook 'LaTeX-math-mode)
+; Emacs help for \label, \ref, \cite.  Normally used only with
+; LaTeX-mode but also useful with plain TeX + eplain and with ConTeXt, so:
+(setq reftex-plug-into-AUCTeX t)
+(add-hook 'TeX-mode-hook 'reftex-mode)
+
+(defun insert-balanced (left right)
+  "Insert a left, right delmiter pair and be poised to type inside them."
+  (interactive)
+  (insert left)
+  (save-excursion
+    (insert right)))
+
+; When start-context-math() is bound to $:
+; Typing one $ gets you $$ with the insertion point between them.
+; Typing a second $ turns the $$ into ConTeXt's form for displayed math:
+;
+;   \placeformula\startformula
+;   [blank line with insertion point at beginning]
+;   \stopformula
+;
+; Delete the \placeformula if you don't want equations numbered automatically.
+
+(defun start-context-math ()
+  (interactive)
+  (let* ((start (max (point-min) (- (point) 1)))
+         (stop  (min (point-max) (+ (point) 1))))
+                                        ; if in the middle of a $$, turn inline math into context display math
+    (if (equal "$$" (buffer-substring-no-properties start stop))
+        (progn
+          (delete-region start stop);get rid of the $$
+                                        ; delete preceding spaces, if any
+          (while (and (< (point-min) (point))
+                      (equal (buffer-substring-no-properties (- (point) 1)
+                                                             (point))
+                             " "))
+            (backward-delete-char 1))
+                                        ; delete a preceding newline, if any
+          (if (equal (buffer-substring-no-properties (- (point) 1)
+                                                     (point))
+                     "\n")
+              (backward-delete-char 1))
+                                        ; ConTeXt's display math with automatic equation numbering
+          (insert "\n\\placeformula\\startformula\n")
+          (save-excursion (insert "\n\\stopformula")))
+                                        ; else: just doing inline math
+      (insert-balanced ?\$ ?\$))))
+
+                                        ; automatically insert right delimiter for $, {, [, and ( and be
+                                        ; poised to type inside them.
+(add-hook 'TeX-mode-hook
+          '(lambda ()
+             (local-set-key "$"
+                            '(lambda ()
+                               (interactive)
+                               (insert-balanced ?\$ ?\$)))
+             (local-set-key "{"
+                            '(lambda ()
+                               (interactive)
+                               (insert-balanced ?\{ ?\})))
+             (local-set-key "["
+                            '(lambda ()
+                               (interactive)
+                               (insert-balanced ?\[ ?\])))
+             (local-set-key "("
+                            '(lambda ()
+                               (interactive)
+                               (insert-balanced ?\( ?\))))))
+
+                                        ; For ConTeXt mode, inserting two $ signs needs to behave specially
+(add-hook 'ConTeXt-mode-hook
+          '(lambda ()
+             (local-set-key "$" 'start-context-math)))
 
 (defun my-latex-setup ()
   (defun LaTeX-word-count ()
@@ -326,9 +418,8 @@ BTXT at the beginning and ETXT at the end"
 ;; Scheme
 ;; ======================================
 (require 'quack)
-(add-to-list 'auto-mode-alist '("\\.rkt\\'" . scheme-mode)) ; racket files
-(setq scheme-program-name "mzscheme")
 (setq quack-fontify-style nil)
+(setq quack-smart-open-paren-p t)
 
 ;; Python
 ;; ======================================
@@ -387,17 +478,16 @@ BTXT at the beginning and ETXT at the end"
 ;; ======================================
 (add-to-list 'load-path "~/.emacs.d/site-lisp/matlab-emacs")
 (load-library "matlab-load")
-(matlab-cedet-setup)
-
-;; ESS (R), statistics
-;; ======================================
-(require 'ess-site)
 
 ;; Ledger (accounting program)
 (setq load-path
       (append load-path (list "~/.emacs.d/site-lisp/ledger-mode")))
 (load-file "~/.emacs.d/site-lisp/ledger-mode/ledger-mode.el")
 (require 'ledger)
+(set-face-attribute 'ledger-font-xact-highlight-face nil
+                    :background "midnight blue")
+(set-face-attribute 'ledger-occur-xact-face nil
+                    :background "midnight blue")
 
 ;; Tags
 ;; ======================================
@@ -766,20 +856,11 @@ are: unix, dos, mac"
     (set-default-font "Consolas-11")))
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(canlock-password "17fbb2e43ad75165c6b69f83ed8c0a5f34d16270")
  '(ecb-options-version "2.40")
  '(frame-background-mode (quote dark))
- '(inhibit-startup-screen t)
- '(org-agenda-files (quote ("~/notebook/org/gtd/General.org" "~/notebook/org/gtd/P-Dev.org" "~/notebook/org/gtd/P-Projects.org" "/home/jason/notebook/org/gtd/Lists.org" "/home/jason/notebook/org/gtd/Work.org")))
- '(quack-fontify-style nil)
- '(quack-smart-open-paren-p t)
  '(rst-level-face-base-light 15))
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
