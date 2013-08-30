@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: entry
+# key: new
+# expand-env: ((yas/indent-line 'fixed))
+# --
+
+${1:$$(format-time-string "%Y")}/${2:$$(format-time-string "%m")}/${3:$$(format-time-string "%d")} ${4:Description}
+    $0                       \$ $6
+    ${8:($9)                     \$ $6}
