@@ -23,7 +23,7 @@
 ;; Required Packages
 (defvar jyh-required-packages
   '(ack-and-a-half anything anything-exuberant-ctags
-                   auctex cmake-mode ctags ctags-update
+                   auctex cmake-mode ctags ctags-update dropdown-list
                    edit-server ert ert-x geiser haskell-mode icicles
                    magit magithub markdown-mode markdown-mode+
                    n3-mode lua-mode org
