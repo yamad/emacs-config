@@ -3,10 +3,10 @@
 ;
 ;; CEDET
 ;; ======================================
-(load-file "~/.emacs.d/site-lisp/cedet/cedet-devel-load.el")
-(global-ede-mode 1)
-(semantic-load-enable-code-helpers)
-(global-srecode-minor-mode 1)
+;(load-file "~/.emacs.d/site-lisp/cedet/cedet-devel-load.el")
+;(global-ede-mode 1)
+;(semantic-load-enable-code-helpers)
+;(global-srecode-minor-mode 1)
 
 ;; Append main load-path directories
 (setq load-path (append load-path (list "~/.emacs.d")))
@@ -15,9 +15,9 @@
 ;; Package manager
 (require 'package)
 (add-to-list 'package-archives
-            '("melpa" . "http://melpa.milkbox.net/packages/") t)
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (add-to-list 'package-archives
-            '("marmalade" . "http://marmalade-repo.org/packages/") t)
+	     '("marmalade" . "http://marmalade-repo.org/packages/") t)
 (package-initialize)
 
 ;; Required Packages
@@ -25,7 +25,7 @@
   '(ack-and-a-half anything anything-exuberant-ctags
                    auctex cmake-mode ctags ctags-update
                    edit-server ert ert-x geiser haskell-mode icicles
-                   magit magithub markdown-mode markdown-mode+
+                   magit markdown-mode markdown-mode+
                    n3-mode lua-mode org
                    quack scss-mode smarter-compile
                    sr-speedbar yasnippet zenburn-theme)
@@ -585,10 +585,9 @@ BTXT at the beginning and ETXT at the end"
          (params_default
           (list
            :tstart hline
-           :lfmt (lambda (line) (apply 'format (cons rst-lfmt line)))
-           :hlfmt (lambda (line) (apply 'format (cons rst-hlfmt line)))
-           ))
-         )
+           :lfmt rst-lfmt
+           :hlfmt rst-hlfmt
+           )))
     (orgtbl-to-generic table (org-combine-plists params_default params))))
 
 ;; lab notebook
