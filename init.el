@@ -26,8 +26,8 @@
                    auctex cmake-mode ctags ctags-update dropdown-list
                    edit-server ert ert-x geiser haskell-mode icicles
                    magit markdown-mode markdown-mode+
-                   n3-mode lua-mode org
-                   quack scss-mode smarter-compile
+                   n3-mode lua-mode org quack
+                   solarized-theme scss-mode smarter-compile
                    sr-speedbar yasnippet zenburn-theme)
   "List of required packages to ensure are installed at launch")
 
@@ -84,6 +84,9 @@
 ;; Bindings for replace-regexp
 (global-set-key (kbd "C-x g r") 'replace-regexp)
 (global-set-key (kbd "C-x g q") 'query-replace-regexp)
+
+;; other useful keybindings
+(global-set-key (kbd "C-x C-l") 'goto-line)
 
 ;; Set syntax highlighting and default color scheme
 (load-theme 'zenburn t)
@@ -151,6 +154,7 @@ of text"
 ;; magit (git)
 (if (eq system-type 'windows-nt)
     (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git.exe"))
+(global-set-key (kbd "C-x C-g") 'magit-status)
 
 ;; YASnippet
 ;; ======================================
@@ -278,6 +282,8 @@ of text"
     (progn
       (require 'tex-mik)
       (setq preview-image-type 'pnm)))
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
 
 (eval-after-load "tex"
   '(add-to-list 'TeX-command-list
@@ -419,7 +425,7 @@ BTXT at the beginning and ETXT at the end"
 ;; ======================================
 (require 'quack)
 (setq quack-fontify-style nil)
-(setq quack-smart-open-paren-p t)
+(setq quack-smart-open-paren-p nil)
 
 ;; Python
 ;; ======================================
