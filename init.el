@@ -637,8 +637,7 @@ BTXT at the beginning and ETXT at the end"
         (set-visited-file-name "./notes.tex")
         (save-buffer))
       (kill-buffer bufname)
-      (switch-to-buffer-other-window "notes.tex")
-      (latex-mode))))
+      (switch-to-buffer-other-window "notes.tex"))))
 
 (defun yas/org-very-safe-expand ()
   (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
