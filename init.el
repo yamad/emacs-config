@@ -24,7 +24,8 @@
 (defvar jyh-required-packages
   '(ack-and-a-half anything anything-exuberant-ctags
                    auctex cmake-mode ctags ctags-update dropdown-list
-                   edit-server ert ert-x geiser haskell-mode icicles
+                   exec-path-from-shell edit-server ert ert-x
+                   geiser haskell-mode icicles
                    magit markdown-mode markdown-mode+
                    n3-mode lua-mode org quack
                    solarized-theme scss-mode smarter-compile
