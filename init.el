@@ -870,6 +870,10 @@ are: unix, dos, mac"
     ;; Add font
     (set-default-font "Consolas-11")))
 
+;; Use chrome for urls on linux
+(if (eq system-type 'gnu/linux)
+    (setq browse-url-browser-function 'browse-url-xdg-open))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
