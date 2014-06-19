@@ -21,14 +21,13 @@
 (package-initialize)
 
 ;; Required Packages
-(defvar jyh-required-packages
-  '(ack-and-a-half anything anything-exuberant-ctags
-                   auctex cmake-mode ctags ctags-update dropdown-list
+(defvar jyh-required-packages '(ag auctex cmake-mode ctags
+                   ctags-update dropdown-list
                    exec-path-from-shell edit-server ert ert-x
-                   geiser haskell-mode icicles
-                   magit markdown-mode markdown-mode+
-                   n3-mode lua-mode org quack
-                   solarized-theme scss-mode smarter-compile
+                   geiser haskell-mode helm helm-ag
+                   helm-projectile icicles ido magit
+                   markdown-mode markdown-mode+ n3-mode lua-mode
+                   org quack solarized-theme smarter-compile
                    sr-speedbar yasnippet zenburn-theme)
   "List of required packages to ensure are installed at launch")
 
@@ -90,6 +89,7 @@
 (global-set-key (kbd "C-x C-l") 'goto-line)
 
 ;; Set syntax highlighting and default color scheme
+(require 'github-theme)
 (load-theme 'zenburn t)
 (global-font-lock-mode 1)
 
@@ -128,6 +128,8 @@ of text"
 ;; Edit server (runs client-server emacs system)
 (require 'edit-server)
 (edit-server-start)
+
+(setq tramp-default-method "ssh")
 
 ;; News
 (setq gnus-select-method '(nntp "news.eternal-september.org"))
@@ -340,6 +342,14 @@ of text"
 (add-to-list 'auto-mode-alist '("\\.ll\\'" . flex-mode))
 ;(add-to-list 'auto-mode-alist '("\\.bnf\\'" . ebnf-mode))
 ;(add-to-list 'auto-mode-alist '("\\.ebnf\\'" . ebnf-mode))
+
+;; Fortran
+;; ======================================
+(let ((findent 4))
+  (setq fortran-do-intent findent)
+  (setq fortran-if-intent findent)
+  (setq fortran-structure-indent findent)
+  (setq fortran-continuation-indent (+ 1 findent)))
 
 ;; Compile
 ;; ======================================
