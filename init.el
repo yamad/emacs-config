@@ -54,9 +54,9 @@
 ;; General requires
 ;(require 'find-files)
 (setq auto-mode-alist
-      (append '(("\\.rst$" . rst-mode)
+      (append '(("\\.rst$"  . rst-mode)
                 ("\\.rest$" . rst-mode)
-                ("\\.f$" . f90-mode))
+                ("\\.f$"    . f90-mode))
               auto-mode-alist))
 (setq interpreter-mode-alist
       (append '(("lua" . lua-mode))
@@ -88,6 +88,9 @@
 
 ;; other useful keybindings
 (global-set-key (kbd "C-x C-l") 'goto-line)
+
+; bind frame/window switching to shift-up/down/left/right
+(windmove-default-keybindings)
 
 ;; Set syntax highlighting and default color scheme
 (require 'github-theme)
@@ -154,6 +157,37 @@ of text"
 (setq gnus-sum-thread-tree-leaf-with-other "+-> ")
 (setq gnus-sum-thread-tree-vertical "|")
 (setq gnus-sum-thread-tree-single-leaf "`-> ")
+
+;; email
+(setq message-send-mail-function 'smtpmail-send-it
+      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+      smtpmail-auth-credentials '(("smtp.gmail.com" 587
+                                   "jyamada1@gmail.com" nil))
+      smtpmail-default-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+
+(require 'mu4e)
+(setq mu4e-drafts-folder "/Gmail/[Gmail].Drafts"
+      mu4e-sent-folder   "/Gmail/[Gmail].Sent_Mail"
+      mu4e-trash-folder  "/Gmail/[Gmail].Trash"
+      mu4e-sent-messages-behavior 'delete
+      mu4e-get-mail-command "offlineimap"
+      mu4e-update-interval 60
+      user-mail-address "jyamada1@gmail.com"
+      user-full-name  "Jason Yamada-Hanff"
+      mu4e-maildir-shortcuts
+            '( ("/Gmail/INBOX" . ?i)
+               ("/Gmail/[Gmail].Sent_Mail"  . ?s)
+               ("/Gmail/[Gmail].Trash" . ?t)))
+(setq mu4e-view-show-images t)
+(when (fboundp 'imagemagick-register-types)
+  (imagemagick-register-types))
+(setq mu4e-view-prefer-html t)
+(setq mu4e-html2text-command "html2text -utf8 -width 72")
+(setq mail-user-agent 'mu4e-user-agent)
+
 
 ;; magit (git)
 (if (eq system-type 'windows-nt)
@@ -452,6 +486,9 @@ BTXT at the beginning and ETXT at the end"
 (require 'quack)
 (setq quack-fontify-style nil)
 (setq quack-smart-open-paren-p nil)
+
+;; Haskell
+(turn-on-haskell-indentation)
 
 ;; Python
 ;; ======================================
@@ -884,6 +921,10 @@ are: unix, dos, mac"
 
     ;; Add font
     (set-default-font "Consolas-11")))
+
+;; Use chrome for urls on linux
+(if (eq system-type 'gnu/linux)
+    (setq browse-url-browser-function 'browse-url-xdg-open))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
