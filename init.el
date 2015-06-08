@@ -25,8 +25,9 @@
                    ctags-update dropdown-list
                    exec-path-from-shell edit-server ert ert-x
                    geiser haskell-mode helm helm-ag
-                   helm-projectile icicles ido magit
-                   markdown-mode markdown-mode+ n3-mode lua-mode
+                   helm-projectile icicles ido js2-mode magit
+                   markdown-mode markdown-mode+ multi-web-mode
+                   n3-mode lua-mode
                    org quack solarized-theme smarter-compile
                    sr-speedbar yasnippet zenburn-theme)
   "List of required packages to ensure are installed at launch")
@@ -431,6 +432,20 @@ BTXT at the beginning and ETXT at the end"
 ;; ======================================
 (require 'scss-mode)
 (setq scss-compile-at-save nil)
+
+(require 'multi-web-mode)
+(setq mweb-default-major-mode 'html-mode)
+(setq mweb-tags
+  '((js-mode "<script[^>]*>" "</script>")
+    (css-mode "<style[^>]*>" "</style>")))
+(setq mweb-filename-extensions '("htm" "html"))
+(multi-web-global-mode 1)
+
+;; Javascript
+;; ======================================
+(require 'js2-mode)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-hook 'js2-mode-hook 'ac-js2-mode)
 
 ;; Scheme
 ;; ======================================
@@ -876,6 +891,14 @@ are: unix, dos, mac"
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(canlock-password "17fbb2e43ad75165c6b69f83ed8c0a5f34d16270")
+ '(custom-safe-themes (quote ("cd70962b469931807533f5ab78293e901253f5eeb133a46c2965359f23bfb2ea" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" default)))
  '(ecb-options-version "2.40")
  '(frame-background-mode (quote dark))
  '(rst-level-face-base-light 15))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(put 'narrow-to-region 'disabled nil)
