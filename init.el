@@ -1,12 +1,5 @@
 ;; General Options
 ;; ======================================
-;
-;; CEDET
-;; ======================================
-;(load-file "~/.emacs.d/site-lisp/cedet/cedet-devel-load.el")
-;(global-ede-mode 1)
-;(semantic-load-enable-code-helpers)
-;(global-srecode-minor-mode 1)
 
 ;; Append main load-path directories
 (setq load-path (append load-path (list "~/.emacs.d")))
