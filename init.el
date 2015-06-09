@@ -2,7 +2,6 @@
 ;; ======================================
 
 ;; Append main load-path directories
-(setq load-path (append load-path (list "~/.emacs.d")))
 (setq load-path (append load-path (list "~/.emacs.d/site-lisp")))
 
 ;; Package manager
