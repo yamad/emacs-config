@@ -28,7 +28,7 @@
                    helm-projectile icicles ido magit
                    markdown-mode markdown-mode+ n3-mode lua-mode
                    org quack solarized-theme smarter-compile
-                   sr-speedbar yasnippet zenburn-theme)
+                   yasnippet zenburn-theme)
   "List of required packages to ensure are installed at launch")
 
 (defun jyh-packages-installed-p (package-list)
@@ -511,11 +511,6 @@ BTXT at the beginning and ETXT at the end"
 
 (define-derived-mode pylons-mode python-mode "Pylons"
   "Major mode for editing python Pylons projects")
-
-;; Speedbar
-;; ======================================
-(require 'sr-speedbar)
-(global-set-key (kbd "C-c s") 'sr-speedbar-toggle)
 
 ;; Igor Pro
 ;; ======================================
