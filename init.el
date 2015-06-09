@@ -515,7 +515,9 @@ BTXT at the beginning and ETXT at the end"
 (setq quack-smart-open-paren-p nil)
 
 ;; Haskell
-(turn-on-haskell-indentation)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-decl-scan)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-doc)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 
 ;; Python
 ;; ======================================
