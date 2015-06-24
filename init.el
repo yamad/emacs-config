@@ -111,6 +111,16 @@ of text"
 (setq-default c-basic-offset 4)
 (setq-default py-indent-offset 4)
 (setq tab-width 4)
+(smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'python 'ruby 'nxml)
+(add-hook 'c-mode-common-hook
+	  (lambda ()
+	    (setq indent-tabs-mode t)))
+;;	    (smart-tabs-advice c-indent-line c-basic-offset)
+;;	    (smart-tabs-advice c-indent-region c-basic-offset)))
+(add-hook 'js2-mode-hook
+	  (lambda ()
+	    (setq indent-tabs-mode t)))
+;;	    (smart-tabs-advice js2-indent-line js2-basic-offset)))
 
 ;; Unique buffer names
 (require 'uniquify)
