@@ -101,11 +101,11 @@ of text"
 	    (setq indent-tabs-mode t)))
 (add-hook 'js2-mode-hook
 	  (lambda ()
-	    (setq indent-tabs-mode t)
-            (setq tab-width 4)))
+	    (setq indent-tabs-mode t)))
 (add-hook 'java-mode-hook
-      (lambda ()
-        (setq tab-width 4)))
+          (lambda ()
+            (setq indent-tabs-mode t)
+            (setq tab-width 4)))
 
 ;; Unique buffer names
 (require 'uniquify)
@@ -560,8 +560,31 @@ are: unix, dos, mac"
           (match-beginning 0)
           (match-end 0)
           'face (list :background (match-string-no-properties 0)))))))
-  (font-lock-fontify-buffer)
-  )
+  (font-lock-fontify-buffer))
+
+(defun word-count (&optional b e)
+  (interactive "r")
+  (let ((b (if mark-active (region-beginning) (point-min)))
+        (e (if mark-active (region-end) (point-max))))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region b e)
+        (goto-char (point-min))
+        (count-matches "\\sw+")))))
+(defun randomly-inject-string (str &optional b e)
+  (interactive "r")
+  (let* ((b (if mark-active (region-beginning) (point-min)))
+         (e (if mark-active (region-end) (point-max)))
+         (wc (word-count b e))
+         (step 0))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region b e)
+        (goto-char (point-min))
+        (while (and (< (point) (point-max)))
+          (setq step (random (/ wc 5)))
+          (forward-word step)
+          (insert " " str))))))
 
 ;; Windows(OS)-specific Configuration
 ;; ======================================
