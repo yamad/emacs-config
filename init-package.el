@@ -1,0 +1,37 @@
+;; Package manager
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives
+	     '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(package-initialize)
+
+;; Required Packages
+(defvar jyh-required-packages '(ag auctex cmake-mode ctags
+                   ctags-update dropdown-list
+                   exec-path-from-shell edit-server ert ert-x
+                   flycheck geiser haskell-mode helm
+                   helm-projectile icicles ido js2-mode magit
+                   markdown-mode markdown-mode+ multi-web-mode
+                   n3-mode lua-mode org solarized-theme
+                   smarter-compile yasnippet zenburn-theme)
+  "List of required packages to ensure are installed at launch")
+
+(defun jyh-packages-installed-p (package-list)
+  (let ((all-p t))
+    (dolist (p package-list)
+      (if (not (package-installed-p p))
+	  (setq all-p nil)
+	nil))
+    all-p))
+
+;; install missing packages
+(if (not (jyh-packages-installed-p jyh-required-packages))
+    (progn
+      ;; check for new packages
+      (message "%s" "Refreshing package database...")
+      (package-refresh-contents)
+      (message "%s" " done.")
+      (dolist (p jyh-required-packages)
+	(if (not (package-installed-p p))
+	  (package-install p)))))

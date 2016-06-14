@@ -1,47 +1,19 @@
-;; General Options
+;; jyh/.emacs.d/init.el
 ;; ======================================
 
-;; Append main load-path directories
-(setq load-path (append load-path (list "~/.emacs.d/site-lisp")))
+;; modularized init
+;; based on http://github.com/verdammelt/dotfiles
 
-;; Package manager
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives
-	     '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(package-initialize)
+;; load paths
+(add-to-list 'load-path "~/.emacs.d/site-lisp")
+(add-to-list 'Info-default-directory-list "~/info")
+(defun load-init-file (file)
+  "load an emacs initialize file"
+  (load (locate-user-emacs-file file)))
 
-;; Required Packages
-(defvar jyh-required-packages '(ag auctex cmake-mode ctags
-                   ctags-update dropdown-list
-                   exec-path-from-shell edit-server ert ert-x
-                   geiser haskell-mode helm helm-ag
-                   helm-projectile icicles ido js2-mode magit
-                   markdown-mode markdown-mode+ multi-web-mode
-                   n3-mode lua-mode
-                   org quack solarized-theme smarter-compile
-                   yasnippet zenburn-theme)
-  "List of required packages to ensure are installed at launch")
 
-(defun jyh-packages-installed-p (package-list)
-  (let ((all-p t))
-    (dolist (p package-list)
-      (if (not (package-installed-p p))
-	  (setq all-p nil)
-	nil))
-    all-p))
+(load-init-file "init-package") ; ensure required packages
 
-;; install missing packages
-(if (not (jyh-packages-installed-p jyh-required-packages))
-    (progn
-      ;; check for new packages
-      (message "%s" "Refreshing package database...")
-      (package-refresh-contents)
-      (message "%s" " done.")
-      (dolist (p jyh-required-packages)
-	(if (not (package-installed-p p))
-	  (package-install p)))))
 
 ;; General requires
 ;(require 'find-files)
@@ -55,7 +27,11 @@
               interpreter-mode-alist))
 
 ;; General Options
-(setq visible-bell 1)
+(setq visible-bell nil)
+(setq ring-bell-funtion
+      (lambda ()
+        (invert-face 'mode-line)
+        (run-with-timer 0.1 nil 'invert-face 'mode-line)))
 (tool-bar-mode 0)
 (line-number-mode 1)
 (column-number-mode 1)
@@ -63,6 +39,13 @@
 (desktop-save-mode 1)
 (setq desktop-restore-eager 3)
 (setq inhibit-startup-screen t)
+(setq flycheck-check-syntax-automatically '(mode-enabled save))
+(put 'narrow-to-region 'disabled nil)
+
+(projectile-global-mode)
+(with-eval-after-load 'projectile
+  (setq projectile-mode-line
+        '(:eval (format " P/%s" (projectile-project-name)))))
 
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
@@ -80,14 +63,15 @@
 
 ;; other useful keybindings
 (global-set-key (kbd "C-x C-l") 'goto-line)
+(global-set-key (kbd "C-x a r") 'align-regexp)
 
 ; bind frame/window switching to shift-up/down/left/right
 (windmove-default-keybindings)
 
 ;; Set syntax highlighting and default color scheme
-(require 'github-theme)
+;(require 'github-theme)
 (load-theme 'zenburn t)
-(global-font-lock-mode 1)
+(global-font-lock-mode)
 
 ;; Unfill functions (opposes fill-paragraph and fill-region)
 (defun unfill-paragraph ()
@@ -111,21 +95,51 @@ of text"
 (setq-default c-basic-offset 4)
 (setq-default py-indent-offset 4)
 (setq tab-width 4)
-(smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'python 'ruby 'nxml)
+(smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'ruby 'nxml)
 (add-hook 'c-mode-common-hook
 	  (lambda ()
 	    (setq indent-tabs-mode t)))
-;;	    (smart-tabs-advice c-indent-line c-basic-offset)
-;;	    (smart-tabs-advice c-indent-region c-basic-offset)))
 (add-hook 'js2-mode-hook
 	  (lambda ()
-	    (setq indent-tabs-mode t)))
-;;	    (smart-tabs-advice js2-indent-line js2-basic-offset)))
+	    (setq indent-tabs-mode t)
+            (setq tab-width 4)))
+(add-hook 'java-mode-hook
+      (lambda ()
+        (setq tab-width 4)))
 
 ;; Unique buffer names
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 (setq uniquify-ignore-buffers-re "^\\*")
+
+;; helm
+(require 'helm)
+(require 'helm-config)
+(global-unset-key (kbd "C-x c"))
+(global-set-key (kbd "M-x")     'undefined)
+(global-set-key (kbd "C-c h")   'helm-command-prefix)
+(global-set-key (kbd "M-x")     'helm-M-x)
+(global-set-key (kbd "C-x r b") 'helm-filtered-bookmarks)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "M-y")     'helm-show-kill-ring)
+(global-set-key (kbd "C-x b")   'helm-mini)
+(global-set-key (kbd "C-c h o") 'helm-occur)
+; rebind tab to run persistent action
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+; make tab work in terminal
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
+; list actions using C-z
+(define-key helm-map (kbd "C-z") 'helm-select-action)
+
+(helm-mode)
+(diminish 'helm-mode)
+
+;; autocomplete
+(ac-config-default)
+(setq ac-auto-start nil)
+(global-set-key (kbd "C-:") 'ac-complete-with-helm)
+(define-key ac-complete-mode-map (kbd "C-:") 'ac-complete-with-helm)
+
 
 ;; ERT (testing suite)
 (require 'ert)
@@ -137,235 +151,26 @@ of text"
 
 (setq tramp-default-method "ssh")
 
-;; News
-(setq gnus-select-method '(nntp "news.eternal-september.org"))
-(setq gnus-secondary-select-methods '((nntp "news.gmane.org")))
-(setq user-full-name "Jason Yamada-Hanff")
-(setq user-mail-address "jyamada1@gmail.com")
-
-(setq gnus-face-0 'font-lock-type-face)
-(setq gnus-face-1 'font-lock-string-face)
-(setq gnus-face-2 'font-lock-variable-name-face)
-(setq gnus-face-3 'font-lock-keyword-face)
-
-(setq gnus-group-line-format "%2{%M%S%p%} %0{%5y%} %P%1{%G%}\n")
-(setq gnus-topic-line-format "%i%3{[ %n -- %A ]%}%v\n")
-
-(setq gnus-summary-line-format "%O%U%R%z%d %B%(%[%4L: %-22,22f%]%) %s\n")
-(setq gnus-summary-mode-line-format "Gnus: %p [%A / Sc:%4z] %Z")
-(setq gnus-summary-same-subject "")
-(setq gnus-sum-thread-tree-root "")
-(setq gnus-sum-thread-tree-single-indent "")
-(setq gnus-sum-thread-tree-leaf-with-other "+-> ")
-(setq gnus-sum-thread-tree-vertical "|")
-(setq gnus-sum-thread-tree-single-leaf "`-> ")
-
-;; email
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-      smtpmail-auth-credentials '(("smtp.gmail.com" 587
-                                   "jyamada1@gmail.com" nil))
-      smtpmail-default-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
-
-(require 'mu4e)
-(setq mu4e-maildir "~/Maildir"
-      mu4e-drafts-folder "/Gmail/[Gmail].Drafts"
-      mu4e-sent-folder   "/Gmail/[Gmail].Sent_Mail"
-      mu4e-trash-folder  "/Gmail/[Gmail].Trash"
-      mu4e-refile-folder "/Gmail/Archive"
-      mu4e-sent-messages-behavior 'delete
-      mu4e-update-interval 300
-      mu4e-headers-auto-update 't
-      mu4e-user-mail-address-list '("jyamada1@gmail.com"
-                                    "jasonyh@gmail.com"
-                                    "jyamada@fas.harvard.edu"
-                                    "jyamada@post.harvard.edu"
-                                    "yamad@yamad.info"
-                                    "jyh@jyh.me")
-      user-full-name  "Jason Yamada-Hanff"
-      mu4e-view-show-addresses 't
-      mu4e-maildir-shortcuts
-            '( ("/Gmail/INBOX" . ?i)
-               ("/Gmail/[Gmail].Sent_Mail"  . ?s)
-               ("/Gmail/[Gmail].Trash" . ?t)
-               ("/Gmail/[Gmail].All Mail" . ?a)))
-(setq mu4e-get-mail-command "offlineimap -u basic")
-(setq mu4e-view-show-images 't)
-(when (fboundp 'imagemagick-register-types)
-  (imagemagick-register-types))
-(setq mu4e-view-prefer-html nil)
-(setq mu4e-html2text-command "html2text -nobs")
-(setq mail-user-agent 'mu4e-user-agent)
-
+(load-init-file "init-news")
+(load-init-file "init-mail")
+(load-init-file "init-tex")
+(load-init-file "init-org")
 
 ;; magit (git)
 (if (eq system-type 'windows-nt)
     (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git.exe"))
 (global-set-key (kbd "C-x C-g") 'magit-status)
+(setq magit-last-seen-setup-instructions "1.4.0")
 
 ;; YASnippet
 ;; ======================================
-(require 'yasnippet)
 (require 'dropdown-list)
-(yas/global-mode 1)
+(yas-global-mode)
+(diminish 'yas-minor-mode)
 (setq yas/root-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
 (yas/load-directory yas/root-directory)
 (setq yas/prompt-functions '(yas/dropdown-prompt))
 
-;; TeX/LaTeX/ConTeXt
-;; ======================================
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq TeX-engine 'xetex)
-(setq TeX-PDF-mode nil)
-(setq-default TeX-master nil)
-
-(add-hook 'LaTeX-mode-hook 'auto-fill-mode)
-(add-hook 'LaTeX-mode-hook 'flyspell-mode)
-(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-
-(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-(setq reftex-plug-into-AUCTeX t)
-
-(setq TeX-open-quote "``")
-(setq TeX-close-quote "''")
-
-
-; for outline views (hide/show sections, chapters, etc.)
-(add-hook 'TeX-mode-hook '(lambda () (TeX-fold-mode 1)))
-(add-hook 'TeX-mode-hook '(lambda () (outline-minor-mode 1)))
-; make PDF by default (can toggle with C-c C-t C-p
-(add-hook 'TeX-mode-hook '(lambda () (TeX-PDF-mode 1)))
-; these math abbrevs (` as prefix char) are also useful in TeX/ConTeXt files
-(require 'latex); defines LaTeX-math-mode
-(add-hook 'TeX-mode-hook 'LaTeX-math-mode)
-; Emacs help for \label, \ref, \cite.  Normally used only with
-; LaTeX-mode but also useful with plain TeX + eplain and with ConTeXt, so:
-(setq reftex-plug-into-AUCTeX t)
-(add-hook 'TeX-mode-hook 'reftex-mode)
-
-(defun insert-balanced (left right)
-  "Insert a left, right delmiter pair and be poised to type inside them."
-  (interactive)
-  (insert left)
-  (save-excursion
-    (insert right)))
-
-; When start-context-math() is bound to $:
-; Typing one $ gets you $$ with the insertion point between them.
-; Typing a second $ turns the $$ into ConTeXt's form for displayed math:
-;
-;   \placeformula\startformula
-;   [blank line with insertion point at beginning]
-;   \stopformula
-;
-; Delete the \placeformula if you don't want equations numbered automatically.
-
-(defun start-context-math ()
-  (interactive)
-  (let* ((start (max (point-min) (- (point) 1)))
-         (stop  (min (point-max) (+ (point) 1))))
-                                        ; if in the middle of a $$, turn inline math into context display math
-    (if (equal "$$" (buffer-substring-no-properties start stop))
-        (progn
-          (delete-region start stop);get rid of the $$
-                                        ; delete preceding spaces, if any
-          (while (and (< (point-min) (point))
-                      (equal (buffer-substring-no-properties (- (point) 1)
-                                                             (point))
-                             " "))
-            (backward-delete-char 1))
-                                        ; delete a preceding newline, if any
-          (if (equal (buffer-substring-no-properties (- (point) 1)
-                                                     (point))
-                     "\n")
-              (backward-delete-char 1))
-                                        ; ConTeXt's display math with automatic equation numbering
-          (insert "\n\\placeformula\\startformula\n")
-          (save-excursion (insert "\n\\stopformula")))
-                                        ; else: just doing inline math
-      (insert-balanced ?\$ ?\$))))
-
-                                        ; automatically insert right delimiter for $, {, [, and ( and be
-                                        ; poised to type inside them.
-(add-hook 'TeX-mode-hook
-          '(lambda ()
-             (local-set-key "$"
-                            '(lambda ()
-                               (interactive)
-                               (insert-balanced ?\$ ?\$)))
-             (local-set-key "{"
-                            '(lambda ()
-                               (interactive)
-                               (insert-balanced ?\{ ?\})))
-             (local-set-key "["
-                            '(lambda ()
-                               (interactive)
-                               (insert-balanced ?\[ ?\])))
-             (local-set-key "("
-                            '(lambda ()
-                               (interactive)
-                               (insert-balanced ?\( ?\))))))
-
-                                        ; For ConTeXt mode, inserting two $ signs needs to behave specially
-(add-hook 'ConTeXt-mode-hook
-          '(lambda ()
-             (local-set-key "$" 'start-context-math)))
-
-(defun my-latex-setup ()
-  (defun LaTeX-word-count ()
-    (interactive)
-    (let* ((this-file (buffer-file-name))
-           (word-count
-            (with-output-to-string
-              (with-current-buffer standard-output
-                (call-process "texcount" nil t nil "-brief" this-file)))))
-      (string-match "\n$" word-count)
-      (message (replace-match "" nil nil word-count))))
-  (define-key LaTeX-mode-map "\C-cw" 'LaTeX-word-count))
-(add-hook 'LaTeX-mode-hook 'my-latex-setup t)
-
-(if (eq system-type 'windows-nt)
-    (progn
-      (require 'tex-mik)
-      (setq preview-image-type 'pnm)))
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
-
-(eval-after-load "tex"
-  '(add-to-list 'TeX-command-list
-                '("Biber" "biber %s" TeX-run-Biber nil t :help "Run Biber") t))
-
-(defun TeX-run-Biber (name command file)
-  "Create a process for NAME using COMMAND to format FILE with Biber."
-  (let ((process (TeX-run-command name command file)))
-    (setq TeX-sentinel-function 'TeX-Biber-sentinel)
-    (if TeX-process-asynchronous
-        process
-      (TeX-synchronous-sentinel name file process))))
-
-(defun TeX-Biber-sentinel (process name)
-  "Cleanup TeX output buffer after running Biber."
-  (goto-char (point-max))
-  (cond
-   ;; Check whether Biber reports any warnings or errors.
-   ((re-search-backward (concat
-                         "^(There \\(?:was\\|were\\) \\([0-9]+\\) "
-                         "\\(warnings?\\|error messages?\\))") nil t)
-    ;; Tell the user their number so that she sees whether the
-    ;; situation is getting better or worse.
-    (message (concat "Biber finished with %s %s. "
-                     "Type `%s' to display output.")
-             (match-string 1) (match-string 2)
-             (substitute-command-keys
-              "\\\\[TeX-recenter-output-buffer]")))
-   (t
-    (message (concat "Biber finished successfully. "
-                     "Run LaTeX again to get citations right."))))
-  (setq TeX-command-next TeX-command-default))
 
 ;; C
 ;; ======================================
@@ -434,6 +239,16 @@ of text"
 ;; ======================================
 (require 'smarter-compile)
 (global-set-key [f12] 'smarter-compile)
+
+;; Objective-C
+;; ======================================
+(setq cc-other-file-alist
+      `(("\\.cpp$" (".hpp" ".h"))
+        ("\\.h$" (".c" ".cpp" ".m" ".mm"))
+        ("\\.hpp$" (".cpp" ".c"))
+        ("\\.m$" (".h"))
+        ("\\.mm$" (".h"))
+        ))
 
 ;; CMake
 ;; ======================================
@@ -514,27 +329,69 @@ BTXT at the beginning and ETXT at the end"
 (require 'multi-web-mode)
 (setq mweb-default-major-mode 'html-mode)
 (setq mweb-tags
-  '((js-mode "<script[^>]*>" "</script>")
+  '((js2-mode "<script[^>]*>" "</script>")
     (css-mode "<style[^>]*>" "</style>")))
 (setq mweb-filename-extensions '("htm" "html"))
 (multi-web-global-mode 1)
 
 ;; Javascript
 ;; ======================================
-(require 'js2-mode)
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(add-hook 'js2-mode-hook 'ac-js2-mode)
+(add-to-list 'auto-mode-alist '("\\.js$"   . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.json$" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx$"  . js2-jsx-mode))
 
-;; Scheme
-;; ======================================
-(require 'quack)
-(setq quack-fontify-style nil)
-(setq quack-smart-open-paren-p nil)
+(add-hook 'js2-mode-hook
+          (lambda ()
+            (flycheck-mode t)
+            (when (executable-find "eslint")
+              (flycheck-select-checker 'javascript-eslint))
+            (tern-mode)
+            (auto-complete-mode)))
+(add-hook 'web-mode-hook 'flycheck-mode)
+
+(eval-after-load 'tern
+  '(progn
+     (require 'tern-auto-complete)
+     (tern-ac-setup)))
+(setq inferior-js-program-command "node")
+(add-hook 'js2-mode-hook
+          '(lambda ()
+             (local-set-key "\C-x\C-e" 'js-send-last-sexp)
+             (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
+             (local-set-key "\C-cb" 'js-send-buffer)
+             (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
+             (local-set-key "\C-cl" 'js-load-file-and-go)))
+
+(with-eval-after-load 'projectile
+  (add-hook 'projectile-after-switch-project-hook 'jyh/setup-local-node-env))
+(defun jyh/setup-local-node-env ()
+  "use local programs for nodejs projects. use with
+projectile-after-switch-project-hook"
+  (interactive)
+  (let ((local-babel-node (expand-file-name "./node_modules/.bin/babel-node"))
+        (local-eslint (expand-file-name "./node_modules/.bin/eslint")))
+    (if (file-exists-p local-babel-node)
+        (setq inferior-js-program-command local-babel-node))
+    (if (file-exists-p local-eslint)
+        (setq flycheck-javascript-eslint-executable local-eslint))))
 
 ;; Haskell
-(add-hook 'haskell-mode-hook 'turn-on-haskell-decl-scan)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-doc)
-(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+(add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+(add-hook 'haskell-mode-hook 'haskell-doc-mode)
+(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+(add-hook 'haskell-mode-hook 'flycheck-mode)
+(setq haskell-interactive-popup-errors nil)
+(eval-after-load "haskell-mode"
+  '(progn
+     (define-key haskell-mode-map (kbd "C-x C-d") nil)
+     (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
+     (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-file)
+     (define-key haskell-mode-map (kbd "C-c C-b") 'haskell-interactive-switch)
+     (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
+     (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
+     (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
+     (define-key haskell-mode-map (kbd "C-c M-.") nil)
+     (define-key haskell-mode-map (kbd "C-c C-d") nil)))
 
 ;; Python
 ;; ======================================
@@ -543,14 +400,21 @@ BTXT at the beginning and ETXT at the end"
 (defun py-nosetests()
   "Runs nosetests command on current file"
   (interactive)
-  (let ((directory (substring (buffer-file-name) 0 (- (length
-                                                       (buffer-file-name))
-                                                      (+ 1 (length (buffer-name))))))
+  (let ((directory
+         (substring (buffer-file-name) 0
+                    (- (length
+                        (buffer-file-name))
+                       (+ 1 (length (buffer-name))))))
         (file (file-name-sans-extension (buffer-name))))
-        (eshell-command (format "nosetests --pdb --with-doctest -w%s %s" directory file))))
+    (eshell-command
+     (format "nosetests --pdb --with-doctest -w%s %s" directory file))))
 (add-hook 'python-mode-hook
           '(lambda ()
              (local-set-key "\C-c\C-q" 'py-nosetests)))
+
+(if (executable-find "ipython")
+    (setq python-shell-interpreter "ipython"
+          python-shell-interpreter-args "-i"))
 
 ;; Pdb debugger
 (setq pdb-path '/usr/lib/python2.6/pdb.py
@@ -584,10 +448,21 @@ BTXT at the beginning and ETXT at the end"
 (setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|vbs\\)$" .
                                  visual-basic-mode)) auto-mode-alist))
 
-;; Matlab
+;; Matlab/Octave
 ;; ======================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/matlab-emacs")
-(load-library "matlab-load")
+(add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
+
+;; R/ESS
+;; ======================================
+(require 'ess-site)
+(setq ess-eval-visibly-p nil)
+(setq ess-ask-for-ess-directory nil)
+(ess-toggle-underscore nil)
+
+(require 'poly-R)
+(require 'poly-markdown)
+(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
+
 
 ;; Ledger (accounting program)
 (setq load-path
@@ -618,141 +493,7 @@ BTXT at the beginning and ETXT at the end"
            dir-name
            (directory-file-name dir-name))))
 
-;; Org mode
-;; ======================================
-(if (eq system-type 'darwin)
-    (setq load-path (cons "~/src/org-mode/lisp" load-path)))
-(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-ca" 'org-agenda)
 
-;; use links outside org-mode
-(global-set-key "\C-c L" 'org-insert-link-global)
-(global-set-key "\C-c o" 'org-open-at-point-global)
-
-(setq org-log-done t)  ;; log timepoints
-(setq org-use-fast-todo-selection t)
-(setq org-agenda-include-diary t)
-(setq org-agenda-skip-deadline-if-done t)
-(setq org-agenda-skip-scheduled-if-done t)
-
-(setq org-agenda-custom-commands
-      '(("b" agenda "Emr - Simple"
-         ((org-agenda-skip-scheduled-if-done nil)
-         (org-agenda-skip-archived-trees nil)
-         (org-agenda-include-diary nil)
-         (org-agenda-prefix-format "  %?-12 t% s")
-         (org-agenda-ndays 7)
-         (org-agenda-start-on-weekday 1)
-         (org-agenda-remove-times-when-in-prefix t)
-         (org-agenda-remove-tags t)
-         (org-agenda-use-time-grid nil)
-         (org-agenda-scheduled-leaders '("" ""))
-         (org-agenda-deadline-leaders '("" ""))
-         (ps-landscape-mode t)
-         (ps-number-of-columns 2))
-        ("~/Desktop/emr_week.ps"))))
-
-;; link abbreviations
-(setq org-link-abbrev-alist
-      '(("doi"     . "http://dx.doi.org/")
-        ("google"  . "http://www.google.com/search?q=%s")))
-
-;; org+remember integration
-(setq org-directory "~/notebook/org/")
-(setq org-default-notes-file "~/notebook/.notes")
-(setq remember-annotation-functions '(org-remember-annotation))
-(setq remember-handler-functions '(org-remember-handler))
-(add-hook 'remember-mode-hook 'org-remember-apply-template)
-(setq org-remember-templates
-      '((?t "* %^{Title}\n %U\n %i\n %a" "~/notebook/org/gtd/General.org")))
-
-;; OrgStruct Mode
-(add-hook 'rst-mode-hook 'turn-on-orgstruct)
-(add-hook 'rst-mode-hook 'turn-on-orgtbl)
-
-;; rst export for orgtbl
-(defun tbl-line (start end sep width-list field-func)
-  (concat
-   start
-   (mapconcat (lambda (width) (funcall field-func width))
-              width-list sep)
-   end))
-(defun tbl-hline (start end sep line-mark width-list)
-  (tbl-line start end sep width-list
-            (lambda (width)
-              (apply 'string (make-list width line-mark)))))
-
-(defun orgtbl-to-rst (table params)
-  (let* ((hline (tbl-hline "+-" "-+" "-+-" ?- org-table-last-column-widths))
-         (hlline (tbl-hline "+=" "=+" "=+=" ?= org-table-last-column-widths))
-         (rst-fmt (tbl-line "| " " |" " | " org-table-last-column-widths
-                            (lambda (width) (format "%%-%ss" width))))
-         (rst-lfmt (concat
-                    rst-fmt "\n" hline))
-         (rst-hlfmt (concat
-                     rst-fmt "\n" hlline))
-         (params_default
-          (list
-           :tstart hline
-           :lfmt rst-lfmt
-           :hlfmt rst-hlfmt
-           )))
-    (orgtbl-to-generic table (org-combine-plists params_default params))))
-
-;; lab notebook
-(defun org-export-labnotes-add-table-format ()
-  (insert org-export-labnotes-table-options)
-  (newline))
-
-(defvar org-export-labnotes-table-options
-  "#+ATTR_LaTeX: longtable* align=rclp{5cm}lp{5cm}")
-
-(defvar org-export-labnotes-header
-  "#+LaTeX_HEADER: \\usepackage[margin=0.5in]{geometry}
-#+OPTIONS: toc:nil num:nil H:3
-#+LaTeX_HEADER: \\usepackage{paralist}
-#+LaTeX_HEADER: \\let\\itemize\\compactitem
-#+LaTeX_HEADER: \\let\\description\\compactdesc
-#+LaTeX_HEADER: \\let\\enumerate\\compactenum
-#+LaTeX_HEADER: \\renewcommand\\maketitle{}")
-
-(defun org-export-lab-notebook-as-latex-to-buffer ()
-  (interactive)
-  (let* ((oldbuf (current-buffer))
-        (bufpath (concat
-                  (make-temp-name
-                  (file-name-sans-extension (buffer-file-name)))
-                  ".org"))
-        (bufname (file-name-nondirectory bufpath))
-        (outbuf (get-buffer-create bufname)))
-    (progn
-      (with-current-buffer outbuf
-        (set-visited-file-name bufpath)
-        (insert-buffer oldbuf)
-        (goto-line (point-min))
-        (insert org-export-labnotes-header)
-        (newline)
-        (org-table-map-tables
-         'org-export-labnotes-add-table-format)
-        (org-export-as-latex nil nil '(title "notes") "notes.tex")
-        (set-buffer-modified-p nil))
-      (with-current-buffer "notes.tex"
-        (set-visited-file-name "./notes.tex")
-        (save-buffer))
-      (kill-buffer bufname)
-      (switch-to-buffer-other-window "notes.tex"))))
-
-(defun yas/org-very-safe-expand ()
-  (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
-
-(add-hook 'org-mode-hook
-          (lambda ()
-            ;; yasnippet (using the new org-cycle hooks)
-            (make-variable-buffer-local 'yas/trigger-key)
-            (setq yas/trigger-key [tab])
-            (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
-            (define-key yas/keymap [tab] 'yas/next-field)))
 
 ;; Constants
 (require 'constants)
@@ -761,143 +502,7 @@ BTXT at the beginning and ETXT at the end"
 (define-key global-map "\C-ccr" 'constants-replace)
 (setq constants-unit-system 'SI)
 
-;; Unicode
-;; ======================================
-
-;; Set UTF-8 as default buffer coding
-(require 'un-define "un-define" t)
-(set-buffer-file-coding-system 'utf-8 'utf-8)
-(set-default buffer-file-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(prefer-coding-system 'utf-8)
-(set-default default-buffer-file-coding-system 'utf-8)
-(setq locale-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
-(set-language-environment "UTF-8")
-
-(defun unicode-insert (char)
-  "Read a unicode code point and insert said character.
-    Input uses `read-quoted-char-radix'.  If you want to copy
-    the values from the Unicode charts, you should set it to 16."
-  (interactive (list (read-quoted-char "Char: ")))
-  (ucs-insert char))
-(setq read-quoted-char-radix 16)
-
-;; Set UTF-8 keys
-(global-set-key "\C-z" nil)
-(global-set-key "\C-z\C-q" 'unicode-insert)
-
-(global-set-key "\C-zoo" "°") ;; degree
-(global-set-key "\C-z+-" "±") ;; plus-minus
-(global-set-key "\C-z.." "·") ;; center bullet
-(global-set-key "\C-z<=" "≤") ;; less than
-(global-set-key "\C-z>=" "≥") ;; greater than
-(global-set-key "\C-z!=" "≠") ;; not equal
-(global-set-key "\C-za" "α") ;; alpha
-(global-set-key "\C-zb" "β") ;; beta
-(global-set-key "\C-zg" "γ") ;; gamma
-(global-set-key "\C-zd" "δ") ;; delta
-(global-set-key "\C-zep" "ε") ;; epsilon
-(global-set-key "\C-zz" "ζ") ;; zeta
-(global-set-key "\C-zet" "η") ;; eta
-(global-set-key "\C-zth" "θ") ;; theta
-(global-set-key "\C-zi" "ι") ;; iota
-(global-set-key "\C-zk" "κ") ;; kappa
-(global-set-key "\C-zl" "λ") ;; lambda
-(global-set-key "\C-zm" "μ") ;; mu
-(global-set-key "\C-zn" "ν") ;; nu
-(global-set-key "\C-zx" "ξ") ;; xi
-(global-set-key "\C-zoc" "ο") ;; omicron
-(global-set-key "\C-zpi" "π") ;; pi
-(global-set-key "\C-zr" "ρ") ;; rho
-(global-set-key "\C-zs" "σ") ;; sigma
-(global-set-key "\C-zt" "τ") ;; tau
-(global-set-key "\C-zu" "υ") ;; upsilon
-(global-set-key "\C-zph" "φ") ;; phi
-(global-set-key "\C-zc" "χ") ;; chi
-(global-set-key "\C-zps" "ψ") ;; psi
-(global-set-key "\C-zom" "ω") ;; omega
-
-(global-set-key "\C-zA" "Α") ;; Alpha
-(global-set-key "\C-zB" "Β") ;; Beta
-(global-set-key "\C-zG" "Γ") ;; Gamma
-(global-set-key "\C-zD" "Δ") ;; Delta
-(global-set-key "\C-zEp" "Ε") ;; Epsilon
-(global-set-key "\C-zZ" "Ζ") ;; Zeta
-(global-set-key "\C-zEt" "Η") ;; Eta
-(global-set-key "\C-zTh" "Θ") ;; Theta
-(global-set-key "\C-zI" "Ι") ;; Iota
-(global-set-key "\C-zK" "Κ") ;; Kappa
-(global-set-key "\C-zL" "Λ") ;; Lambda
-(global-set-key "\C-zM" "Μ") ;; Mu
-(global-set-key "\C-zN" "Ν") ;; Nu
-(global-set-key "\C-zX" "Ξ") ;; Xi
-(global-set-key "\C-zOc" "Ο") ;; Omicron
-(global-set-key "\C-zPi" "Π") ;; Pi
-(global-set-key "\C-zR" "Ρ") ;; Rho
-(global-set-key "\C-zS" "Σ") ;; Sigma
-(global-set-key "\C-zTa" "Τ") ;; Tau
-(global-set-key "\C-zU" "Υ") ;; Upsilon
-(global-set-key "\C-zPh" "Φ") ;; Phi
-(global-set-key "\C-zC" "Χ") ;; Chi
-(global-set-key "\C-zPs" "Ψ") ;; Psi
-(global-set-key "\C-zOm" "Ω") ;; Omega
-
-; Set auto-replace
-(define-abbrev-table 'global-abbrev-table '(
-  ("alpha" "α" nil 0)
-  ("beta" "β" nil 0)
-  ("gamma" "γ" nil 0)
-  ("delta" "δ" nil 0)
-  ("epsilon" "ε" nil 0)
-  ("zeta" "ζ" nil 0)
-  ("eta" "η" nil 0)
-  ("theta" "θ" nil 0)
-  ("iota" "ι" nil 0)
-  ("kappa" "κ" nil 0)
-  ("lambda" "λ" nil 0)
-  ("mu" "μ" nil 0)
-  ("nu" "ν" nil 0)
-  ("xi" "ξ" nil 0)
-  ("omicron" "ο" nil 0)
-  ("pi" "π" nil 0)
-  ("rho" "ρ" nil 0)
-  ("sigma" "σ" nil 0)
-  ("tau" "τ" nil 0)
-  ("upsilon" "υ" nil 0)
-  ("phi" "φ" nil 0)
-  ("chi" "χ" nil 0)
-  ("psi" "ψ" nil 0)
-  ("omega" "ω" nil 0)
-  ("Alpha" "Α" nil 0)
-  ("Beta" "Β" nil 0)
-  ("Gamma" "Γ" nil 0)
-  ("Delta" "Δ" nil 0)
-  ("Epsilon" "Ε" nil 0)
-  ("Zeta" "Ζ" nil 0)
-  ("Eta" "Η" nil 0)
-  ("Theta" "Θ" nil 0)
-  ("Iota" "Ι" nil 0)
-  ("Kappa" "Κ" nil 0)
-  ("Lambda" "Λ" nil 0)
-  ("Mu" "Μ" nil 0)
-  ("Nu" "Ν" nil 0)
-  ("Xi" "Ξ" nil 0)
-  ("Omicron" "Ο" nil 0)
-  ("Pi" "Π" nil 0)
-  ("Rho" "Ρ" nil 0)
-  ("Sigma" "Σ" nil 0)
-  ("Tau" "Τ" nil 0)
-  ("Upsilon" "Υ" nil 0)
-  ("Phi" "Φ" nil 0)
-  ("Chi" "Χ" nil 0)
-  ("Psi" "Ψ" nil 0)
-  ("Omega" "Ω" nil 0)
-  ("degC" "°" nil 0)
-  ("degreeC" "°" nil 0)
-))
+(load-init-file "init-unicode")
 
 ;; Other
 ;; ======================================
@@ -945,6 +550,19 @@ are: unix, dos, mac"
       (set-buffer-file-coding-system new-coding-system)))
   (message "EOL conversion now %s" new-eol))
 
+(defun xah-syntax-color-hex ()
+  "Syntax color hex color spec such as 「#ff1100」 in current buffer."
+  (interactive)
+  (font-lock-add-keywords
+   nil
+   '(("#[abcdef[:digit:]]\\{6\\}"
+      (0 (put-text-property
+          (match-beginning 0)
+          (match-end 0)
+          'face (list :background (match-string-no-properties 0)))))))
+  (font-lock-fontify-buffer)
+  )
+
 ;; Windows(OS)-specific Configuration
 ;; ======================================
 
@@ -967,20 +585,6 @@ are: unix, dos, mac"
 (if (eq system-type 'gnu/linux)
     (setq browse-url-browser-function 'browse-url-xdg-open))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(canlock-password "17fbb2e43ad75165c6b69f83ed8c0a5f34d16270")
- '(custom-safe-themes (quote ("cd70962b469931807533f5ab78293e901253f5eeb133a46c2965359f23bfb2ea" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" default)))
- '(ecb-options-version "2.40")
- '(frame-background-mode (quote dark))
- '(rst-level-face-base-light 15))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-(put 'narrow-to-region 'disabled nil)
+;; move Custom set variables, so we don't have to look at it
+(setq custom-file (locate-user-emacs-file "init-custom"))
+(load custom-file)
