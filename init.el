@@ -134,12 +134,12 @@ of text"
 (helm-mode)
 (diminish 'helm-mode)
 
-;; autocomplete
-(ac-config-default)
-(setq ac-auto-start nil)
-(global-set-key (kbd "C-:") 'ac-complete-with-helm)
-(define-key ac-complete-mode-map (kbd "C-:") 'ac-complete-with-helm)
-
+;; autocomplete -- company mode
+(add-hook 'after-init-hook 'global-company-mode)
+(eval-after-load 'company
+  '(progn
+     (define-key company-mode-map (kbd "C-:") 'helm-company)
+     (define-key company-active-map (kbd "C-:") 'helm-company)))
 
 ;; ERT (testing suite)
 (require 'ert)
