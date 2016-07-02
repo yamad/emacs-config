@@ -48,10 +48,19 @@
 (setq explicit-shell-file-name "zsh")
 (put 'narrow-to-region 'disabled nil)
 
-(projectile-global-mode)
-(with-eval-after-load 'projectile
+;; project management
+(use-package projectile
+  :config
+  (projectile-global-mode)
   (setq projectile-mode-line
-        '(:eval (format " P/%s" (projectile-project-name)))))
+        '(:eval (format " P/%s" (projectile-project-name))))
+  (setq projectile-enable-caching t) ; otherwise too slow
+  (use-package helm-projectile       ; use helm as interface
+    :config
+    (setq projectile-completion-system 'helm)
+    (helm-projectile-on)
+    (setq projectile-switch-project-action 'helm-projectile)))
+
 
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
