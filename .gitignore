@@ -1,0 +1,16 @@
+*~
+\#*\#
+.DS_Store
+.emacs.desktop*
+.tutor/*
+.mc-lists.el
+.yas-compiled-snippets.el
+abbrev_defs
+projectile-bookmarks.eld
+recentf
+ac-comphist.dat
+irony/*
+elpa/*
+eshell/*
+request/*
+url/*
