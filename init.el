@@ -14,6 +14,9 @@
 
 (load-init-file "init-package") ; ensure required packages
 
+;; start emacs server for emacsclient service
+(require 'server)
+(unless (server-running-p) (server-start))
 
 ;; General requires
 ;(require 'find-files)
@@ -33,6 +36,8 @@
         (invert-face 'mode-line)
         (run-with-timer 0.1 nil 'invert-face 'mode-line)))
 (tool-bar-mode 0)
+(when (not (display-graphic-p))
+  (menu-bar-mode -1))
 (line-number-mode 1)
 (column-number-mode 1)
 (setq kill-whole-line t)
@@ -40,6 +45,7 @@
 (setq desktop-restore-eager 3)
 (setq inhibit-startup-screen t)
 (setq flycheck-check-syntax-automatically '(mode-enabled save))
+(setq explicit-shell-file-name "zsh")
 (put 'narrow-to-region 'disabled nil)
 
 (projectile-global-mode)
@@ -124,6 +130,11 @@ of text"
 (global-set-key (kbd "M-y")     'helm-show-kill-ring)
 (global-set-key (kbd "C-x b")   'helm-mini)
 (global-set-key (kbd "C-c h o") 'helm-occur)
+(global-set-key (kbd "C-c h i") 'helm-imenu)
+
+;; swiper / ivy
+(global-set-key (kbd "C-c C-s") 'swiper-helm)
+
 ; rebind tab to run persistent action
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
 ; make tab work in terminal
@@ -139,15 +150,26 @@ of text"
 (eval-after-load 'company
   '(progn
      (define-key company-mode-map (kbd "C-:") 'helm-company)
-     (define-key company-active-map (kbd "C-:") 'helm-company)))
+     (define-key company-active-map (kbd "C-:") 'helm-company)
+     (diminish 'company-mode)))
+
+;; dash documentation browser
+(global-set-key (kbd "C-c h f") 'helm-dash)
+(global-set-key (kbd "C-c h g") 'helm-dash-at-point)
+(global-set-key (kbd "C-c h h") 'helm-dash-reset-connections)
+
+(defun jyh/dash-install (docset)
+  (unless (file-exists-p (jyh/dash-path docset))
+    (helm-dash-install-docset docset)))
+(defvar jyh/required-dash-docsets
+  '("C"
+    "CMake"
+    "D3"))
+(setq helm-dash-browser-func 'eww)
 
 ;; ERT (testing suite)
 (require 'ert)
 (require 'ert-x)
-
-;; Edit server (runs client-server emacs system)
-(require 'edit-server)
-(edit-server-start)
 
 (setq tramp-default-method "ssh")
 
@@ -345,14 +367,14 @@ BTXT at the beginning and ETXT at the end"
             (flycheck-mode t)
             (when (executable-find "eslint")
               (flycheck-select-checker 'javascript-eslint))
-            (tern-mode)
-            (auto-complete-mode)))
+            (when (executable-find "flow")
+              (flycheck-add-next-checker 'javascript-flow))
+            (tern-mode)))
 (add-hook 'web-mode-hook 'flycheck-mode)
 
 (eval-after-load 'tern
   '(progn
-     (require 'tern-auto-complete)
-     (tern-ac-setup)))
+     (setq-local company-backends (cons 'company-tern company-backends))))
 (setq inferior-js-program-command "node")
 (add-hook 'js2-mode-hook
           '(lambda ()

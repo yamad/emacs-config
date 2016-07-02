@@ -10,8 +10,10 @@
 (defvar jyh-required-packages
   '(ag
     auctex
+    bind-key
     cmake-mode
     company
+    company-tern
     ctags
     ctags-update
     diminish
@@ -29,6 +31,7 @@
     helm
     helm-ag
     helm-company
+    helm-dash
     helm-flycheck
     helm-projectile
     js2-mode
@@ -45,6 +48,7 @@
     solarized-theme
     smarter-compile
     tern
+    use-package
     yasnippet
     zenburn-theme)
   "List of required packages to ensure are installed at launch")
