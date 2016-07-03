@@ -231,8 +231,39 @@ of text"
 (yas-load-directory yas/root-directory)
 (setq yas-prompt-functions '(yas/dropdown-prompt))
 
+(use-package avy
+  :bind (("C-. c" . avy-goto-char)
+         ("C-. l" . avy-goto-line)
+         ("C-. w" . avy-goto-word-or-subword-1)
+         ("C-. f" . avy-goto-char-timer)
+         ("C-. p" . avy-pop-mark))
+  :config
+  (setq avy-background t))
 
+(use-package ace-jump-helm-line
+  :bind (:map helm-map
+              ("C-." . ace-jump-helm-line))
+  :config
+  ;; change appearance
+  (setq ace-jump-helm-line-style 'pre)
+  (setq ace-jump-helm-line-background t)
+  (setq ace-jump-helm-line-default-action 'move-only)
+  (ace-jump-helm-line-idle-exec-remove 'helm-mini) ;; turn off autostart
+  ;; set action switch keys
+  (setq ace-jump-helm-line-select-key ?e)
+  (setq ace-jump-helm-line-move-only-key ?o)
+  (setq ace-jump-helm-line-persistent-key ?p)
+  ;; disable hints preview
+  (ace-jump-helm-line-autoshow-mode -1)
+  ;; use `linum-mode' to show
+  (setq ace-jump-helm-line-autoshow-mode-use-linum t))
+
+(use-package ace-window
+  :config
+  (global-set-key (kbd "C-. n") 'ace-window)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 ;; C
+
 ;; ======================================
 (setq c-default-style
       '((c-mode . "linux")))
