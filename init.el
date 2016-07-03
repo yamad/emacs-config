@@ -91,6 +91,12 @@
   :diminish fci-mode
   :config (fci-mode))
 
+;; which-key -- keybinding display
+(use-package which-key
+  :diminish which-key-mode
+  :config
+  (which-key-mode))
+
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
 

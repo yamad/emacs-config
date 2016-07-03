@@ -63,6 +63,7 @@
     smarter-compile
     tern
     use-package
+    which-key
     yasnippet
     zenburn-theme)
   "List of required packages to ensure are installed at launch")
