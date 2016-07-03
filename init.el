@@ -71,24 +71,25 @@
     (helm-projectile-on)
     (setq projectile-switch-project-action 'helm-projectile)))
 
+  (use-package helm-descbinds
+    :config (helm-descbinds-mode))
+
 ;; which-key -- keybinding display
 (use-package which-key
   :diminish which-key-mode
   :config
   (which-key-mode))
-  (use-package helm-descbinds
-    :config (helm-descbinds-mode))
 
+(use-package highlight-parentheses
+  :diminish highlight-parentheses-mode
+  :config
+  (global-highlight-parentheses-mode-check-buffers))
 
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
 
 ;; always remove trailing whitespace before saving
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-(use-package highlight-parentheses
-  :diminish highlight-parentheses-mode
-  :config
-  (global-highlight-parentheses-mode-check-buffers))
 
 ;; Alternate bindings for M-x
 (global-set-key "\C-x\C-m" 'execute-extended-command)
