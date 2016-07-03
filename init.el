@@ -222,8 +222,8 @@ of text"
 (yas-global-mode)
 (diminish 'yas-minor-mode)
 (setq yas/root-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
-(yas/load-directory yas/root-directory)
-(setq yas/prompt-functions '(yas/dropdown-prompt))
+(yas-load-directory yas/root-directory)
+(setq yas-prompt-functions '(yas/dropdown-prompt))
 
 
 ;; C
@@ -656,7 +656,7 @@ are: unix, dos, mac"
     (setenv "PATH" (concat (getenv "PATH") ";C:\\cygwin\\bin"))
 
     ;; Add font
-    (set-default-font "Consolas-11")))
+    (set-frame-font "Consolas-11")))
 
 ;; Use chrome for urls on linux
 (if (eq system-type 'gnu/linux)
