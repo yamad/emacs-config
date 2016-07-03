@@ -125,6 +125,12 @@
    `(mode-line ((t (:box nil))))
    `(mode-line-inactive ((t (:box nil))))))
 
+;; directory management
+(use-package dired+
+  :config
+  ; don't create new buffer for every directory)
+  (diredp-toggle-find-file-reuse-dir 1))
+
 ;; Unfill functions (opposes fill-paragraph and fill-region)
 (defun unfill-paragraph ()
   "Takes a multi-line paragraph and makes it into a single line

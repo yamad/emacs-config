@@ -28,6 +28,7 @@
     ctags
     ctags-update
     diminish
+    dired+
     dropdown-list
     exec-path-from-shell
     edit-server
