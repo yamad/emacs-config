@@ -137,6 +137,18 @@
   ; don't create new buffer for every directory)
   (diredp-toggle-find-file-reuse-dir 1))
 
+;; anzu -- multiple search/replace
+(use-package anzu
+  :config
+  (global-anzu-mode +1)
+  (define-key isearch-mode-map
+    [remap isearch-query-replace]
+    #'anzu-isearch-query-replace)
+  (define-key isearch-mode-map
+    [remap isearch-query-replace-regexp]
+    #'anzu-isearch-query-replace-regexp)
+  )
+
 ;; Unfill functions (opposes fill-paragraph and fill-region)
 (defun unfill-paragraph ()
   "Takes a multi-line paragraph and makes it into a single line

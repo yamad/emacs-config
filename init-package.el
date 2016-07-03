@@ -20,6 +20,7 @@
 ;; Required Packages
 (defvar jyh-required-packages
   '(ag
+    anzu
     auctex
     bind-key
     cmake-mode
