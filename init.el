@@ -80,6 +80,10 @@
 
 ;; always remove trailing whitespace before saving
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+(use-package highlight-parentheses
+  :diminish highlight-parentheses-mode
+  :config
+  (global-highlight-parentheses-mode-check-buffers))
 
 ;; Alternate bindings for M-x
 (global-set-key "\C-x\C-m" 'execute-extended-command)
