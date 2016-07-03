@@ -22,6 +22,8 @@
 (require 'server)
 (unless (server-running-p) (server-start))
 
+(load-init-file "init-display")
+
 ;; General requires
 ;(require 'find-files)
 (setq auto-mode-alist
@@ -39,57 +41,30 @@
       (lambda ()
         (invert-face 'mode-line)
         (run-with-timer 0.1 nil 'invert-face 'mode-line)))
-(tool-bar-mode 0)
-(when (not (display-graphic-p))
-  (menu-bar-mode -1))
-(line-number-mode 1)
-(column-number-mode 1)
 (setq kill-whole-line t)
 (desktop-save-mode 1)
 (setq desktop-restore-eager 3)
-(setq inhibit-startup-screen t)
 (setq flycheck-check-syntax-automatically '(mode-enabled save))
-(setq explicit-shell-file-name "zsh")
 (put 'narrow-to-region 'disabled nil)
+
+;; terminal
+(setq explicit-shell-file-name "zsh")
+(defun named-term (name)
+  (interactive "sName: ")
+  (ansi-term "zsh" name))
 
 ;; project management
 (use-package projectile
   :config
   (projectile-global-mode)
-  (setq projectile-mode-line
-        '(:eval (format " P/%s" (projectile-project-name))))
+;  (setq projectile-mode-line
+;        '(:eval (format " P/%s" (projectile-project-name))))
   (setq projectile-enable-caching t) ; otherwise too slow
   (use-package helm-projectile       ; use helm as interface
     :config
     (setq projectile-completion-system 'helm)
     (helm-projectile-on)
     (setq projectile-switch-project-action 'helm-projectile)))
-
-;; nice mode line
-(use-package smart-mode-line
-  :config
-  (setq sml/theme 'respectful)
-  (setq sml/no-confirm-load-theme t)
-  (sml/setup)
-  ; flat mode line
-  (set-face-attribute 'mode-line nil :box nil)
-  (set-face-attribute 'mode-line-inactive nil :box nil))
-
-(setq fringe-mode 'half-width)
-(set-face-attribute 'fringe nil
-                    :foreground (face-foreground 'default)
-                    :background (face-background 'default))
-
-;; unobtrusive scroll bar
-(use-package yascroll
-  :config
-  (scroll-bar-mode -1)
-  (global-yascroll-bar-mode 1)
-  (setq yascroll:delay-to-hide nil))
-
-(use-package fill-column-indicator
-  :diminish fci-mode
-  :config (fci-mode))
 
 ;; which-key -- keybinding display
 (use-package which-key
@@ -117,19 +92,6 @@
 
 ; bind frame/window switching to shift-up/down/left/right
 (windmove-default-keybindings)
-
-;; Set syntax highlighting and default color scheme
-;(require 'github-theme)
-(load-theme 'zenburn t)
-(global-font-lock-mode)
-;; tone down some default colors
-(zenburn-with-color-variables
-  (custom-set-faces
-   `(linum ((t (:foreground ,zenburn-bg+2
-                :background ,zenburn-bg))))
-   `(fringe ((t (:background ,zenburn-bg))))
-   `(mode-line ((t (:box nil))))
-   `(mode-line-inactive ((t (:box nil))))))
 
 ;; directory management
 (use-package dired+
