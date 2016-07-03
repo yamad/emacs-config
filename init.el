@@ -11,7 +11,6 @@
   "load an emacs initialize file"
   (load (locate-user-emacs-file file)))
 
-
 ;; move Custom set variables, so we don't have to look at it
 (setq custom-file (locate-user-emacs-file "init-custom.el"))
 (load custom-file)
@@ -66,6 +65,31 @@
     (helm-projectile-on)
     (setq projectile-switch-project-action 'helm-projectile)))
 
+;; nice mode line
+(use-package smart-mode-line
+  :config
+  (setq sml/theme 'respectful)
+  (setq sml/no-confirm-load-theme t)
+  (sml/setup)
+  ; flat mode line
+  (set-face-attribute 'mode-line nil :box nil)
+  (set-face-attribute 'mode-line-inactive nil :box nil))
+
+(setq fringe-mode 'half-width)
+(set-face-attribute 'fringe nil
+                    :foreground (face-foreground 'default)
+                    :background (face-background 'default))
+
+;; unobtrusive scroll bar
+(use-package yascroll
+  :config
+  (scroll-bar-mode -1)
+  (global-yascroll-bar-mode 1)
+  (setq yascroll:delay-to-hide nil))
+
+(use-package fill-column-indicator
+  :diminish fci-mode
+  :config (fci-mode))
 
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
@@ -92,6 +116,14 @@
 ;(require 'github-theme)
 (load-theme 'zenburn t)
 (global-font-lock-mode)
+;; tone down some default colors
+(zenburn-with-color-variables
+  (custom-set-faces
+   `(linum ((t (:foreground ,zenburn-bg+2
+                :background ,zenburn-bg))))
+   `(fringe ((t (:background ,zenburn-bg))))
+   `(mode-line ((t (:box nil))))
+   `(mode-line-inactive ((t (:box nil))))))
 
 ;; Unfill functions (opposes fill-paragraph and fill-region)
 (defun unfill-paragraph ()

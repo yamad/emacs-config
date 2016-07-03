@@ -24,6 +24,7 @@
     ert-x
     ess
     ess-R-data-view
+    fill-column-indicator
     flycheck
     geiser
     ghc
@@ -46,6 +47,7 @@
     polymode
     projectile
     solarized-theme
+    smart-mode-line
     smarter-compile
     tern
     use-package
