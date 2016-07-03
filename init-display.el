@@ -9,6 +9,7 @@
 (load-init-file "core-display-init")
 
 (setq inhibit-startup-screen t)
+
 (jyh/do-after-display-system-init
  ;; remove unnecessary UI elements
  (scroll-bar-mode -1)
@@ -58,13 +59,20 @@
  (add-hook 'window-configuration-change-hook
            #'jyh/change-modeline-by-window-count)
 
- ;; stuff to run only in GUI mode
+ ;; hide menu bar in terminal mode
  (unless (display-graphic-p)
-   (menu-bar-mode -1)
+   (menu-bar-mode -1))
 
-   ;; unobtrusive scroll bar
-   (use-package yascroll
-     :config
-     (global-yascroll-bar-mode 1)
-     (setq yascroll:delay-to-hide nil)))
+ ;; unobtrusive scroll bar, only in GUI mode-line
+ (if (display-graphic-p)
+     (use-package yascroll
+       :config
+       (global-yascroll-bar-mode 1)
+       (setq yascroll:delay-to-hide nil)))
+
+ ;; indicate desired line length (fill-column)
+ (use-package fill-column-indicator
+   :diminish fci-mode
+   :config
+   (add-hook 'prog-mode-hook #'fci-mode))
  )
