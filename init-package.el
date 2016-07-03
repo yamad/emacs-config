@@ -46,6 +46,7 @@
     helm-ag
     helm-company
     helm-dash
+    helm-descbinds
     helm-flycheck
     helm-projectile
     js2-mode

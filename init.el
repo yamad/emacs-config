@@ -71,6 +71,9 @@
   :diminish which-key-mode
   :config
   (which-key-mode))
+  (use-package helm-descbinds
+    :config (helm-descbinds-mode))
+
 
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
