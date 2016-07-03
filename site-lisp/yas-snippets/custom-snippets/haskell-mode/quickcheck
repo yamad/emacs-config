@@ -1,0 +1,11 @@
+#name: quickcheck
+# --
+{-# LANGUAGE TemplateHaskell #-}
+
+import Test.QuickCheck
+import Test.QuickCheck.All
+
+$0
+
+return []
+main = $(quickCheckAll)

@@ -1,0 +1,6 @@
+java-mode/topdoc
+#name: top comment
+# --
+/**
+ *
+ */
