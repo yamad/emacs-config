@@ -57,8 +57,8 @@
 (use-package projectile
   :config
   (projectile-global-mode)
-;  (setq projectile-mode-line
-;        '(:eval (format " P/%s" (projectile-project-name))))
+  (setq projectile-mode-line
+        '(:eval (format " P/%s" (projectile-project-name))))
   (setq projectile-enable-caching t) ; otherwise too slow
   (use-package helm-projectile       ; use helm as interface
     :config
