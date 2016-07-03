@@ -170,9 +170,7 @@ of text"
 (global-set-key (kbd "C-x b")   'helm-mini)
 (global-set-key (kbd "C-c h o") 'helm-occur)
 (global-set-key (kbd "C-c h i") 'helm-imenu)
-
-;; swiper / ivy
-(global-set-key (kbd "C-c C-s") 'swiper-helm)
+(global-set-key (kbd "C-c C-s") 'helm-swoop)
 
 ; rebind tab to run persistent action
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)

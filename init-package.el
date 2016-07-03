@@ -49,6 +49,7 @@
     helm-descbinds
     helm-flycheck
     helm-projectile
+    helm-swoop
     highlight-parentheses
     js2-mode
     magit
