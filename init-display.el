@@ -19,14 +19,11 @@
  (column-number-mode 1)                  ; show col-number  in mode line
  (use-package smart-mode-line
    :config
-   (setq sml/theme nil)                 ; zenburn theme provides theming
-   (setq sml/no-confirm-load-theme t)
-   (sml/setup))
-
- ;; indicate desired line length (fill-column)
- (use-package fill-column-indicator
-   :diminish fci-mode
-   :config (fci-mode))
+   (progn
+     (setq sml/theme nil)                 ; zenburn theme provides theming
+     (setq sml/no-confirm-load-theme t)
+     (sml/setup)
+     (diminish 'projectile-mode)))        ; sml provides its own projectile display
 
  ;; reduce appearance of gutters/margins/"fringes"
  (setq fringe-mode 'half-width)
