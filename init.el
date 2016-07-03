@@ -108,15 +108,11 @@
 
 ;; anzu -- multiple search/replace
 (use-package anzu
+  :diminish anzu-mode
+  :bind (("M-%" . anzu-query-replace)
+         ("C-M-%" . anzu-query-replace-regexp))
   :config
-  (global-anzu-mode +1)
-  (define-key isearch-mode-map
-    [remap isearch-query-replace]
-    #'anzu-isearch-query-replace)
-  (define-key isearch-mode-map
-    [remap isearch-query-replace-regexp]
-    #'anzu-isearch-query-replace-regexp)
-  )
+  (global-anzu-mode))
 
 ;; Unfill functions (opposes fill-paragraph and fill-region)
 (defun unfill-paragraph ()
