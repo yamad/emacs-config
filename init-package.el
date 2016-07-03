@@ -1,10 +1,21 @@
 ;; Package manager
 (require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives
-	     '("marmalade" . "http://marmalade-repo.org/packages/") t)
+
+(defvar jyh/package-archives
+  '(("melpa" . "http://melpa.org/packages/")
+    ("melpa-stable" . "http://stable.melpa.org/packages/")
+    ("marmalade" . "http://marmalade-repo.org/packages/")
+    ("sc" . "http://joseito.republika.pl/sunrise-commander/")))
+(setq package-archives (append package-archives jyh/package-archives))
 (package-initialize)
+
+;; bootstrap `use-package'
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-when-compile
+  (require 'use-package)
+  (setq use-package-always-ensure t))
 
 ;; Required Packages
 (defvar jyh-required-packages
