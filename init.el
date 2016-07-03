@@ -12,7 +12,12 @@
   (load (locate-user-emacs-file file)))
 
 
-(load-init-file "init-package") ; ensure required packages
+;; move Custom set variables, so we don't have to look at it
+(setq custom-file (locate-user-emacs-file "init-custom.el"))
+(load custom-file)
+
+;; ensure required packages
+(load-init-file "init-package")
 
 ;; start emacs server for emacsclient service
 (require 'server)
@@ -638,7 +643,3 @@ are: unix, dos, mac"
 ;; Use chrome for urls on linux
 (if (eq system-type 'gnu/linux)
     (setq browse-url-browser-function 'browse-url-xdg-open))
-
-;; move Custom set variables, so we don't have to look at it
-(setq custom-file (locate-user-emacs-file "init-custom"))
-(load custom-file)
