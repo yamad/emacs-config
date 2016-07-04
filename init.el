@@ -19,6 +19,10 @@
   "load an emacs initialize file"
   (load (locate-user-emacs-file file)))
 
+(defsubst hook-into-modes (func &rest modes)
+  "help add a function to many mode hooks (from jwiegley)"
+  (dolist (mode-hook modes) (add-hook mode-hook func)))
+
 ;; ensure required packages
 (load-init-file "init-package")
 
@@ -33,6 +37,12 @@
 
 ;; store all backups (*~) in one place
 (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+
+;; pick up environment from shell
+(use-package exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize)))
 
 ;; General requires
 ;(require 'find-files)
