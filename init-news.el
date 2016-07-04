@@ -1,4 +1,7 @@
-;; News/gnus setup
+;;; init-news.el --- news/gnus setup
+;;
+;; part of emacs config for jyamad. see init.el
+
 (setq gnus-select-method '(nntp "news.eternal-september.org"))
 (setq gnus-secondary-select-methods '((nntp "news.gmane.org")))
 (setq user-full-name "Jason Yamada-Hanff")

@@ -1,7 +1,7 @@
-;; TeX/LaTeX/ConTeXt
-;; ======================================
+;;; init-tex.el --- TeX package configuration
+;;
+;; part of emacs config for jyamad. see init.el
 
-;; AuCTeX
 ;; general options for all TeX-based modes
 (use-package tex-site
   :defer t
@@ -15,6 +15,7 @@
         TeX-auto-save t                    ; save style information
         TeX-electric-sub-and-superscript t ; insert braces after sub/superscripts
         TeX-clean-confirm nil              ; don't confirm before cleaning
+        TeX-quote-after-quote t
         TeX-open-quote "``"
         TeX-close-quote "''")
   (setq-default TeX-engine 'xetex
@@ -26,7 +27,7 @@
 
 (use-package tex-mik
   :ensure auctex
-  :if eq system-type 'windows-nt
+  :if (eq system-type 'windows-nt)
   :config
   (setq preview-image-type 'pnm))
 

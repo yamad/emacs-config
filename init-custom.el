@@ -1,4 +1,6 @@
-;; custom variables
+;;; init-custom.el --- custom variables
+;;
+;; part of emacs config for jyamad. see init.el
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

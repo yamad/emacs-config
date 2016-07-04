@@ -1,5 +1,7 @@
-;; Org mode
-;; ======================================
+;;; init-org.el --- org-mode config
+;;
+;; part of emacs config for jyamad. see init.el
+
 (if (eq system-type 'darwin)
     (setq load-path (cons "~/src/org-mode/lisp" load-path)))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))

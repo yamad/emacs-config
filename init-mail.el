@@ -1,4 +1,6 @@
-;; email configuration
+;;; init-mail.el --- email config
+;;
+;; part of emacs config for jyamad. see init.el
 
 ;; SMTP setup
 (setq message-send-mail-function 'smtpmail-send-it

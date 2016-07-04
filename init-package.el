@@ -1,4 +1,7 @@
-;; Package manager
+;;; init-package.el --- required package load
+;;
+;; part of emacs config for jyamad. see init.el
+
 (require 'package)
 (setq package-enable-at-startup nil)
 
@@ -81,12 +84,12 @@
     all-p))
 
 ;; install missing packages
-(if (not (jyh-packages-installed-p jyh-required-packages))
-    (progn
-      ;; check for new packages
-      (message "%s" "Refreshing package database...")
-      (package-refresh-contents)
-      (message "%s" " done.")
-      (dolist (p jyh-required-packages)
-	(if (not (package-installed-p p))
-	  (package-install p)))))
+;; (if (not (jyh-packages-installed-p jyh-required-packages))
+;;     (progn
+;;       ;; check for new packages
+;;       (message "%s" "Refreshing package database...")
+;;       (package-refresh-contents)
+;;       (message "%s" " done.")
+;;       (dolist (p jyh-required-packages)
+;; 	(if (not (package-installed-p p))
+;; 	  (package-install p)))))

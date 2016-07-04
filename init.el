@@ -1,4 +1,4 @@
-;;; init.el -- emacs configuration for jyamad
+;;; init.el --- emacs configuration for jyamad
 ;;
 ;; .emacs config credits for many good ideas:
 ;;  * http://github.com/lunaryorn/.emacs.d

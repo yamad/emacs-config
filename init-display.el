@@ -1,8 +1,6 @@
+;;; init-display.el --- appearance/display configuration
 ;;
-;; init-display.el -- appearance/display specific config
-;;
-;; jyamad emacs config
-
+;; part of emacs config for jyamad. see init.el
 
 ;; use spacemacs display init features
 ;; provides (remaned) `jyh/do-after-display-system-init'

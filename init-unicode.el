@@ -1,5 +1,6 @@
-;; Unicode
-;; ======================================
+;;; init-unicode.el --- unicode utilities
+;;
+;; part of emacs config for jyamad. see init.el
 
 ;; Set UTF-8 as default buffer coding
 (require 'un-define "un-define" t)
