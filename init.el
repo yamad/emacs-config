@@ -215,6 +215,22 @@ of text"
      (define-key company-active-map (kbd "C-:") 'helm-company)
      (diminish 'company-mode)))
 
+;; hippie-expand -- dabbrev replacement for expansion and completion
+(use-package hippie-exp
+  :bind (([remap dabbrev-expand] . hippie-expand))
+  :config
+  (progn
+    (setq hippie-expand-try-functions-list
+          '(try-expand-dabbrev
+            try-expand-dabbrev-all-buffers
+            try-expand-dabbrev-from-kill
+            try-complete-file-name-partially
+            try-complete-file-name
+            try-expand-all-abbrevs
+            try-expand-list
+            try-complete-lisp-symbol-partially
+            try-complete-lisp-symbol))))
+
 ;; dash documentation browser
 (global-set-key (kbd "C-c h f") 'helm-dash)
 (global-set-key (kbd "C-c h g") 'helm-dash-at-point)
