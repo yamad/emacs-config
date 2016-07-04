@@ -56,10 +56,9 @@
 (setq flycheck-check-syntax-automatically '(mode-enabled save))
 (put 'narrow-to-region 'disabled nil)
 
-(use-package auto-revert
-  :diminish auto-revert-mode
-  :config
-  (global-auto-revert-mode))
+(use-package autorevert
+  :init (global-auto-revert-mode)
+  :diminish auto-revert-mode)
 
 ;; terminal
 (setq explicit-shell-file-name "zsh")
