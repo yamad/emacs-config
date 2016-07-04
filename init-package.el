@@ -1,21 +1,21 @@
 ;; Package manager
 (require 'package)
+(setq package-enable-at-startup nil)
 
 (defvar jyh/package-archives
   '(("melpa" . "http://melpa.org/packages/")
-    ("melpa-stable" . "http://stable.melpa.org/packages/")
-    ("marmalade" . "http://marmalade-repo.org/packages/")
-    ("sc" . "http://joseito.republika.pl/sunrise-commander/")))
+    ("melpa-stable" . "http://stable.melpa.org/packages/")))
 (setq package-archives (append package-archives jyh/package-archives))
+
 (package-initialize)
 
 ;; bootstrap `use-package'
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+
 (eval-when-compile
-  (require 'use-package)
-  (setq use-package-always-ensure t))
+  (require 'use-package))
 
 ;; Required Packages
 (defvar jyh-required-packages

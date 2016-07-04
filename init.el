@@ -1,22 +1,31 @@
-;; jyh/.emacs.d/init.el
-;; ======================================
+;;; init.el -- emacs configuration for jyamad
+;;
+;; .emacs config credits for many good ideas:
+;;  * http://github.com/lunaryorn/.emacs.d
+;;  * http://github.com/jwiegley/dot-emacs
+;;  * http://github.com/syl20bnr/spacemacs
+;;  * http://sachachua.com/dotemacs
+;;  * http://github.com/verdammelt/dotfiles
 
-;; modularized init
-;; based on http://github.com/verdammelt/dotfiles
+;; don't load outdated byte code
+(setq load-prefer-newer t)
 
 ;; load paths
-(add-to-list 'load-path "~/.emacs.d/site-lisp")
-(add-to-list 'Info-default-directory-list "~/info")
+(eval-and-compile
+  (add-to-list 'load-path "~/.emacs.d/site-lisp")
+  (add-to-list 'Info-default-directory-list "~/info"))
+
 (defun load-init-file (file)
   "load an emacs initialize file"
   (load (locate-user-emacs-file file)))
 
-;; move Custom set variables, so we don't have to look at it
-(setq custom-file (locate-user-emacs-file "init-custom.el"))
-(load custom-file)
-
 ;; ensure required packages
 (load-init-file "init-package")
+
+;; put set variables from customize interface in own file
+;; I don't use it, but gets used automatically sometimes
+(setq custom-file (locate-user-emacs-file "init-custom.el"))
+(load custom-file)
 
 ;; start emacs server for emacsclient service
 (require 'server)
@@ -263,8 +272,8 @@ of text"
   :config
   (global-set-key (kbd "C-. n") 'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
-;; C
 
+;; C
 ;; ======================================
 (setq c-default-style
       '((c-mode . "linux")))

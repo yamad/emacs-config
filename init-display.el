@@ -3,6 +3,7 @@
 ;;
 ;; jyamad emacs config
 
+
 ;; use spacemacs display init features
 ;; provides (remaned) `jyh/do-after-display-system-init'
 ;; to run code only when a UI starts
