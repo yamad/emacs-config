@@ -31,7 +31,8 @@
 (require 'server)
 (unless (server-running-p) (server-start))
 
-(load-init-file "init-display")
+;; store all backups (*~) in one place
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 
 ;; General requires
 ;(require 'find-files)
@@ -123,7 +124,7 @@
 ;; anzu -- multiple search/replace
 (use-package anzu
   :ensure t
-  :init (global-anzu-mode)
+  :config (global-anzu-mode)
   :bind
   (([remap query-replace] . anzu-query-replace)
    ([remap query-replace-regexp] . anzu-query-replace-regexp)
@@ -689,6 +690,10 @@ are: unix, dos, mac"
           (setq step (random (/ wc 5)))
           (forward-word step)
           (insert " " str))))))
+
+
+;; configure display
+(load-init-file "init-display")
 
 ;; Windows(OS)-specific Configuration
 ;; ======================================

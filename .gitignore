@@ -13,6 +13,7 @@ recentf
 ac-comphist.dat
 irony/*
 elpa/*
+backups/*
 eshell/*
 request/*
 url/*
