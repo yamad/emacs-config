@@ -6,6 +6,7 @@
 ;;  * http://github.com/syl20bnr/spacemacs
 ;;  * http://sachachua.com/dotemacs
 ;;  * http://github.com/verdammelt/dotfiles
+;;  * https://github.com/purcell/emacs.d
 
 ;; don't load outdated byte code
 (setq load-prefer-newer t)
@@ -246,6 +247,7 @@ point reaches the beginning or end of the buffer, stop there."
 ;; hippie-expand -- dabbrev replacement for expansion and completion
 (use-package hippie-exp
   :bind (([remap dabbrev-expand] . hippie-expand))
+  :defer t
   :config
   (progn
     (setq hippie-expand-try-functions-list
