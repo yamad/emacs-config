@@ -295,14 +295,11 @@ point reaches the beginning or end of the buffer, stop there."
     (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git.exe"))
   (setq magit-last-seen-setup-instructions "1.4.0"))
 
-;; YASnippet
-;; ======================================
-(require 'dropdown-list)
-(yas-global-mode)
-(diminish 'yas-minor-mode)
-(setq yas/root-directory "~/.emacs.d/site-lisp/yas-snippets/custom-snippets")
-(yas-load-directory yas/root-directory)
-(setq yas-prompt-functions '(yas/dropdown-prompt))
+(use-package yasnippet
+  :ensure t
+  :diminish yas-minor-mode
+  :config
+  (yas-global-mode 1))
 
 (use-package avy
   :bind (("C-. c" . avy-goto-char)
