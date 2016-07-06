@@ -331,6 +331,10 @@ point reaches the beginning or end of the buffer, stop there."
   (global-set-key (kbd "C-. n") 'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
+(use-package expand-region
+  :ensure t
+  :bind (("C-c v" . er/expand-region)))
+
 ;; C
 ;; ======================================
 (setq c-default-style
