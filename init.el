@@ -285,10 +285,13 @@ point reaches the beginning or end of the buffer, stop there."
 (load-init-file "init-org")
 
 ;; magit (git)
-(if (eq system-type 'windows-nt)
+(use-package magit
+  :ensure t
+  :bind (("C-x C-g" . magit-status))
+  :config
+  (when (eq system-type 'windows-nt)
     (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git.exe"))
-(global-set-key (kbd "C-x C-g") 'magit-status)
-(setq magit-last-seen-setup-instructions "1.4.0")
+  (setq magit-last-seen-setup-instructions "1.4.0"))
 
 ;; YASnippet
 ;; ======================================
@@ -656,8 +659,6 @@ projectile-after-switch-project-hook"
            path-to-ctags
            dir-name
            (directory-file-name dir-name))))
-
-
 
 ;; Constants
 (require 'constants)
