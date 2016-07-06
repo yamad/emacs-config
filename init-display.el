@@ -13,6 +13,26 @@
  ;; remove unnecessary UI elements
  (scroll-bar-mode -1)
  (tool-bar-mode   -1)
+ ;; hide menu bar in terminal mode
+ (unless (display-graphic-p)
+   (menu-bar-mode -1))
+
+ ;; reduce gutters/margins/"fringes" to 'half-width
+ (set-fringe-mode 4)
+
+ ;; unobtrusive scroll bar, only in GUI mode-line
+ (if (display-graphic-p)
+     (use-package yascroll
+       :config
+       (global-yascroll-bar-mode 1)
+       (setq yascroll:delay-to-hide nil)))
+
+ ;; indicate desired line length (fill-column)
+ (use-package fill-column-indicator
+   :ensure t
+   :diminish fci-mode
+   :config
+   (add-hook 'prog-mode-hook #'turn-on-fci-mode))
 
  ;; mode line
  (line-number-mode 1)                    ; show line-number in mode line
@@ -24,9 +44,6 @@
      (setq sml/no-confirm-load-theme t)
      (sml/setup)
      (diminish 'projectile-mode)))        ; sml provides its own projectile display
-
- ;; reduce appearance of gutters/margins/"fringes" to 'half-width
- (set-fringe-mode 4)
 
  ;; set syntax highlighting and default color scheme
  (use-package zenburn-theme
@@ -62,22 +79,4 @@
           `(mode-line ((t (:background ,zenburn-bg-2 :box nil))))))))
    (add-hook 'window-configuration-change-hook
              #'jyh/change-modeline-by-window-count))
-
- ;; hide menu bar in terminal mode
- (unless (display-graphic-p)
-   (menu-bar-mode -1))
-
- ;; unobtrusive scroll bar, only in GUI mode-line
- (if (display-graphic-p)
-     (use-package yascroll
-       :config
-       (global-yascroll-bar-mode 1)
-       (setq yascroll:delay-to-hide nil)))
-
- ;; indicate desired line length (fill-column)
- (use-package fill-column-indicator
-   :ensure t
-   :diminish fci-mode
-   :config
-   (add-hook 'prog-mode-hook #'turn-on-fci-mode))
  )
