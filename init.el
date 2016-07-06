@@ -301,9 +301,10 @@ point reaches the beginning or end of the buffer, stop there."
 
 (use-package avy
   :bind (("C-. c" . avy-goto-char)
+         ("C-. f" . avy-goto-char-in-line)
          ("C-. l" . avy-goto-line)
          ("C-. w" . avy-goto-word-or-subword-1)
-         ("C-. f" . avy-goto-char-timer)
+         ("C-. s" . avy-goto-char-timer)
          ("C-. p" . avy-pop-mark))
   :config
   (setq avy-background t))
