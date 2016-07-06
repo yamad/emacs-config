@@ -25,8 +25,8 @@
      (sml/setup)
      (diminish 'projectile-mode)))        ; sml provides its own projectile display
 
- ;; reduce appearance of gutters/margins/"fringes"
- (setq fringe-mode 'half-width)
+ ;; reduce appearance of gutters/margins/"fringes" to 'half-width
+ (set-fringe-mode 4)
 
  ;; set syntax highlighting and default color scheme
  (load-theme 'zenburn t)
@@ -71,7 +71,8 @@
 
  ;; indicate desired line length (fill-column)
  (use-package fill-column-indicator
+   :ensure t
    :diminish fci-mode
    :config
-   (add-hook 'prog-mode-hook #'fci-mode))
+   (add-hook 'prog-mode-hook #'turn-on-fci-mode))
  )
