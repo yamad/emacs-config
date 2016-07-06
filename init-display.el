@@ -29,34 +29,39 @@
  (set-fringe-mode 4)
 
  ;; set syntax highlighting and default color scheme
- (load-theme 'zenburn t)
- (global-font-lock-mode)
+ (use-package zenburn-theme
+   :ensure t
+   :config
+   (load-theme 'zenburn t)
+   (global-font-lock-mode)
 
- ;; tone down some default colors in zenburn
- (zenburn-with-color-variables
-   (custom-set-faces
-    `(linum
-      ((t (:foreground ,zenburn-bg+2
-                       :background ,zenburn-bg))))
-    `(fringe
-      ((t (:background ,zenburn-bg))))
-    `(mode-line
-      ((t (:box nil :background ,zenburn-bg-1))))
-    `(mode-line-inactive
-      ((t (:box nil :background ,zenburn-bg-1))))))
+   ;; tone down some default colors in zenburn
+   (zenburn-with-color-variables
+     (custom-set-faces
+      `(linum
+        ((t (:foreground ,zenburn-bg+2
+                         :background ,zenburn-bg))))
+      `(fringe
+        ((t (:background ,zenburn-bg))))
+      ;; no box around modeline
+      `(mode-line
+        ((t (:box nil :background ,zenburn-bg-1))))
+      `(mode-line-inactive
+        ((t (:box nil :background ,zenburn-bg-1))))))
 
- (defun jyh/change-modeline-by-window-count ()
-   (if (eq (count-windows) 1)
-       ;; tone down mode line if just one window
+   (defun jyh/change-modeline-by-window-count ()
+     "change modeline style based on number of windows"
+     (if (eq (count-windows) 1)
+         ;; tone down mode line if just one window
          (zenburn-with-color-variables
            (custom-set-faces
             `(mode-line ((t (:background ,zenburn-bg-1 :box nil))))))
-     ;; differentiate active mode line
-     (zenburn-with-color-variables
-       (custom-set-faces
-        `(mode-line ((t (:background ,zenburn-bg-2 :box nil))))))))
- (add-hook 'window-configuration-change-hook
-           #'jyh/change-modeline-by-window-count)
+       ;; make active mode line darker
+       (zenburn-with-color-variables
+         (custom-set-faces
+          `(mode-line ((t (:background ,zenburn-bg-2 :box nil))))))))
+   (add-hook 'window-configuration-change-hook
+             #'jyh/change-modeline-by-window-count))
 
  ;; hide menu bar in terminal mode
  (unless (display-graphic-p)
