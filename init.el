@@ -32,10 +32,6 @@
 (setq custom-file (locate-user-emacs-file "init-custom.el"))
 (load custom-file)
 
-;; start emacs server for emacsclient service
-(require 'server)
-(unless (server-running-p) (server-start))
-
 ;; store all backups (*~) in one place
 (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 
