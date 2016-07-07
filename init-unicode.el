@@ -8,20 +8,12 @@
 (set-default buffer-file-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
-(set-default default-buffer-file-coding-system 'utf-8)
+(set-default buffer-file-coding-system 'utf-8)
 (setq locale-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (set-selection-coding-system 'utf-8)
 (set-language-environment "UTF-8")
-
-(defun unicode-insert (char)
-  "Read a unicode code point and insert said character.
-    Input uses `read-quoted-char-radix'.  If you want to copy
-    the values from the Unicode charts, you should set it to 16."
-  (interactive (list (read-quoted-char "Char: ")))
-  (ucs-insert char))
-(setq read-quoted-char-radix 16)
 
 ;; Set UTF-8 keys
 (global-set-key "\C-z" nil)
