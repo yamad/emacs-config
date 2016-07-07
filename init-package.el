@@ -25,8 +25,10 @@
   :defer 10
   :commands (paradox-upgrade-packages paradox-list-packages)
   :config
-  (setq paradox-github-token
-        "0f577656108e6ac7dea0da02c553b9fd9d4b7a63"))
+  (setq paradox-execute-asynchronously nil
+        paradox-automatically-star nil
+        paradox-spinner-type 'moon
+        paradox-github-token "0f577656108e6ac7dea0da02c553b9fd9d4b7a63"))
 
 ;; Required Packages
 (defvar jyh-required-packages
