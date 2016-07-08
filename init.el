@@ -430,10 +430,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
   (smartparens-global-mode)
   (show-smartparens-global-mode)
-
-  (hook-into-modes #'smartparens-strict-mode
-                   'inferior-emacs-lisp-mode-hook
-                   'emacs-lisp-mode-hook)
   :config
   (require 'smartparens-config)
   (setq sp-autoskip-closing-pair 'always
