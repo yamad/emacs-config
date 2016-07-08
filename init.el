@@ -127,7 +127,7 @@
 (use-package highlight-parentheses
   :diminish highlight-parentheses-mode
   :config
-  (global-highlight-parentheses-mode-check-buffers))
+  (global-highlight-parentheses-mode))
 
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
