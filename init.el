@@ -8,6 +8,11 @@
 ;;  * http://github.com/verdammelt/dotfiles
 ;;  * https://github.com/purcell/emacs.d
 
+;;; Commentary:
+;; Configuration for Emacs for jyamad
+
+;;; Code:
+
 ;; don't load outdated byte code
 (setq load-prefer-newer t)
 
@@ -41,17 +46,6 @@
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize)))
 
-;; General requires
-;(require 'find-files)
-(setq auto-mode-alist
-      (append '(("\\.rst$"  . rst-mode)
-                ("\\.rest$" . rst-mode)
-                ("\\.f$"    . f90-mode))
-              auto-mode-alist))
-(setq interpreter-mode-alist
-      (append '(("lua" . lua-mode))
-              interpreter-mode-alist))
-
 ;; General Options
 (setq visible-bell nil)
 (setq ring-bell-funtion
@@ -61,8 +55,24 @@
 (setq kill-whole-line t)
 (desktop-save-mode 1)
 (setq desktop-restore-eager 3)
-(setq flycheck-check-syntax-automatically '(mode-enabled save))
 (put 'narrow-to-region 'disabled nil)
+
+(use-package rst
+  :defer t
+  :mode (("\\.rst$" . rst-mode)
+         ("\\.rest$" . rst-mode)))
+(use-package markdown-mode  :defer t)
+(use-package markdown-mode+ :defer t)
+
+(use-package flycheck
+  :ensure t
+  :init
+  (global-flycheck-mode)
+  (setq flycheck-check-syntax-automatically '(mode-enabled save)))
+
+(use-package helm-flycheck
+  :ensure t
+  :after flycheck)
 
 (use-package autorevert
   :init (global-auto-revert-mode)
@@ -83,12 +93,12 @@
   (setq projectile-enable-caching t) ; otherwise too slow
   (use-package helm-projectile       ; use helm as interface
     :config
-    (setq projectile-completion-system 'helm)
+    (setq projectile-completion-system #'helm)
     (helm-projectile-on)
-    (setq projectile-switch-project-action 'helm-projectile)))
+    (setq projectile-switch-project-action #'helm-projectile)))
 
-  (use-package helm-descbinds
-    :config (helm-descbinds-mode))
+(use-package helm-descbinds
+  :config (helm-descbinds-mode))
 
 ;; which-key -- keybinding display
 (use-package which-key
@@ -103,6 +113,7 @@
 
 ;; ANSI coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
+(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
 
 ;; always remove trailing whitespace before saving
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
@@ -158,26 +169,28 @@ of text"
 (define-key global-map "\C-\M-Q" 'unfill-region)
 
 ;; Set tab behavior
-(setq-default indent-tabs-mode nil)
-(setq-default c-basic-offset 4)
-(setq-default py-indent-offset 4)
-(setq tab-width 4)
-(smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'ruby 'nxml)
-(add-hook 'c-mode-common-hook
-	  (lambda ()
-	    (setq indent-tabs-mode t)))
-(add-hook 'js2-mode-hook
-	  (lambda ()
-	    (setq indent-tabs-mode t)))
-(add-hook 'java-mode-hook
-          (lambda ()
-            (setq indent-tabs-mode t)
-            (setq tab-width 4)))
+(setq-default indent-tabs-mode nil
+              tab-width 4
+              c-basic-offset 4
+              py-indent-offset 4)
+
+(use-package smart-tabs-mode
+  :ensure t
+  :config
+  (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'ruby 'nxml))
+
+(hook-into-modes #'(lambda ()
+                     (setq indent-tabs-mode t
+                           tab-width 4))
+                 'c-mode-common-hook
+                 'js2-mode-hook
+                 'java-mode-hook)
 
 ;; Unique buffer names
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-(setq uniquify-ignore-buffers-re "^\\*")
+(use-package uniquify
+  :config
+  (setq uniquify-buffer-name-style 'post-forward-angle-brackets
+        uniquify-ignore-buffers-re "^\\*"))
 
 ;; from http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
 (defun smarter-move-beginning-of-line (arg)
@@ -204,41 +217,42 @@ point reaches the beginning or end of the buffer, stop there."
       (move-beginning-of-line 1))))
 
 ;; remap C-a to `smarter-move-beginning-of-line'
-(global-set-key [remap move-beginning-of-line]
-                'smarter-move-beginning-of-line)
+(bind-key [remap move-beginning-of-line]
+          'smarter-move-beginning-of-line)
 
 ;; helm
-(require 'helm)
-(require 'helm-config)
-(global-unset-key (kbd "C-x c"))
-(global-set-key (kbd "M-x")     'undefined)
-(global-set-key (kbd "C-c h")   'helm-command-prefix)
-(global-set-key (kbd "M-x")     'helm-M-x)
-(global-set-key (kbd "C-x r b") 'helm-filtered-bookmarks)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "M-y")     'helm-show-kill-ring)
-(global-set-key (kbd "C-x b")   'helm-mini)
-(global-set-key (kbd "C-c h o") 'helm-occur)
-(global-set-key (kbd "C-c h i") 'helm-imenu)
-(global-set-key (kbd "C-c C-s") 'helm-swoop)
+(use-package helm
+  :ensure t
+  :bind (([remap execute-extended-command] . helm-M-x)     ; M-x
+         ([remap switch-to-buffer] . helm-mini)            ; C-x b
+         ([remap bookmark-jump] . helm-filtered-bookmarks) ; C-x r b
+         ([remap find-file] . helm-find-files)             ; C-x C-f
+         ([remap yank-pop] . helm-how-kill-ring)           ; M-y
+         ("C-c h" . helm-command-prefix)
+         :map helm-command-map
+         ("o" . helm-occur)             ; C-c h o
+         ("i" . helm-imenu)             ; C-c h i
+         ("s" . helm-swoop)             ; C-c h s
+         :map helm-map
+         ("<tab>" . helm-execute-persistent-action)
+         ("C-i" . helm-execute-persistent-action) ; make tab work in terminal
+         ("C-z" . helm-select-action))            ; list actions using C-z
+  :diminish helm-mode
+  :config
+  (require 'helm-config)
+  (helm-mode)
+  (global-unset-key (kbd "C-x c")))
 
-; rebind tab to run persistent action
-(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-; make tab work in terminal
-(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
-; list actions using C-z
-(define-key helm-map (kbd "C-z") 'helm-select-action)
-
-(helm-mode)
-(diminish 'helm-mode)
-
-;; autocomplete -- company mode
-(add-hook 'after-init-hook 'global-company-mode)
-(eval-after-load 'company
-  '(progn
-     (define-key company-mode-map (kbd "C-:") 'helm-company)
-     (define-key company-active-map (kbd "C-:") 'helm-company)
-     (diminish 'company-mode)))
+;; company -- autocomplete
+(use-package company
+  :ensure t
+  :diminish company-mode
+  :bind (:map company-mode-map
+              ("C-:" . helm-company)
+              :map company-active-map
+              ("C-:" . helm-company))
+  :config
+  (global-company-mode))
 
 ;; hippie-expand -- dabbrev replacement for expansion and completion
 (use-package hippie-exp
@@ -258,22 +272,22 @@ point reaches the beginning or end of the buffer, stop there."
             try-complete-lisp-symbol))))
 
 ;; dash documentation browser
-(global-set-key (kbd "C-c h f") 'helm-dash)
-(global-set-key (kbd "C-c h g") 'helm-dash-at-point)
-(global-set-key (kbd "C-c h h") 'helm-dash-reset-connections)
-
-(defun jyh/dash-install (docset)
-  (unless (file-exists-p (jyh/dash-path docset))
-    (helm-dash-install-docset docset)))
-(defvar jyh/required-dash-docsets
+(use-package helm-dash
+  :ensure t
+  :after helm
+  :bind (:map helm-command-map
+              ("f" . helm-dash)
+              ("g" . helm-dash-at-point)
+              ("h" . helm-dash-reset-connections))
+  :config
+  (defun jyh/dash-install (docset)
+    (unless (file-exists-p (jyh/dash-path docset))
+      (helm-dash-install-docset docset)))
+  (defvar jyh/required-dash-docsets
   '("C"
     "CMake"
     "D3"))
-(setq helm-dash-browser-func 'eww)
-
-;; ERT (testing suite)
-(require 'ert)
-(require 'ert-x)
+  (setq helm-dash-browser-func 'eww))
 
 (setq tramp-default-method "ssh")
 
@@ -454,28 +468,29 @@ _k_: kill        _s_: split                   _{_: wrap with { }
           (lambda()
             (local-set-key (kbd "C-c o") 'ff-find-other-file)))
 
-(require 'yacc-mode)
-(require 'flex-mode)
-;(require 'ebnf-mode)
-(add-to-list 'auto-mode-alist '("\\.y\\'" . yacc-mode))
-(add-to-list 'auto-mode-alist '("\\.yy\\'" . yacc-mode))
-(add-to-list 'auto-mode-alist '("\\.l\\'" . flex-mode))
-(add-to-list 'auto-mode-alist '("\\.ll\\'" . flex-mode))
-;(add-to-list 'auto-mode-alist '("\\.bnf\\'" . ebnf-mode))
-;(add-to-list 'auto-mode-alist '("\\.ebnf\\'" . ebnf-mode))
+(use-package yacc-mode
+  :defer t
+  :mode ("\\.yy?\\'" . yacc-mode))
+(use-package flex-mode
+  :defer t
+  :mode ("\\.ll?\\'" . flex-mode))
+(use-package ebnf-mode
+  :defer t
+  :mode (("\\.bnf$" . ebnf-mode)
+         ("\\.ebnf$" . ebnf-mode)))
 
-;; Fortran
-;; ======================================
-(let ((findent 4))
-  (setq fortran-do-intent findent)
-  (setq fortran-if-intent findent)
-  (setq fortran-structure-indent findent)
-  (setq fortran-continuation-indent (+ 1 findent)))
+;; f90 -- Fortran 90 and later
+(use-package f90
+  :mode ("\\.f$" . f90-mode)
+  :config
+  (let ((findent 4))
+    (setq fortran-do-intent findent)
+    (setq fortran-if-intent findent)
+    (setq fortran-structure-indent findent)
+    (setq fortran-continuation-indent (+ 1 findent))))
 
-;; Compile
-;; ======================================
-(require 'smarter-compile)
-(global-set-key [f12] 'smarter-compile)
+(use-package smarter-compile
+  :bind ("[f12]" . smarter-compile))
 
 ;; Objective-C
 ;; ======================================
@@ -487,11 +502,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
         ("\\.mm$" (".h"))
         ))
 
-;; CMake
-;; ======================================
-(require 'cmake-mode)
-(add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
-(add-to-list 'auto-mode-alist '("\\.cmake\\''" . cmake-mode))
+(use-package cmake
+  :mode (("CMakeLists\\.txt\\'" . cmake-mode)
+         ("\\.cmake\\'" . cmake-mode)))
 
 ;; XML
 ;; ======================================
@@ -499,10 +512,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   '(add-to-list 'rng-schema-locating-files
 		"~/.schemas/nxml-schemas.xml"))
 
-;; N3-Mode
-;(require 'n3-mode)
-(add-to-list 'auto-mode-alist '("\\.n3\\'" . n3-mode))
-(add-to-list 'auto-mode-alist '("\\.owl\\'" . n3-mode))
+(use-package n3
+  :mode (("\\.n3\\'" . n3-mode)
+         ("\\.owl\\'" . n3-mode)))
 
 ;; nxml
 (defun decorate-region (b e btxt etxt)
@@ -571,27 +583,30 @@ BTXT at the beginning and ETXT at the end"
 (setq mweb-filename-extensions '("htm" "html"))
 (multi-web-global-mode 1)
 
-;; Javascript
-;; ======================================
-(add-to-list 'auto-mode-alist '("\\.js$"   . js2-mode))
-(add-to-list 'auto-mode-alist '("\\.json$" . js2-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx$"  . js2-jsx-mode))
+(use-package js2-mode
+  :ensure t
+  :defer t
+  :after flycheck
+  :mode (("\\.js$" . js2-mode)
+         ("\\.json$" . js2-mode)
+         ("\\.jsx$" . js2-jsx-mode))
+  :config
+  ;; use programs from local node environment if possible
+  (defun jyh/setup-local-node-env ()
+    "use local programs for nodejs projects"
+    (interactive)
+    (let ((local-babel-node (expand-file-name "./node_modules/.bin/babel-node"))
+          (local-eslint     (expand-file-name "./node_modules/.bin/eslint")))
+      (if (file-exists-p local-babel-node)
+          (setq inferior-js-program-command local-babel-node))
+      (if (file-exists-p local-eslint)
+          (setq flycheck-javascript-eslint-executable local-eslint))))
+  (with-eval-after-load 'projectile
+    (add-hook 'projectile-after-switch-project-hook
+              'jyh/setup-local-node-env))
 
-(add-hook 'js2-mode-hook
-          (lambda ()
-            (flycheck-mode t)
-            (when (executable-find "eslint")
-              (flycheck-select-checker 'javascript-eslint))
-            (when (executable-find "flow")
-              (flycheck-add-next-checker 'javascript-flow))
-            (tern-mode)))
-(add-hook 'web-mode-hook 'flycheck-mode)
-
-(eval-after-load 'tern
-  '(progn
-     (setq-local company-backends (cons 'company-tern company-backends))))
-(setq inferior-js-program-command "node")
-(add-hook 'js2-mode-hook
+  (setq inferior-js-program-command "node")
+  (add-hook 'js2-mode-hook
           '(lambda ()
              (local-set-key "\C-x\C-e" 'js-send-last-sexp)
              (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
@@ -599,36 +614,64 @@ BTXT at the beginning and ETXT at the end"
              (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
              (local-set-key "\C-cl" 'js-load-file-and-go)))
 
-(with-eval-after-load 'projectile
-  (add-hook 'projectile-after-switch-project-hook 'jyh/setup-local-node-env))
-(defun jyh/setup-local-node-env ()
-  "use local programs for nodejs projects. use with
-projectile-after-switch-project-hook"
-  (interactive)
-  (let ((local-babel-node (expand-file-name "./node_modules/.bin/babel-node"))
-        (local-eslint (expand-file-name "./node_modules/.bin/eslint")))
-    (if (file-exists-p local-babel-node)
-        (setq inferior-js-program-command local-babel-node))
-    (if (file-exists-p local-eslint)
-        (setq flycheck-javascript-eslint-executable local-eslint))))
+  ;; tern -- javascript static analysis
+  (use-package tern
+    :ensure t
+    :defer t
+    :config
+    (add-hook 'js2-mode #'tern-mode)
+    (use-package company-tern
+      :ensure t
+      :defer t
+      :after (company tern)
+      :config
+      (add-hook 'js2-mode-hook
+                #'(lambda ()
+                    (setq-local company-backends
+                                (cons 'company-tern company-backends))))))
+  ;; skewer -- run browser REPL with buffers
+  (use-package skewer
+    :defer t
+    :config
+    (add-hook 'js2-mode #'skewer-mode))
+  (add-hook 'js2-mode-hook #'flycheck-mode))
 
-;; Haskell
-(add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-(add-hook 'haskell-mode-hook 'haskell-doc-mode)
-(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-(add-hook 'haskell-mode-hook 'flycheck-mode)
-(setq haskell-interactive-popup-errors nil)
-(eval-after-load "haskell-mode"
-  '(progn
-     (define-key haskell-mode-map (kbd "C-x C-d") nil)
-     (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
-     (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-file)
-     (define-key haskell-mode-map (kbd "C-c C-b") 'haskell-interactive-switch)
-     (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
-     (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
-     (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-compile)
-     (define-key haskell-mode-map (kbd "C-c M-.") nil)
-     (define-key haskell-mode-map (kbd "C-c C-d") nil)))
+(use-package haskell
+  :defer t
+  :commands (haskell-indentation-mode
+             haskell-decl-scan
+             haskell-doc-mode
+             interactive-haskell-mode)
+  :init
+  (add-hook 'haskell-mode-hook
+            #'(lambda ()
+                (haskell-indentation-mode)
+                (haskell-doc-mode)
+                (haskell-decl-scan-mode)
+                (interactive-haskell-mode)
+                (flycheck-mode)))
+  (setq haskell-interactive-popup-errors nil)
+  :bind (:map haskell-mode-map
+              ("C-x C-d" . nil)
+              ("C-c C-z" . haskell-interactive-switch)
+              ("C-c C-l" . haskell-process-load-file)
+              ("C-c C-b" . haskell-interactive-switch)
+              ("C-c C-t" . haskell-process-do-type)
+              ("C-c C-i" . haskell-process-do-info)
+              ("C-c C-c" . haskell-compile)
+              ("C-c M-." . nil)
+              ("C-c C-d" . nil)))
+
+(use-package haskell-compile
+  :ensure haskell-mode
+  :defer t
+  :config
+  ;; use Stack for building
+  (setq haskell-compile-cabal-build-command "stack build"))
+
+(use-package lua-mode
+  :ensure t
+  :interpreter "lua")
 
 ;; Python
 ;; ======================================
@@ -689,31 +732,63 @@ projectile-after-switch-project-hook"
 ;; ======================================
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 
-;; R/ESS
-;; ======================================
-(require 'ess-site)
-(setq ess-eval-visibly-p nil)
-(setq ess-ask-for-ess-directory nil)
-(ess-toggle-underscore nil)
+;; R/ESS -- statistics software
+(use-package ess
+  :ensure t
+;  :defer t
+  :commands R
+  :mode (("\\.[rR]\\'" . R-mode)
+         ("\\.[rR]profile\\'" . R-mode)
+         ("\\.[Rr]out\\'" . R-transcript-mode)
+         ("\\.[Bb][Uu][Gg]\\'" . ess-bugs-mode)
+         ("\\.[Bb][Oo][Gg]\\'" . ess-bugs-mode)
+         ("\\.[Bb][Mm][Dd]\\'" . ess-bugs-mode))
+  :config
+  (setq ess-eval-visibly-p nil)
+  (setq ess-ask-for-ess-directory nil)
 
-(require 'poly-R)
-(require 'poly-markdown)
-(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
+  (require 'ess-site)
+  (with-eval-after-load 'ess-site
+    ;; Follow Hadley Wickham's R style guide
+    (setq ess-first-continued-statement-offset 2
+          ess-continued-statement-offset 0
+          ess-expression-offset 2
+          ess-default-style 'DEFAULT)))
 
+(use-package ess-smart-equals
+  :ensure t
+  :defer t
+  :init
+  (hook-into-modes #'ess-smart-equals-mode
+                   'ess-mode-hook
+                   'inferior-ess-mode-hook))
 
-;; Ledger (accounting program)
-(setq load-path
-      (append load-path (list "~/.emacs.d/site-lisp/ledger-mode")))
-(load-file "~/.emacs.d/site-lisp/ledger-mode/ledger-mode.el")
-(require 'ledger)
-(set-face-attribute 'ledger-font-xact-highlight-face nil
-                    :background "midnight blue")
-(set-face-attribute 'ledger-occur-xact-face nil
-                    :background "midnight blue")
+(use-package polymode
+  :defer t
+  :mode ("\\.Rmd$" . Rmd-mode)
+  :init
+  (defun Rmd-mode ()
+    "ESS Markdown mode for Rmd files"
+    (interactive)
+    (require 'poly-R)
+    (require 'poly-markdown)
+    (R-mode)
+    (poly-markdown+r-mode)))
+
+;; ledger -- accounting program
+(use-package ledger
+  :load-path "site-lisp/ledger-mode"
+  :config
+  (set-face-attribute 'ledger-font-xact-highlight-face nil
+                      :background "midnight blue")
+  (set-face-attribute 'ledger-occur-xact-face nil
+                      :background "midnight blue"))
 
 ;; Tags
 ;; ======================================
-(ctags-auto-update-mode 1)
+(use-package ctags-update
+  :config
+  (ctags-auto-update-mode 1))
 
 (cond ((eq system-type 'linux)
        (setq path-to-ctags "/usr/bin/ctags"))
@@ -846,3 +921,7 @@ are: unix, dos, mac"
 ;; Use chrome for urls on linux
 (if (eq system-type 'gnu/linux)
     (setq browse-url-browser-function 'browse-url-xdg-open))
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
