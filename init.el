@@ -102,9 +102,27 @@
 
 ;; which-key -- keybinding display
 (use-package which-key
+  :ensure t
   :diminish which-key-mode
+  :init (which-key-mode)
   :config
-  (which-key-mode))
+  (setq which-key-sort-order #'which-key-prefix-then-key-order
+        which-key-description-replacement-alist
+        '(("Prefix Command" . "prefix")
+          ;; Lambdas
+          ("\\`\\?\\?\\'" . "λ")
+          ;; Prettify hydra entry points
+          ("/body\\'"     . "|=")))
+
+  (which-key-declare-prefixes
+    ;;Prefixes for global prefixes and minor modes
+    "C-c !" "flycheck"
+    "C-c h" "helm"
+    "C-c p" "projectile"
+    "C-c j" "jump"
+    "C-c f" "files"
+    "C-c s" "search"
+    "C-c x" "text"))
 
 (use-package highlight-parentheses
   :diminish highlight-parentheses-mode
