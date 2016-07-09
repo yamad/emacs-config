@@ -44,3 +44,5 @@
   (setq mu4e-view-prefer-html nil)
   (setq mu4e-html2text-command "html2text -nobs")
   (setq mail-user-agent 'mu4e-user-agent))
+
+(provide 'init-mail)

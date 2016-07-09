@@ -136,3 +136,7 @@
   (add-hook 'ConTeXt-mode-hook
             '(lambda ()
                (local-set-key "$" 'start-context-math))))
+
+(provide 'init-tex)
+
+;;; init-tex.el ends here

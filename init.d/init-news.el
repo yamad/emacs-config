@@ -2,6 +2,8 @@
 ;;
 ;; part of emacs config for jyamad. see init.el
 
+;;; Code:
+
 (setq gnus-select-method '(nntp "news.eternal-september.org"))
 (setq gnus-secondary-select-methods '((nntp "news.gmane.org")))
 (setq user-full-name "Jason Yamada-Hanff")
@@ -23,3 +25,7 @@
 (setq gnus-sum-thread-tree-leaf-with-other "+-> ")
 (setq gnus-sum-thread-tree-vertical "|")
 (setq gnus-sum-thread-tree-single-leaf "`-> ")
+
+(provide 'init-news)
+
+;;; init-news.el ends here

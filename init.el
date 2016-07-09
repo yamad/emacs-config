@@ -16,29 +16,30 @@
 ;; don't load outdated byte code
 (setq load-prefer-newer t)
 
-;; load paths
+;; extra load paths
 (eval-and-compile
-  (add-to-list 'load-path "~/.emacs.d/site-lisp")
+  ;; initialization files directory
+  (add-to-list 'load-path (locate-user-emacs-file "init.d"))
+  ;; custom elisp directory
+  (add-to-list 'load-path (locate-user-emacs-file "lisp"))
+  ;; local package directory
+  (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
   (add-to-list 'Info-default-directory-list "~/info"))
 
-(defun load-init-file (file)
-  "load an emacs initialize file"
-  (load (locate-user-emacs-file file)))
+(setq custom-file (locate-user-emacs-file "init.d/init-custom.el"))
 
 (defsubst hook-into-modes (func &rest modes)
-  "help add a function to many mode hooks (from jwiegley)"
+  "Help add a function FUNC to a list of MODES (from jwiegley)."
   (dolist (mode-hook modes) (add-hook mode-hook func)))
 
 ;; ensure required packages
-(load-init-file "init-package")
+(require 'init-package)
 
 ;; put set variables from customize interface in own file
-;; I don't use it, but gets used automatically sometimes
-(setq custom-file (locate-user-emacs-file "init-custom.el"))
 (load custom-file)
 
 ;; store all backups (*~) in one place
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+(setq backup-directory-alist '(("." . (locate-user-emacs-file "backups"))))
 
 ;; pick up environment from shell
 (use-package exec-path-from-shell
@@ -157,7 +158,7 @@
   ; don't create new buffer for every directory)
   (diredp-toggle-find-file-reuse-dir 1))
 
-;; anzu -- multiple search/replace
+;; anzu -- show search position
 (use-package anzu
   :ensure t
   :config (global-anzu-mode)
@@ -171,8 +172,7 @@
 
 ;; Unfill functions (opposes fill-paragraph and fill-region)
 (defun unfill-paragraph ()
-  "Takes a multi-line paragraph and makes it into a single line
-of text"
+  "Turn a multi-line paragraph into a single line of text."
   (interactive)
   (let ((fill-column (point-max)))
     (fill-paragraph nil)))
@@ -309,10 +309,10 @@ point reaches the beginning or end of the buffer, stop there."
 
 (setq tramp-default-method "ssh")
 
-(load-init-file "init-news")
-(load-init-file "init-mail")
-(load-init-file "init-tex")
-(load-init-file "init-org")
+(require 'init-news)
+(require 'init-mail)
+(require 'init-tex)
+(require 'init-org)
 
 ;; magit (git)
 (use-package magit
@@ -504,7 +504,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     (setq fortran-continuation-indent (+ 1 findent))))
 
 (use-package smarter-compile
-  :bind ("[f12]" . smarter-compile))
+  :bind ("<f12>" . smarter-compile))
 
 ;; Objective-C
 ;; ======================================
@@ -826,8 +826,7 @@ BTXT at the beginning and ETXT at the end"
 (define-key global-map "\C-ccr" 'constants-replace)
 (setq constants-unit-system 'SI)
 
-(load-init-file "init-unicode")
-
+(require 'init-unicode)
 ;; Other
 ;; ======================================
 
@@ -912,7 +911,7 @@ are: unix, dos, mac"
 
 
 ;; configure display
-(load-init-file "init-display")
+(require 'init-display)
 
 ;; Windows(OS)-specific Configuration
 ;; ======================================
@@ -939,3 +938,5 @@ are: unix, dos, mac"
 ;; Local Variables:
 ;; coding: utf-8
 ;; End:
+
+;;; init.el ends here

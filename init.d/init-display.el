@@ -2,10 +2,17 @@
 ;;
 ;; part of emacs config for jyamad. see init.el
 
+;;; Commentary:
+;; Configuration for appearance (themes, colors, etc) in GUI and
+;; terminal frames
+
+;;; Code:
+
 ;; use spacemacs display init features
 ;; provides (remaned) `jyh/do-after-display-system-init'
 ;; to run code only when a UI starts
-(load-init-file "core-display-init")
+(add-to-list 'load-path (locate-user-emacs-file "lisp"))
+(require 'core-display-init)
 
 (setq inhibit-startup-screen t)
 
@@ -13,9 +20,7 @@
  ;; remove unnecessary UI elements
  (scroll-bar-mode -1)
  (tool-bar-mode   -1)
- ;; hide menu bar in terminal mode
- (unless (display-graphic-p)
-   (menu-bar-mode -1))
+ (menu-bar-mode   -1)
 
  ;; reduce gutters/margins/"fringes" to 'half-width
  (set-fringe-mode 4)
@@ -78,5 +83,8 @@
          (custom-set-faces
           `(mode-line ((t (:background ,zenburn-bg-2 :box nil))))))))
    (add-hook 'window-configuration-change-hook
-             #'jyh/change-modeline-by-window-count))
- )
+             #'jyh/change-modeline-by-window-count)))
+
+(provide 'init-display)
+
+;;; init-display.el ends here
