@@ -429,7 +429,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     ("C-<right>" sp-backward-slurp-sexp))
 
   (smartparens-global-mode)
-  (show-smartparens-global-mode)
   :config
   (require 'smartparens-config)
   (setq sp-autoskip-closing-pair 'always
