@@ -54,9 +54,15 @@
         (invert-face 'mode-line)
         (run-with-timer 0.1 nil 'invert-face 'mode-line)))
 (setq kill-whole-line t)
-(desktop-save-mode 1)
-(setq desktop-restore-eager 3)
 (put 'narrow-to-region 'disabled nil)
+
+;; answer y/n instead of yes/no
+(fset 'yes-or-no-p #'y-or-n-p)
+
+(use-package desktop
+  :config
+  (desktop-save-mode 1)
+  (setq desktop-restore-eager 3))
 
 (use-package rst
   :defer t
