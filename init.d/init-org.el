@@ -2,8 +2,14 @@
 ;;
 ;; part of emacs config for jyamad. see init.el
 
-(if (eq system-type 'darwin)
-    (setq load-path (cons "~/src/org-mode/lisp" load-path)))
+;;; Code:
+
+(use-package org
+  :ensure t
+  )
+
+(when *is-mac-os*
+  (setq load-path (cons "~/src/org-mode/lisp" load-path)))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)

@@ -38,6 +38,15 @@
   "Help add a function FUNC to a list of MODES (from jwiegley)."
   (dolist (mode-hook modes) (add-hook mode-hook func)))
 
+(defconst *is-mac-os* (eq system-type 'darwin))
+(defconst *is-windows-os* (eq system-type 'windows-nt))
+(defconst *is-linux-os* (eq system-type 'gnu/linux))
+
+(defconst *is-mac-display* (eq window-system 'ns))
+(defconst *is-windows-display* (eq window-system 'w32))
+(defconst *is-X-display* (eq window-system 'x))
+(defconst *is-terminal-display* (eq window-system nil))
+
 ;; ensure required packages
 (require 'init-package)
 
@@ -182,6 +191,11 @@
    ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
   :diminish anzu-mode)
 
+(use-package visual-regexp
+  :ensure t
+  :bind (("C-c s r" . vr/replace)
+         ("C-c s R" . vr/query-replace)))
+
 ;; Unfill functions (opposes fill-paragraph and fill-region)
 (defun unfill-paragraph ()
   "Turn a multi-line paragraph into a single line of text."
@@ -196,11 +210,6 @@
   (let ((fill-column (point-max)))
     (fill-region beg end)))
 (define-key global-map "\M-Q" 'unfill-paragraph)
-(use-package visual-regexp
-  :ensure t
-  :bind (("C-c s r" . vr/replace)
-         ("C-c s R" . vr/query-replace)))
-
 (define-key global-map "\C-\M-Q" 'unfill-region)
 
 ;; Set tab behavior
@@ -336,7 +345,7 @@ point reaches the beginning or end of the buffer, stop there."
   :ensure t
   :bind (("C-x C-g" . magit-status))
   :config
-  (when (eq system-type 'windows-nt)
+  (when *is-windows-os*
     (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git.exe"))
   (setq magit-last-seen-setup-instructions "1.4.0"))
 
@@ -613,6 +622,12 @@ BTXT at the beginning and ETXT at the end"
 (setq mweb-filename-extensions '("htm" "html"))
 (multi-web-global-mode 1)
 
+(use-package restclient
+  :ensure t
+  :config
+  (use-package restclient-helm :ensure t)
+  (use-package company-restclient :ensure t))
+
 (use-package js2-mode
   :ensure t
   :defer t
@@ -627,12 +642,6 @@ BTXT at the beginning and ETXT at the end"
     (interactive)
     (let ((local-babel-node (expand-file-name "./node_modules/.bin/babel-node"))
           (local-eslint     (expand-file-name "./node_modules/.bin/eslint")))
-(use-package restclient
-  :ensure t
-  :config
-  (use-package restclient-helm :ensure t)
-  (use-package company-restclient :ensure t))
-
       (if (file-exists-p local-babel-node)
           (setq inferior-js-program-command local-babel-node))
       (if (file-exists-p local-eslint)
@@ -824,14 +833,10 @@ BTXT at the beginning and ETXT at the end"
 ;; ======================================
 (use-package ctags-update
   :config
-  (ctags-auto-update-mode 1))
+  (ctags-auto-update-mode 1)
+  (when *is-windows-os
+    (setq path-to-ctags "C:\\cygwin\\bin\\ctags.exe")))
 
-(cond ((eq system-type 'linux)
-       (setq path-to-ctags "/usr/bin/ctags"))
-      ((eq system-type 'darwin)
-       (setq path-to-ctags "/opt/local/bin/ctags"))
-      ((eq system-type 'windows-nt)
-       (setq path-to-ctags "C:\\cygwin\\bin\\ctags.exe")))
 (defun create-tags(dir-name)
   "Create tags file."
   (interactive "DDirectory: ")
@@ -849,6 +854,7 @@ BTXT at the beginning and ETXT at the end"
 (setq constants-unit-system 'SI)
 
 (require 'init-unicode)
+
 ;; Other
 ;; ======================================
 
@@ -938,14 +944,13 @@ are: unix, dos, mac"
 ;; Windows(OS)-specific Configuration
 ;; ======================================
 
-(if (eq system-type 'windows-nt)
+(when *is-windows-os*
   (progn
     ;; Printer
     (setenv "PRINTER" "PDFCreator")
-    (cond ((eq system-type 'windows-nt)
-	   (setq ps-printer-name "PDFCreator")
-	   (setq ps-printer-name-option "-d")
-	   (setq ps-lpr-command "C:\\cygwin\\bin\\lpr.exe")))
+    (setq ps-printer-name "PDFCreator")
+    (setq ps-printer-name-option "-d")
+    (setq ps-lpr-command "C:\\cygwin\\bin\\lpr.exe")
 
     ;; Add cygwin to path
     (setenv "PATH" (concat (getenv "PATH") ";C:\\cygwin\\bin"))
@@ -954,8 +959,8 @@ are: unix, dos, mac"
     (set-frame-font "Consolas-11")))
 
 ;; Use chrome for urls on linux
-(if (eq system-type 'gnu/linux)
-    (setq browse-url-browser-function 'browse-url-xdg-open))
+(when *is-linux-os*
+  (setq browse-url-browser-function 'browse-url-xdg-open))
 
 ;; Local Variables:
 ;; coding: utf-8
