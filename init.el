@@ -190,6 +190,11 @@
   (let ((fill-column (point-max)))
     (fill-region beg end)))
 (define-key global-map "\M-Q" 'unfill-paragraph)
+(use-package visual-regexp
+  :ensure t
+  :bind (("C-c s r" . vr/replace)
+         ("C-c s R" . vr/query-replace)))
+
 (define-key global-map "\C-\M-Q" 'unfill-region)
 
 ;; Set tab behavior
