@@ -3,6 +3,8 @@
 ;; part of emacs config for jyamad. see init.el
 
 ;; general options for all TeX-based modes
+(use-package auctex :ensure t :defer t)
+
 (use-package tex-site
   :defer t
   :ensure auctex)

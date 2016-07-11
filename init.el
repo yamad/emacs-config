@@ -108,18 +108,21 @@
 
 ;; project management
 (use-package projectile
+  :ensure t
   :config
   (projectile-global-mode)
   (setq projectile-mode-line
         '(:eval (format " P/%s" (projectile-project-name))))
   (setq projectile-enable-caching t) ; otherwise too slow
   (use-package helm-projectile       ; use helm as interface
+    :ensure t
     :config
     (setq projectile-completion-system #'helm)
     (helm-projectile-on)
     (setq projectile-switch-project-action #'helm-projectile)))
 
 (use-package helm-descbinds
+  :ensure t
   :config (helm-descbinds-mode))
 
 ;; which-key -- keybinding display
@@ -147,6 +150,7 @@
     "C-c x" "text"))
 
 (use-package highlight-parentheses
+  :ensure t
   :diminish highlight-parentheses-mode
   :config
   (global-highlight-parentheses-mode))
@@ -175,6 +179,7 @@
 
 ;; directory management
 (use-package dired+
+  :ensure t
   :config
   ; don't create new buffer for every directory)
   (diredp-toggle-find-file-reuse-dir 1))
@@ -285,18 +290,25 @@ point reaches the beginning or end of the buffer, stop there."
   :config
   (require 'helm-config)
   (helm-mode)
+  (use-package helm-swoop :ensure t)    ; helm-based searching
   (global-unset-key (kbd "C-x c")))
 
 ;; company -- autocomplete
 (use-package company
   :ensure t
   :diminish company-mode
-  :bind (:map company-mode-map
+  :config
+  (use-package helm-company
+    :ensure t
+    :bind (:map company-mode-map
               ("C-:" . helm-company)
               :map company-active-map
-              ("C-:" . helm-company))
-  :config
+              ("C-:" . helm-company)))
   (global-company-mode))
+
+;; ag -- better grep searching
+(use-package ag :ensure t)
+(use-package helm-ag :ensure t)
 
 ;; hippie-expand -- dabbrev replacement for expansion and completion
 (use-package hippie-exp
@@ -384,6 +396,7 @@ point reaches the beginning or end of the buffer, stop there."
   (setq ace-jump-helm-line-autoshow-mode-use-linum t))
 
 (use-package ace-window
+  :ensure t
   :config
   (global-set-key (kbd "C-. n") 'ace-window)
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
@@ -529,6 +542,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     (setq fortran-continuation-indent (+ 1 findent))))
 
 (use-package smarter-compile
+  :ensure t
   :bind ("<f12>" . smarter-compile))
 
 ;; Objective-C
@@ -541,9 +555,12 @@ _k_: kill        _s_: split                   _{_: wrap with { }
         ("\\.mm$" (".h"))
         ))
 
-(use-package cmake
+(use-package cmake-mode
+  :ensure t
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
+
+(use-package geiser :ensure t)
 
 ;; XML
 ;; ======================================
@@ -551,7 +568,8 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   '(add-to-list 'rng-schema-locating-files
 		"~/.schemas/nxml-schemas.xml"))
 
-(use-package n3
+(use-package n3-mode
+  :ensure t
   :mode (("\\.n3\\'" . n3-mode)
          ("\\.owl\\'" . n3-mode)))
 
@@ -681,7 +699,7 @@ BTXT at the beginning and ETXT at the end"
     (add-hook 'js2-mode #'skewer-mode))
   (add-hook 'js2-mode-hook #'flycheck-mode))
 
-(use-package haskell
+(use-package haskell-mode
   :defer t
   :commands (haskell-indentation-mode
              haskell-decl-scan
@@ -798,7 +816,8 @@ BTXT at the beginning and ETXT at the end"
     (setq ess-first-continued-statement-offset 2
           ess-continued-statement-offset 0
           ess-expression-offset 2
-          ess-default-style 'DEFAULT)))
+          ess-default-style 'DEFAULT))
+  (use-package ess-R-data-view :ensure t :defer t))
 
 (use-package ess-smart-equals
   :ensure t
@@ -809,6 +828,7 @@ BTXT at the beginning and ETXT at the end"
                    'inferior-ess-mode-hook))
 
 (use-package polymode
+  :ensure t
   :defer t
   :mode ("\\.Rmd$" . Rmd-mode)
   :init
@@ -832,9 +852,10 @@ BTXT at the beginning and ETXT at the end"
 ;; Tags
 ;; ======================================
 (use-package ctags-update
+  :ensure t
   :config
   (ctags-auto-update-mode 1)
-  (when *is-windows-os
+  (when *is-windows-os*
     (setq path-to-ctags "C:\\cygwin\\bin\\ctags.exe")))
 
 (defun create-tags(dir-name)
@@ -936,7 +957,6 @@ are: unix, dos, mac"
           (setq step (random (/ wc 5)))
           (forward-word step)
           (insert " " str))))))
-
 
 ;; configure display
 (require 'init-display)

@@ -43,6 +43,7 @@
  (line-number-mode 1)                    ; show line-number in mode line
  (column-number-mode 1)                  ; show col-number  in mode line
  (use-package smart-mode-line
+   :ensure t
    :config
    (progn
      (setq sml/theme nil)                 ; zenburn theme provides theming
