@@ -46,3 +46,5 @@
   (setq mail-user-agent 'mu4e-user-agent))
 
 (provide 'init-mail)
+
+;;; init-mail.el ends here
