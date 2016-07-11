@@ -806,8 +806,8 @@ BTXT at the beginning and ETXT at the end"
     (poly-markdown+r-mode)))
 
 ;; ledger -- accounting program
-(use-package ledger
-  :load-path "site-lisp/ledger-mode"
+(use-package ledger-mode
+  :ensure t
   :config
   (set-face-attribute 'ledger-font-xact-highlight-face nil
                       :background "midnight blue")
