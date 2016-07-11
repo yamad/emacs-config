@@ -621,6 +621,12 @@ BTXT at the beginning and ETXT at the end"
     (interactive)
     (let ((local-babel-node (expand-file-name "./node_modules/.bin/babel-node"))
           (local-eslint     (expand-file-name "./node_modules/.bin/eslint")))
+(use-package restclient
+  :ensure t
+  :config
+  (use-package restclient-helm :ensure t)
+  (use-package company-restclient :ensure t))
+
       (if (file-exists-p local-babel-node)
           (setq inferior-js-program-command local-babel-node))
       (if (file-exists-p local-eslint)
