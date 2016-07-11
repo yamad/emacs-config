@@ -9,9 +9,15 @@
 ;;  * https://github.com/purcell/emacs.d
 
 ;;; Commentary:
-;; Configuration for Emacs for jyamad
+;; Emacs Configuration for jyamad
 
 ;;; Code:
+
+;; document minimum version
+(let ((minver "24.5.1"))
+  (when (version< emacs-version minver)
+    (warn "This version (%s) of Emacs is older than the oldest tested version (%s) with this configuration. Stuff might be broken."
+          emacs-version minver)))
 
 ;; don't load outdated byte code
 (setq load-prefer-newer t)
