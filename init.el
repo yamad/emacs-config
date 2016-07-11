@@ -39,7 +39,7 @@
 (load custom-file)
 
 ;; store all backups (*~) in one place
-(setq backup-directory-alist '(("." . (locate-user-emacs-file "backups"))))
+(setq backup-directory-alist `(("." . ,(locate-user-emacs-file "backups"))))
 
 ;; pick up environment from shell
 (use-package exec-path-from-shell
