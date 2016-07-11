@@ -351,6 +351,7 @@ point reaches the beginning or end of the buffer, stop there."
 (require 'init-mail)
 (require 'init-tex)
 (require 'init-org)
+(require 'init-irc)
 
 ;; magit (git)
 (use-package magit
