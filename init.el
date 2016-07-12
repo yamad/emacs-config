@@ -237,6 +237,7 @@
 
 ;; Unique buffer names
 (use-package uniquify
+  :ensure nil
   :config
   (setq uniquify-buffer-name-style 'post-forward-angle-brackets
         uniquify-ignore-buffers-re "^\\*"))
@@ -521,13 +522,12 @@ _k_: kill        _s_: split                   _{_: wrap with { }
           (lambda()
             (local-set-key (kbd "C-c o") 'ff-find-other-file)))
 
-(use-package yacc-mode
+(use-package bison-mode
   :defer t
-  :mode ("\\.yy?\\'" . yacc-mode))
-(use-package flex-mode
-  :defer t
-  :mode ("\\.ll?\\'" . flex-mode))
+  :mode (("\\.yy?\\'" . bison-mode)
+         ("\\.ll?\\'" . bison-mode)))
 (use-package ebnf-mode
+  :ensure nil
   :defer t
   :mode (("\\.bnf$" . ebnf-mode)
          ("\\.ebnf$" . ebnf-mode)))

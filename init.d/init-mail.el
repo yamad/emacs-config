@@ -14,6 +14,7 @@
 
 ;; use mu/mu4e as a mail client
 (use-package mu4e
+  :ensure nil
   :defer t
   :config
   (setq mu4e-maildir "~/Maildir"
