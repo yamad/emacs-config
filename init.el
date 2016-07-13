@@ -142,10 +142,12 @@
   (which-key-declare-prefixes
     ;;Prefixes for global prefixes and minor modes
     "C-c !" "flycheck"
-    "C-c h" "helm"
-    "C-c p" "projectile"
-    "C-c j" "jump"
     "C-c f" "files"
+    "C-c h" "helm"
+    "C-c j" "jump"
+    "C-c m" "major mode"
+    "C-c o" "org"
+    "C-c p" "projectile"
     "C-c s" "search"
     "C-c x" "text"))
 
@@ -302,9 +304,9 @@ point reaches the beginning or end of the buffer, stop there."
   (use-package helm-company
     :ensure t
     :bind (:map company-mode-map
-              ("C-:" . helm-company)
-              :map company-active-map
-              ("C-:" . helm-company)))
+                ("C-:" . helm-company)
+                :map company-active-map
+                ("C-:" . helm-company)))
   (global-company-mode))
 
 ;; ag -- better grep searching

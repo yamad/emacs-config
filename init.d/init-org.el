@@ -6,15 +6,18 @@
 
 (use-package org
   :ensure t
-  :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c l" . org-store-link)
-         ("C-c a" . org-agenda)
-         ;; use links outside org-mode
-         ("C-c L" . org-insert-link-global)
-         ("C-c o" . org-open-at-point-global))
+  :init
+  ;; use-package's :bind isn't working with :prefix(-map), so
+  ;; workaround like this
+  (bind-keys :prefix "C-c o"
+             :prefix-map jyh-org-command-map
+             ("l" . org-store-link)
+             ("a" . org-agenda)
+             ("c" . org-capture)
+             ;; use links outside org-mode
+             ("L" . org-insert-link-global)
+             ("O" . org-open-at-point-global))
   :config
-  (when *is-mac-os*
-    (setq load-path (cons "~/src/org-mode/lisp" load-path)))
   (setq org-log-done t                  ; log timepoints
         org-use-fast-todo-selection t
         org-agenda-include-diary t
@@ -44,9 +47,8 @@
           ("google"  . "http://www.google.com/search?q=%s")))
 
   ;; org-capture is the new org+remember in v8.0
-  (setq org-directory "~/notebook/org/")
+  (setq org-directory "~/Dropbox/org/")
   (setq org-default-notes-file (concat org-directory "notes.org"))
-  (bind-key "C-c c" #'org-capture)
 
   ;;
   ;; TODO: modernize the rest of this for org 8
