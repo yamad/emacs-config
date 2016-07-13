@@ -64,7 +64,7 @@
 
 ;; General Options
 (setq visible-bell nil)
-(setq ring-bell-funtion
+(setq ring-bell-function
       (lambda ()
         (invert-face 'mode-line)
         (run-with-timer 0.1 nil 'invert-face 'mode-line)))
@@ -176,14 +176,14 @@
 (global-set-key (kbd "C-x C-l") 'goto-line)
 (global-set-key (kbd "C-x a r") 'align-regexp)
 
-; bind frame/window switching to shift-up/down/left/right
+;; bind frame/window switching to shift-up/down/left/right
 (windmove-default-keybindings)
 
 ;; directory management
 (use-package dired+
   :ensure t
   :config
-  ; don't create new buffer for every directory)
+  ;; don't create new buffer for every directory
   (diredp-toggle-find-file-reuse-dir 1))
 
 ;; anzu -- show search position
@@ -343,9 +343,9 @@ point reaches the beginning or end of the buffer, stop there."
     (unless (file-exists-p (jyh/dash-path docset))
       (helm-dash-install-docset docset)))
   (defvar jyh/required-dash-docsets
-  '("C"
-    "CMake"
-    "D3"))
+    '("C"
+      "CMake"
+      "D3"))
   (setq helm-dash-browser-func 'eww))
 
 (setq tramp-default-method "ssh")
@@ -508,13 +508,13 @@ _k_: kill        _s_: split                   _{_: wrap with { }
           (lambda ()
             (let ((filename (buffer-file-name)))
               ;; Enable kernel mode for the appropriate files
-;              (when (and filename
-;                         (string-match (expand-file-name "~/src/linux-trees")
+                                        ;              (when (and filename
+                                        ;                         (string-match (expand-file-name "~/src/linux-trees")
                                         ;                                       filename))
               )
-                (setq indent-tabs-mode t)
-                (setq show-trailing-whitespace t)
-                (c-set-style "linux-tabs-only")))
+            (setq indent-tabs-mode t)
+            (setq show-trailing-whitespace t)
+            (c-set-style "linux-tabs-only")))
 
 (defun my-make-CR-do-indent ()
   (define-key c-mode-base-map "\C-m" 'c-context-line-break))
@@ -569,7 +569,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 ;; ======================================
 (eval-after-load 'rng-loc
   '(add-to-list 'rng-schema-locating-files
-		"~/.schemas/nxml-schemas.xml"))
+                "~/.schemas/nxml-schemas.xml"))
 
 (use-package n3-mode
   :ensure t
@@ -613,8 +613,8 @@ BTXT at the beginning and ETXT at the end"
     (region-end)
     (my-rng-complete-tag)))
   (decorate-region b e
-   (format "<%s>" tag)
-   (format "</%s>" tag)))
+                   (format "<%s>" tag)
+                   (format "</%s>" tag)))
 
 (defun nxml-wrap-thing (thing tag)
   (interactive
@@ -638,8 +638,8 @@ BTXT at the beginning and ETXT at the end"
 (require 'multi-web-mode)
 (setq mweb-default-major-mode 'html-mode)
 (setq mweb-tags
-  '((js2-mode "<script[^>]*>" "</script>")
-    (css-mode "<style[^>]*>" "</style>")))
+      '((js2-mode "<script[^>]*>" "</script>")
+        (css-mode "<style[^>]*>" "</style>")))
 (setq mweb-filename-extensions '("htm" "html"))
 (multi-web-global-mode 1)
 
@@ -673,12 +673,12 @@ BTXT at the beginning and ETXT at the end"
 
   (setq inferior-js-program-command "node")
   (add-hook 'js2-mode-hook
-          '(lambda ()
-             (local-set-key "\C-x\C-e" 'js-send-last-sexp)
-             (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
-             (local-set-key "\C-cb" 'js-send-buffer)
-             (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
-             (local-set-key "\C-cl" 'js-load-file-and-go)))
+            '(lambda ()
+               (local-set-key "\C-x\C-e" 'js-send-last-sexp)
+               (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
+               (local-set-key "\C-cb" 'js-send-buffer)
+               (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
+               (local-set-key "\C-cl" 'js-load-file-and-go)))
 
   ;; tern -- javascript static analysis
   (use-package tern
@@ -696,7 +696,7 @@ BTXT at the beginning and ETXT at the end"
                     (setq-local company-backends
                                 (cons 'company-tern company-backends))))))
   ;; skewer -- run browser REPL with buffers
-  (use-package skewer
+  (use-package skewer-mode
     :defer t
     :config
     (add-hook 'js2-mode #'skewer-mode))
@@ -801,7 +801,7 @@ BTXT at the beginning and ETXT at the end"
 ;; R/ESS -- statistics software
 (use-package ess
   :ensure t
-;  :defer t
+                                        ;  :defer t
   :commands R
   :mode (("\\.[rR]\\'" . R-mode)
          ("\\.[rR]profile\\'" . R-mode)
@@ -859,16 +859,16 @@ BTXT at the beginning and ETXT at the end"
   :config
   (ctags-auto-update-mode 1)
   (when *is-windows-os*
-    (setq path-to-ctags "C:\\cygwin\\bin\\ctags.exe")))
+    (setq path-to-ctags "C:\\cygwin\\bin\\ctags.exe"))
 
-(defun create-tags(dir-name)
-  "Create tags file."
-  (interactive "DDirectory: ")
-  (shell-command
-   (format "%s -f %s/TAGS -e -R %s"
-           path-to-ctags
-           dir-name
-           (directory-file-name dir-name))))
+  (defun create-tags(dir-name)
+    "Create tags file."
+    (interactive "DDirectory: ")
+    (shell-command
+     (format "%s -f %s/TAGS -e -R %s"
+             path-to-ctags
+             dir-name
+             (directory-file-name dir-name)))))
 
 ;; Constants
 (require 'constants)
