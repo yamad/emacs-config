@@ -680,28 +680,32 @@ BTXT at the beginning and ETXT at the end"
                (local-set-key "\C-cb" 'js-send-buffer)
                (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
                (local-set-key "\C-cl" 'js-load-file-and-go)))
-
-  ;; tern -- javascript static analysis
-  (use-package tern
-    :ensure t
-    :defer t
-    :config
-    (add-hook 'js2-mode #'tern-mode)
-    (use-package company-tern
-      :ensure t
-      :defer t
-      :after (company tern)
-      :config
-      (add-hook 'js2-mode-hook
-                #'(lambda ()
-                    (setq-local company-backends
-                                (cons 'company-tern company-backends))))))
-  ;; skewer -- run browser REPL with buffers
-  (use-package skewer-mode
-    :defer t
-    :config
-    (add-hook 'js2-mode #'skewer-mode))
   (add-hook 'js2-mode-hook #'flycheck-mode))
+
+;; tern -- javascript static analysis
+(use-package tern
+  :ensure t
+  :defer t
+  :after js2-mode
+  :config
+  (add-hook 'js2-mode #'tern-mode))
+
+(use-package company-tern
+  :ensure t
+  :defer t
+  :after (company tern)
+  :config
+  (add-hook 'js2-mode-hook
+            #'(lambda ()
+                (setq-local company-backends
+                            (cons 'company-tern company-backends))))))
+
+;; skewer -- run browser REPL with buffers
+(use-package skewer-mode
+  :defer t
+  :after js2-mode
+  :config
+  (add-hook 'js2-mode #'skewer-mode))
 
 (use-package haskell-mode
   :defer t
