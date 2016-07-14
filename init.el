@@ -982,22 +982,7 @@ are: unix, dos, mac"
 ;; configure display
 (require 'init-display)
 
-;; Windows(OS)-specific Configuration
-;; ======================================
-
-(when *is-windows-os*
-  (progn
-    ;; Printer
-    (setenv "PRINTER" "PDFCreator")
-    (setq ps-printer-name "PDFCreator")
-    (setq ps-printer-name-option "-d")
-    (setq ps-lpr-command "C:\\cygwin\\bin\\lpr.exe")
-
-    ;; Add cygwin to path
-    (setenv "PATH" (concat (getenv "PATH") ";C:\\cygwin\\bin"))
-
-    ;; Add font
-    (set-frame-font "Consolas-11")))
+(require 'init-windows-os)
 
 ;; Use chrome for urls on linux
 (when *is-linux-os*
