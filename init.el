@@ -149,7 +149,8 @@
     "C-c o" "org"
     "C-c p" "projectile"
     "C-c s" "search"
-    "C-c x" "text"))
+    "C-c x" "text"
+    "C-c y" "spotify"))
 
 (use-package highlight-parentheses
   :ensure t
@@ -738,6 +739,13 @@ BTXT at the beginning and ETXT at the end"
 (use-package lua-mode
   :ensure t
   :interpreter "lua")
+
+(use-package spotify
+  :ensure t
+  :bind (("C-c y y" . spotify-playpause)
+         ("C-c y p" . spotify-previous)
+         ("C-c y n" . spotify-next)
+         ("C-c y c" . spotify-current)))
 
 ;; Python
 ;; ======================================
