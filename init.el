@@ -584,59 +584,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :mode (("\\.n3\\'" . n3-mode)
          ("\\.owl\\'" . n3-mode)))
 
-;; nxml
-(defun decorate-region (b e btxt etxt)
-  "Wrap a region bounded by positions B and E with the string
-BTXT at the beginning and ETXT at the end"
-  (interactive "r\nMBeginning text: \nMEnding text: ")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region b e)
-      (goto-char (point-min))
-      (insert btxt)
-      (goto-char (point-max))
-      (insert etxt))))
-
-(defun decorate-thing (thing btxt etxt)
-  "Wrap current thing with BTXT and ETXT"
-  (interactive "SThing: \nMBeginning text: \nMEnding text: ")
-  (let ((bounds (bounds-of-thing-at-point thing)))
-    (decorate-region
-     (car bounds)
-     (cdr bounds)
-     btxt etxt)))
-
 (require 'rng-nxml)
-
-(defun my-rng-complete-tag ()
-  (completing-read "Tag: "
-                   'rng-complete-qname-function
-                   nil nil ""
-                   'rng-tag-history))
-
-(defun nxml-wrap-region (b e tag)
-  (interactive
-   (list
-    (region-beginning)
-    (region-end)
-    (my-rng-complete-tag)))
-  (decorate-region b e
-                   (format "<%s>" tag)
-                   (format "</%s>" tag)))
-
-(defun nxml-wrap-thing (thing tag)
-  (interactive
-   (list
-    (intern (read-string "Thing: " nil))
-    (my-rng-complete-tag)))
-  (let ((bounds (bounds-of-thing-at-point thing)))
-    (nxml-wrap-region (car bounds) (cdr bounds) tag)))
-
-(defun nxml-wrap-word (tag)
-  (interactive
-   (list
-    (my-rng-complete-tag)))
-  (nxml-wrap-thing 'word tag))
 
 ;; HTML/CSS
 ;; ======================================
