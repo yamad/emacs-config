@@ -172,16 +172,16 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; Alternate bindings for M-x
-(global-set-key "\C-x\C-m" 'execute-extended-command)
-(global-set-key "\C-c\C-m" 'execute-extended-command)
+(bind-keys ("C-x C-m" . execute-extended-command)
+           ("C-c C-m" . execute-extended-command))
 
 ;; Bindings for replace-regexp
-(global-set-key (kbd "C-x g r") 'replace-regexp)
-(global-set-key (kbd "C-x g q") 'query-replace-regexp)
+(bind-keys ("C-x g r" . replace-regexp)
+           ("C-x g q" . query-replace-regexp))
 
 ;; other useful keybindings
-(global-set-key (kbd "C-x C-l") 'goto-line)
-(global-set-key (kbd "C-x a r") 'align-regexp)
+(bind-key "C-x C-l" 'goto-line)
+(bind-key "C-x a r" 'align-regexp)
 
 ;; bind frame/window switching to shift-up/down/left/right
 (windmove-default-keybindings)
@@ -308,13 +308,15 @@ point reaches the beginning or end of the buffer, stop there."
   :ensure t
   :diminish company-mode
   :config
-  (use-package helm-company
-    :ensure t
-    :bind (:map company-mode-map
-                ("C-:" . helm-company)
-                :map company-active-map
-                ("C-:" . helm-company)))
   (global-company-mode))
+
+(use-package helm-company
+  :ensure t
+  :after (helm company)
+  :bind (:map company-mode-map
+         ("C-:" . helm-company)
+         :map company-active-map
+         ("C-:" . helm-company)))
 
 ;; ag -- better grep searching
 (use-package ag :ensure t)
@@ -325,17 +327,16 @@ point reaches the beginning or end of the buffer, stop there."
   :bind (([remap dabbrev-expand] . hippie-expand))
   :defer t
   :config
-  (progn
-    (setq hippie-expand-try-functions-list
-          '(try-expand-dabbrev
-            try-expand-dabbrev-all-buffers
-            try-expand-dabbrev-from-kill
-            try-complete-file-name-partially
-            try-complete-file-name
-            try-expand-all-abbrevs
-            try-expand-list
-            try-complete-lisp-symbol-partially
-            try-complete-lisp-symbol))))
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          try-complete-file-name-partially
+          try-complete-file-name
+          try-expand-all-abbrevs
+          try-expand-list
+          try-complete-lisp-symbol-partially
+          try-complete-lisp-symbol)))
 
 ;; dash documentation browser
 (use-package helm-dash
@@ -515,9 +516,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
           (lambda ()
             (let ((filename (buffer-file-name)))
               ;; Enable kernel mode for the appropriate files
-                                        ;              (when (and filename
-                                        ;                         (string-match (expand-file-name "~/src/linux-trees")
-                                        ;                                       filename))
+              ;;              (when (and filename
+              ;;                         (string-match (expand-file-name "~/src/linux-trees")
+              ;;                                       filename))
               )
             (setq indent-tabs-mode t)
             (setq show-trailing-whitespace t)
@@ -663,6 +664,12 @@ BTXT at the beginning and ETXT at the end"
   :mode (("\\.js$" . js2-mode)
          ("\\.json$" . js2-mode)
          ("\\.jsx$" . js2-jsx-mode))
+  :bind (:map js2-mode-map
+         ("C-x C-e" . js-send-last-sexp)
+         ("C-\ M-x" . js-send-last-sexp-and-go)
+         ("C-c b" . js-send-buffer)
+         ("C-c C-b" . js-send-buffer-and-go)
+         ("C-c l" . js-load-file-and-go))
   :config
   ;; use programs from local node environment if possible
   (defun jyh/setup-local-node-env ()
@@ -679,13 +686,6 @@ BTXT at the beginning and ETXT at the end"
               'jyh/setup-local-node-env))
 
   (setq inferior-js-program-command "node")
-  (add-hook 'js2-mode-hook
-            '(lambda ()
-               (local-set-key "\C-x\C-e" 'js-send-last-sexp)
-               (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
-               (local-set-key "\C-cb" 'js-send-buffer)
-               (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
-               (local-set-key "\C-cl" 'js-load-file-and-go)))
   (add-hook 'js2-mode-hook #'flycheck-mode))
 
 ;; tern -- javascript static analysis
@@ -704,7 +704,7 @@ BTXT at the beginning and ETXT at the end"
   (add-hook 'js2-mode-hook
             #'(lambda ()
                 (setq-local company-backends
-                            (cons 'company-tern company-backends))))))
+                            (cons 'company-tern company-backends)))))
 
 ;; skewer -- run browser REPL with buffers
 (use-package skewer-mode
@@ -819,7 +819,7 @@ BTXT at the beginning and ETXT at the end"
 ;; R/ESS -- statistics software
 (use-package ess
   :ensure t
-                                        ;  :defer t
+  :defer t
   :commands R
   :mode (("\\.[rR]\\'" . R-mode)
          ("\\.[rR]profile\\'" . R-mode)
@@ -870,8 +870,7 @@ BTXT at the beginning and ETXT at the end"
   (set-face-attribute 'ledger-occur-xact-face nil
                       :background "midnight blue"))
 
-;; Tags
-;; ======================================
+;; tags
 (use-package ctags-update
   :ensure t
   :config
@@ -908,8 +907,7 @@ BTXT at the beginning and ETXT at the end"
   "insert the current date using the format of `current-date-format`"
   (interactive)
   (insert (format-time-string current-date-format (current-time))))
-
-(global-set-key "\C-c\C-d" 'insert-current-date)
+(bind-key "C-c C-d" 'insert-current-date)
 
 (defun reload-igor-mode ()
   (interactive)
