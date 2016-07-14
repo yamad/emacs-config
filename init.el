@@ -132,6 +132,12 @@
   :init (which-key-mode)
   :config
   (setq which-key-sort-order #'which-key-prefix-then-key-order
+        which-key-key-replacement-alist
+        '(("<\\([[:alnum:]-]+\\)>" . "\\1")
+          ("up"                    . "↑")
+          ("right"                 . "→")
+          ("down"                  . "↓")
+          ("left"                  . "←"))
         which-key-description-replacement-alist
         '(("Prefix Command" . "prefix")
           ;; Lambdas
