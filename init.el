@@ -86,6 +86,15 @@
 (use-package markdown-mode  :defer t)
 (use-package markdown-mode+ :defer t)
 
+;; screenplay format (Fountain)
+(use-package fountain-mode
+  :defer t
+  :config
+  (add-hook 'fountain-mode-hook 'turn-off-fci-mode))
+(use-package olivetti
+  :config
+  (add-hook 'fountain-mode-hook 'turn-on-olivetti-mode))
+
 (use-package flycheck
   :ensure t
   :init
