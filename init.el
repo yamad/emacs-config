@@ -310,14 +310,19 @@ point reaches the beginning or end of the buffer, stop there."
   (require 'helm-config)
   (helm-mode)
   (use-package helm-swoop :ensure t)    ; helm-based searching
-  (global-unset-key (kbd "C-x c")))
+  (global-unset-key (kbd "C-x c"))
+  ;; don't ask before creating new buffer
+  (setq helm-ff-newfile-prompt-p nil))
 
 ;; company -- autocomplete
 (use-package company
   :ensure t
   :diminish company-mode
+  :bind (("M-RET" . company-complete))
   :config
-  (global-company-mode))
+  (global-company-mode)
+  (setq company-dabbrev-code-modes t
+        company-dabbrev-code-everywhere t))
 
 (use-package helm-company
   :ensure t
@@ -350,6 +355,7 @@ point reaches the beginning or end of the buffer, stop there."
 ;; dash documentation browser
 (use-package helm-dash
   :ensure t
+  :disabled t
   :after helm
   :bind (:map helm-command-map
               ("f" . helm-dash)
@@ -498,9 +504,21 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 ;; C
 ;; ======================================
-(setq c-default-style
-      '((c-mode . "linux")))
+(use-package cc-mode
+  :defer t
+  :ensure nil                           ; built-in
+  :config
+  (setq c-default-style '((c-mode . "linux")))
+  (add-hook 'c-mode-common-hook #'hs-minor-mode) ; hide/show mode
+  )
 
+(use-package company-c-headers
+  :after cc-mode
+  :config
+  (add-hook 'c-mode-common-hook
+            #'(lambda ()
+                (setq-local company-backends
+                            (cons 'company-c-headers company-backends)))))
 
 (defun c-lineup-arglist-tabs-only (ignored)
   "Line up argument lists by tabs, not spaces"
@@ -540,6 +558,28 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 (add-hook 'c-mode-common-hook
           (lambda()
             (local-set-key (kbd "C-c o") 'ff-find-other-file)))
+
+(use-package cmake-ide
+  :ensure t
+  :config
+  (cmake-ide-setup))
+
+(use-package rtags
+  :config
+  (add-hook 'c-mode-common-hook #'rtags-start-process-unless-running)
+  (add-hook 'c++-mode-common-hook #'rtags-start-process-unless-running)
+  (rtags-enable-standard-keybindings)   ; default C-c r prefix
+  (setq rtags-autostart-diagnostics t
+        rtags-completions-enabled t)
+  (rtags-diagnostics)
+  (push 'company-rtags company-backends)
+
+  (require 'flycheck-rtags)
+  (defun jyh-flycheck-rtags-setup ()
+    (flycheck-select-checker 'rtags)
+    (setq-local flycheck-highlighting-mode nil)
+    (setq-local flycheck-check-syntax-automatically nil))
+  (add-hook 'c-mode-common-hook #'jyh-flycheck-rtags-setup))
 
 (use-package bison-mode
   :defer t
