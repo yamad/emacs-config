@@ -37,7 +37,15 @@
    :ensure t
    :diminish fci-mode
    :config
-   (add-hook 'prog-mode-hook #'turn-on-fci-mode))
+   (add-hook 'prog-mode-hook #'turn-on-fci-mode)
+
+   ;; workaround company/fci display incompatibility
+   (defun on-off-fci-before-company(command)
+     (when (string= "show" command)
+       (turn-off-fci-mode))
+     (when (string= "hide" command)
+       (turn-on-fci-mode)))
+   (advice-add 'company-call-frontends :before #'on-off-fci-before-company))
 
  ;; mode line
  (line-number-mode 1)                    ; show line-number in mode line
