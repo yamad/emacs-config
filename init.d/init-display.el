@@ -32,21 +32,6 @@
        (global-yascroll-bar-mode 1)
        (setq yascroll:delay-to-hide nil)))
 
- ;; indicate desired line length (fill-column)
- (use-package fill-column-indicator
-   :ensure t
-   :diminish fci-mode
-   :config
-   (add-hook 'prog-mode-hook #'turn-on-fci-mode)
-
-   ;; workaround company/fci display incompatibility
-   (defun on-off-fci-before-company(command)
-     (when (string= "show" command)
-       (turn-off-fci-mode))
-     (when (string= "hide" command)
-       (turn-on-fci-mode)))
-   (advice-add 'company-call-frontends :before #'on-off-fci-before-company))
-
  ;; mode line
  (line-number-mode 1)                    ; show line-number in mode line
  (column-number-mode 1)                  ; show col-number  in mode line
