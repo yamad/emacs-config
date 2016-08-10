@@ -16,11 +16,13 @@
 
 (setq inhibit-startup-screen t)
 
+(unless *is-mac-display*
+  (menu-bar-mode   -1))
+
 (jyh/do-after-display-system-init
  ;; remove unnecessary UI elements
  (scroll-bar-mode -1)
  (tool-bar-mode   -1)
- (menu-bar-mode   -1)
 
  ;; reduce gutters/margins/"fringes" to 'half-width
  (set-fringe-mode 4)
@@ -63,7 +65,7 @@
       `(mode-line
         ((t (:box nil :background ,zenburn-bg-1))))
       `(mode-line-inactive
-        ((t (:box nil :background ,zenburn-bg-1))))))
+        ((t (:box nil :background ,zenburn-bg-1)))))))
 
    (defun jyh/change-modeline-by-window-count ()
      "change modeline style based on number of windows"
@@ -77,7 +79,7 @@
          (custom-set-faces
           `(mode-line ((t (:background ,zenburn-bg-2 :box nil))))))))
    (add-hook 'window-configuration-change-hook
-             #'jyh/change-modeline-by-window-count)))
+             #'jyh/change-modeline-by-window-count))
 
 (provide 'init-display)
 
