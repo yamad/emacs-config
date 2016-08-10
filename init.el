@@ -86,11 +86,13 @@
 (use-package markdown-mode  :defer t)
 (use-package markdown-mode+ :defer t)
 
-;; screenplay format (Fountain)
-(use-package fountain-mode
+(use-package visual-fill-column
+  :ensure t
   :defer t
-  :config
-  (add-hook 'fountain-mode-hook 'turn-off-fci-mode))
+  :init (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
+
+;; screenplay format (Fountain)
+(use-package fountain-mode :defer t)
 (use-package olivetti
   :config
   (add-hook 'fountain-mode-hook 'turn-on-olivetti-mode))
@@ -355,7 +357,6 @@ point reaches the beginning or end of the buffer, stop there."
 ;; dash documentation browser
 (use-package helm-dash
   :ensure t
-  :disabled t
   :after helm
   :bind (:map helm-command-map
               ("f" . helm-dash)
