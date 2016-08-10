@@ -550,7 +550,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
               )
             (setq indent-tabs-mode t)
             (setq show-trailing-whitespace t)
-            (c-set-style "linux-tabs-only")))
+            (c-set-style "linux")))
 
 (defun my-make-CR-do-indent ()
   (define-key c-mode-base-map "\C-m" 'c-context-line-break))
