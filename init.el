@@ -395,6 +395,11 @@ point reaches the beginning or end of the buffer, stop there."
   :config
   (yas-global-mode 1))
 
+(use-package zop-to-char
+  :ensure t
+  :config
+  (global-set-key [remap zap-to-char] 'zop-to-char))
+
 (use-package avy
   :bind (("C-. c" . avy-goto-char)
          ("C-. f" . avy-goto-char-in-line)
