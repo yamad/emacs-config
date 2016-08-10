@@ -295,7 +295,7 @@ point reaches the beginning or end of the buffer, stop there."
          ([remap switch-to-buffer] . helm-mini)            ; C-x b
          ([remap bookmark-jump] . helm-filtered-bookmarks) ; C-x r b
          ([remap find-file] . helm-find-files)             ; C-x C-f
-         ([remap yank-pop] . helm-how-kill-ring)           ; M-y
+         ([remap yank-pop] . helm-show-kill-ring)          ; M-y
          ("C-c h" . helm-command-prefix)
          :map helm-command-map
          ("o" . helm-occur)             ; C-c h o
