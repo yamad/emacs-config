@@ -13,6 +13,9 @@
 
 ;;; Code:
 
+;; added by Package.el for emacs 25
+(package-initialize)
+
 ;; document minimum version
 (let ((minver "24.5.1"))
   (when (version< emacs-version minver)
