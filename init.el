@@ -367,12 +367,14 @@ point reaches the beginning or end of the buffer, stop there."
               ("h" . helm-dash-reset-connections))
   :config
   (defun jyh/dash-install (docset)
-    (unless (file-exists-p (jyh/dash-path docset))
+    (unless (member docset (helm-dash-installed-docsets))
       (helm-dash-install-docset docset)))
   (defvar jyh/required-dash-docsets
     '("C"
       "CMake"
-      "D3"))
+      "D3JS"))
+  (dolist (ds jyh/required-dash-docsets)
+    (jyh/dash-install ds))
   (setq helm-dash-browser-func 'eww))
 
 (setq tramp-default-method "ssh")
