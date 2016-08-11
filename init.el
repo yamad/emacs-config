@@ -873,6 +873,23 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     (R-mode)
     (poly-markdown+r-mode)))
 
+(when *is-mac-os*
+  (defun maxima-version ()
+    (car
+     (last (directory-files "/usr/local/Cellar/maxima" nil "[0-9\.]+" nil))))
+  (defun maxima-emacs-path ()
+    (concat "/usr/local/Cellar/maxima/" (maxima-version)
+            "/share/maxima/" (maxima-version) "/emacs"))
+  (add-to-list 'load-path (maxima-emacs-path)))
+
+(use-package maxima
+  :defer t
+  :ensure nil)
+(use-package imaxima
+  :defer t
+  :ensure nil
+  :after maxima)
+
 ;; ledger -- accounting program
 (use-package ledger-mode
   :ensure t
