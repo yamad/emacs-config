@@ -883,21 +883,18 @@ _k_: kill        _s_: split                   _{_: wrap with { }
                       :background "midnight blue"))
 
 ;; tags
-(use-package ctags-update
+(use-package ggtags
   :ensure t
   :config
-  (ctags-auto-update-mode 1)
-  (when *is-windows-os*
-    (setq path-to-ctags "C:\\cygwin\\bin\\ctags.exe"))
-
-  (defun create-tags(dir-name)
-    "Create tags file."
-    (interactive "DDirectory: ")
-    (shell-command
-     (format "%s -f %s/TAGS -e -R %s"
-             path-to-ctags
-             dir-name
-             (directory-file-name dir-name)))))
+  (hook-into-modes '(lambda () (ggtags-mode 1))
+                   'c-mode
+                   'c++-mode
+                   'erlang-mode
+                   'f90-mode
+                   'java-mode
+                   'js2-mode
+                   'lua-mode
+                   'makefile-mode))
 
 ;; Constants
 (require 'constants)
