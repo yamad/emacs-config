@@ -629,7 +629,12 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
 
-(use-package geiser :ensure t)
+(use-package geiser
+  :ensure t
+  :config
+  (add-hook 'geiser-mode-hook
+            (lambda ()
+              (local-unset-key (kbd "C-.")))))
 
 ;; XML
 ;; ======================================
