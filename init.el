@@ -573,15 +573,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   (define-key c-mode-base-map "\C-m" 'c-context-line-break))
 (add-hook 'c-initialization-hook 'my-make-CR-do-indent)
 
-(add-hook 'c-mode-common-hook
-          (lambda()
-            (local-set-key (kbd "C-c o") 'ff-find-other-file)))
-
-(use-package cmake-ide
-  :ensure t
-  :config
-  (cmake-ide-setup))
-
 (use-package rtags
   :config
   (add-hook 'c-mode-common-hook #'rtags-start-process-unless-running)
@@ -623,10 +614,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     (setq fortran-structure-indent findent)
     (setq fortran-continuation-indent (+ 1 findent))))
 
-(use-package smarter-compile
-  :ensure t
-  :bind ("<f12>" . smarter-compile))
-
 ;; Objective-C
 ;; ======================================
 (setq cc-other-file-alist
@@ -659,18 +646,16 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 ;; HTML/CSS
 ;; ======================================
-;(require 'scss-mode)
-;(setq scss-compile-at-save nil)
+(require 'scss-mode)
+(setq scss-compile-at-save nil)
 
-(use-package multi-web-mode
-  :ensure t
-  :init
-  (setq mweb-default-major-mode 'html-mode)
-  (setq mweb-tags
-        '((js2-mode "<script[^>]*>" "</script>")
-          (css-mode "<style[^>]*>" "</style>")))
-  (setq mweb-filename-extensions '("htm" "html"))
-  (multi-web-global-mode 1))
+(require 'multi-web-mode)
+(setq mweb-default-major-mode 'html-mode)
+(setq mweb-tags
+      '((js2-mode "<script[^>]*>" "</script>")
+        (css-mode "<style[^>]*>" "</style>")))
+(setq mweb-filename-extensions '("htm" "html"))
+(multi-web-global-mode 1)
 
 (use-package restclient
   :ensure t
@@ -715,7 +700,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :defer t
   :after js2-mode
   :config
-  (add-hook 'js2-mode-hook #'tern-mode))
+  (add-hook 'js2-mode #'tern-mode))
 
 (use-package company-tern
   :ensure t
