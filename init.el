@@ -95,10 +95,17 @@
   :init (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
 
 ;; screenplay format (Fountain)
-(use-package fountain-mode :defer t)
-(use-package olivetti
+(use-package fountain-mode
+  :commands (fountain-export-tex-template)
+  :defer t
   :config
-  (add-hook 'fountain-mode-hook 'turn-on-olivetti-mode))
+  (assq-delete-all 'note fountain-export-tex-template)
+  (add-to-list 'fountain-export-tex-template '(note "\\emph{{{content}}}\n\n")))
+(use-package olivetti
+  :ensure fountain-mode
+  :defer t
+  :config
+  (add-hook 'fountain-mode-hook #'turn-on-olivetti-mode))
 
 (use-package flycheck
   :ensure t
