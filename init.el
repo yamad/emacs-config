@@ -659,16 +659,18 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 ;; HTML/CSS
 ;; ======================================
-(require 'scss-mode)
-(setq scss-compile-at-save nil)
+;(require 'scss-mode)
+;(setq scss-compile-at-save nil)
 
-(require 'multi-web-mode)
-(setq mweb-default-major-mode 'html-mode)
-(setq mweb-tags
-      '((js2-mode "<script[^>]*>" "</script>")
-        (css-mode "<style[^>]*>" "</style>")))
-(setq mweb-filename-extensions '("htm" "html"))
-(multi-web-global-mode 1)
+(use-package multi-web-mode
+  :ensure t
+  :init
+  (setq mweb-default-major-mode 'html-mode)
+  (setq mweb-tags
+        '((js2-mode "<script[^>]*>" "</script>")
+          (css-mode "<style[^>]*>" "</style>")))
+  (setq mweb-filename-extensions '("htm" "html"))
+  (multi-web-global-mode 1))
 
 (use-package restclient
   :ensure t
@@ -713,7 +715,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :defer t
   :after js2-mode
   :config
-  (add-hook 'js2-mode #'tern-mode))
+  (add-hook 'js2-mode-hook #'tern-mode))
 
 (use-package company-tern
   :ensure t
@@ -734,16 +736,16 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 (use-package haskell-mode
   :defer t
-  :commands (haskell-indentation-mode
-             haskell-decl-scan
+  :commands (haskell-decl-scan
              haskell-doc-mode
+             haskell-indentation-mode
              interactive-haskell-mode)
   :init
   (add-hook 'haskell-mode-hook
             #'(lambda ()
-                (haskell-indentation-mode)
                 (haskell-doc-mode)
                 (haskell-decl-scan-mode)
+                (haskell-indentation-mode)
                 (interactive-haskell-mode)
                 (flycheck-mode)))
   (setq haskell-interactive-popup-errors nil)
@@ -764,6 +766,13 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :config
   ;; use Stack for building
   (setq haskell-compile-cabal-build-command "stack build"))
+
+(use-package hindent
+  :ensure t
+  :defer t
+  :init (add-hook 'haskell-mode-hook #'hindent-mode)
+  :config
+  (setq hindent-style "johan-tibell"))
 
 (use-package lua-mode
   :ensure t
