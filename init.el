@@ -707,7 +707,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :defer t
   :after js2-mode
   :config
-  (add-hook 'js2-mode #'tern-mode))
+  (add-hook 'js2-mode-hook #'tern-mode))
 
 (use-package company-tern
   :ensure t
@@ -879,7 +879,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     (require 'poly-R)
     (require 'poly-markdown)
     (R-mode)
-    (poly-markdown+r-mode)))
+    (poly-markdown+r-mode))
+  :config
+  (add-hook 'Rmd-mode-hook #'visual-line-mode))
 
 (when *is-mac-os*
   (defun maxima-version ()
@@ -912,14 +914,18 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :ensure t
   :config
   (hook-into-modes '(lambda () (ggtags-mode 1))
-                   'c-mode
-                   'c++-mode
-                   'erlang-mode
-                   'f90-mode
-                   'java-mode
-                   'js2-mode
-                   'lua-mode
-                   'makefile-mode))
+                   'c-mode-hook
+                   'c++-mode-hook
+                   'erlang-mode-hook
+                   'f90-mode-hook
+                   'java-mode-hook
+                   'js2-mode-hook
+                   'lua-mode-hook
+                   'makefile-mode-hook))
+
+;; useful utilities library from bbatsov
+(use-package crux
+  :ensure t)
 
 ;; Constants
 (require 'constants)
