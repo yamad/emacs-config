@@ -227,6 +227,12 @@
   ;; don't create new buffer for every directory
   (diredp-toggle-find-file-reuse-dir 1))
 
+(use-package ranger :ensure t)
+
+;; bookmark management
+(use-package bookmark+
+  :ensure t)
+
 ;; anzu -- show search position
 (use-package anzu
   :ensure t
