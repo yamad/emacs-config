@@ -4,6 +4,9 @@
 
 ;;; Code:
 
+(add-to-list 'load-path "~/.emacs.d/site-lisp/org-mode/lisp")
+(add-to-list 'load-path "~/.emacs.d/site-lisp/org-mode/contrib/lisp" t)
+
 (use-package org
   :ensure t
   :init
