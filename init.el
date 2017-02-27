@@ -162,6 +162,7 @@
   :init (which-key-mode)
   :config
   (setq which-key-sort-order #'which-key-prefix-then-key-order
+        which-key-prefix-prefix "➤"
         which-key-key-replacement-alist
         '(("<\\([[:alnum:]-]+\\)>" . "\\1")
           ("up"                    . "↑")
@@ -169,7 +170,7 @@
           ("down"                  . "↓")
           ("left"                  . "←"))
         which-key-description-replacement-alist
-        '(("Prefix Command" . "prefix")
+        '(("Prefix Command" . "➤")
           ;; Lambdas
           ("\\`\\?\\?\\'" . "λ")
           ;; Prettify hydra entry points
