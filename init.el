@@ -111,7 +111,19 @@
   :ensure t
   :init
   (global-flycheck-mode)
-  (setq flycheck-check-syntax-automatically '(mode-enabled save)))
+  :config
+  (setq flycheck-check-syntax-automatically '(mode-enabled save))
+  (defhydra jyh/hydra-flycheck
+    (:pre (progn (setq hydra-lv t) (flycheck-list-errors))
+     :post (progn (setq hydra-lv nil) (quit-windows-on "*Flycheck errors*"))
+     :hint nil)
+    "Errors"
+    ("f"  flycheck-error-list-set-filter                            "Filter")
+    ("j"  flycheck-next-error                                       "Next")
+    ("k"  flycheck-previous-error                                   "Previous")
+    ("gg" flycheck-first-error                                      "First")
+    ("G"  (progn (goto-char (point-max)) (flycheck-previous-error)) "Last")
+    ("q"  nil)))
 
 (use-package helm-flycheck
   :ensure t
