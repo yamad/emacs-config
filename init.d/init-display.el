@@ -55,31 +55,36 @@
 
    ;; tone down some default colors in zenburn
    (zenburn-with-color-variables
-     (custom-set-faces
-      `(linum
-        ((t (:foreground ,zenburn-bg+2
-                         :background ,zenburn-bg))))
-      `(fringe
-        ((t (:background ,zenburn-bg))))
-      ;; no box around modeline
-      `(mode-line
-        ((t (:box nil :background ,zenburn-bg-1))))
-      `(mode-line-inactive
-        ((t (:box nil :background ,zenburn-bg-1)))))))
+    (custom-set-faces
+     `(linum
+       ((t (:foreground ,zenburn-bg+2
+                        :background ,zenburn-bg))))
+     `(fringe
+       ((t (:background ,zenburn-bg))))
+     ;; no box around modeline
+     `(mode-line
+       ((t (:box nil :background ,zenburn-bg-1))))
+     `(mode-line-inactive
+       ((t (:box nil :background ,zenburn-bg-1))))
+     ;; ivy
+     `(ivy-current-match
+       ((t (:background ,zenburn-bg+1 :underline nil))))
+     `(ivy-virtual
+       ((t (:foreground ,zenburn-bg+2))))))
 
    (defun jyh/change-modeline-by-window-count ()
      "change modeline style based on number of windows"
      (if (eq (count-windows) 1)
          ;; tone down mode line if just one window
          (zenburn-with-color-variables
-           (custom-set-faces
-            `(mode-line ((t (:background ,zenburn-bg-1 :box nil))))))
+          (custom-set-faces
+           `(mode-line ((t (:background ,zenburn-bg-1 :box nil))))))
        ;; make active mode line darker
        (zenburn-with-color-variables
-         (custom-set-faces
-          `(mode-line ((t (:background ,zenburn-bg-2 :box nil))))))))
+        (custom-set-faces
+         `(mode-line ((t (:background ,zenburn-bg-2 :box nil))))))))
    (add-hook 'window-configuration-change-hook
-             #'jyh/change-modeline-by-window-count))
+             #'jyh/change-modeline-by-window-count)))
 
 (provide 'init-display)
 
