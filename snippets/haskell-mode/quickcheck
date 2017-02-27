@@ -1,4 +1,5 @@
-#name: quickcheck
+# -*- mode: snippet -*-
+# name: quickcheck
 # --
 {-# LANGUAGE TemplateHaskell #-}
 
