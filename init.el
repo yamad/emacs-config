@@ -63,6 +63,8 @@
 (use-package exec-path-from-shell
   :config
   (when (memq window-system '(mac ns))
+    (add-to-list 'exec-path-from-shell-variables "NIX_PATH")
+    (add-to-list 'exec-path-from-shell-variables "CURL_CA_BUNDLE")
     (exec-path-from-shell-initialize)))
 
 ;; General Options
@@ -697,6 +699,11 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :ensure t
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
+
+(use-package nix-mode :ensure t)
+(use-package nix-buffer :ensure t)
+(use-package nix-sandbox :ensure t)
+(use-package nixos-options :ensure t)
 
 (use-package geiser
   :ensure t
