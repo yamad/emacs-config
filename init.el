@@ -645,15 +645,16 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :config
   (add-hook 'c-mode-common-hook #'rtags-start-process-unless-running)
   (add-hook 'c++-mode-common-hook #'rtags-start-process-unless-running)
-  (add-hook 'c-mode-common-hook #'(lambda ()
-                                    (setq-local eldoc-documentation-function
-                                                #'rtags-eldoc)))
+  (add-hook 'c-mode-common-hook
+            #'(lambda ()
+                (setq-local eldoc-documentation-function #'rtags-eldoc)
+                (setq-local company-b
+                            ckends (cons 'company-rtags company-backends))))
   (rtags-enable-standard-keybindings)   ; default C-c r prefix
   (setq rtags-autostart-diagnostics t
         rtags-completions-enabled t
         rtags-use-helm t)
   (rtags-diagnostics)
-  (push 'company-rtags company-backends)
 
   (require 'flycheck-rtags)
   (defun jyh-flycheck-rtags-setup ()
