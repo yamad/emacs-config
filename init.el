@@ -149,14 +149,11 @@
   (setq projectile-enable-caching t) ; otherwise too slow
   (use-package helm-projectile       ; use helm as interface
     :ensure t
+    :disabled
     :config
     (setq projectile-completion-system #'helm)
     (helm-projectile-on)
     (setq projectile-switch-project-action #'helm-projectile)))
-
-(use-package helm-descbinds
-  :ensure t
-  :config (helm-descbinds-mode))
 
 ;; which-key -- keybinding display
 (use-package which-key
@@ -183,6 +180,7 @@
     "C-c !" "flycheck"
     "C-c f" "files"
     "C-c h" "helm"
+    "C-c i" "ivy"
     "C-c j" "jump"
     "C-c m" "major mode"
     "C-c o" "org"
@@ -334,9 +332,13 @@ point reaches the beginning or end of the buffer, stop there."
   (require 'helm-config)
   (helm-mode)
   (use-package helm-swoop :ensure t)    ; helm-based searching
+  (use-package helm-descbinds
+    :ensure t
+    :config (helm-descbinds-mode))
   (global-unset-key (kbd "C-x c"))
   ;; don't ask before creating new buffer
   (setq helm-ff-newfile-prompt-p nil))
+
 
 ;; company -- autocomplete
 (use-package company
@@ -355,6 +357,59 @@ point reaches the beginning or end of the buffer, stop there."
          ("C-:" . helm-company)
          :map company-active-map
          ("C-:" . helm-company)))
+
+;; ivy -- completion backend
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :bind (("C-c C-r" . ivy-resume)
+         :map ivy-minibuffer-map
+         ("C-." . ivy-avy))
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t
+        ivy-re-builders-alist
+        '((t . ivy--regex-ignore-order))
+        ivy-height 20
+        ivy-fixed-height-minibuffer nil)
+
+  (use-package ivy-hydra :ensure t)
+  (use-package swiper :ensure t)
+  (use-package counsel :ensure t)
+  (use-package counsel-projectile :ensure t
+    :config
+    (counsel-projectile-on))
+
+  ;; setup ivy-based global command keymap
+  (bind-keys
+   :prefix-map ivy-command-map
+   :prefix "C-c i"
+   :prefix-docstring "Ivy/Counsel command keymap"
+   ("s" . swiper)
+   ("o" . ivy-occur)
+   ("i" . counsel-imenu)
+   ("k" . counsel-ag)
+   ("f" . counsel-recentf)
+   ("g" . counsel-git)
+   ("j" . counsel-git-grep)
+   ("l" . counsel-locate)
+   ("u" . counsel-unicode-char)
+   )
+
+  ;; remap built-in functions
+  (bind-keys
+   ([remap execute-extended-command] . counsel-M-x)  ; M-x
+   ([remap switch-to-buffer] . ivy-switch-buffer)    ; C-x b
+   ([remap bookmark-jump] . counsel-bookmark)        ; C-x r b
+   ([remap find-file] . counsel-find-file)           ; C-x C-f
+   ([remap yank-pop] . counsel-yank-pop)             ; M-y
+   )
+
+  (bind-keys
+   :map company-mode-map
+   ("C-:" . counsel-company)
+   :map company-active-map
+   ("C-:" . counsel-company)) )
 
 ;; ag -- better grep searching
 (use-package ag :ensure t)
