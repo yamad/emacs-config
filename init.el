@@ -848,6 +848,31 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 ;; Python
 ;; ======================================
+
+(use-package anaconda-mode
+  :ensure t
+  :config
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
+
+;; setup IPython shell, lifted from Emacs Prelude
+(when (executable-find "ipython")
+  (setq python-shell-interpreter "ipython"
+        python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+        python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+        python-shell-completion-setup-code
+        "from IPython.core.completerlib import module_completion"
+        python-shell-completion-module-string-code
+        "';'.join(module_completion('''%s'''))\n"
+        python-shell-completion-string-code
+        "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
+  (if (version< (replace-regexp-in-string "\n$" ""
+                                          (shell-command-to-string "ipython --version"))
+                "5")
+      (setq python-shell-interpreter-args "-i")
+    (setq python-shell-interpreter-args "--simple-prompt -i")))
+
+
 (require 'cython-mode)
 ;; Nosetests
 (defun py-nosetests()
@@ -865,9 +890,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
           '(lambda ()
              (local-set-key "\C-c\C-q" 'py-nosetests)))
 
-(if (executable-find "ipython")
-    (setq python-shell-interpreter "ipython"
-          python-shell-interpreter-args "-i"))
 
 ;; Pdb debugger
 (setq pdb-path '/usr/lib/python2.6/pdb.py
