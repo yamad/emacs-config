@@ -838,6 +838,15 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :ensure nil
   :load-path "site-lisp/igor-mode")
 
+
+
+;; Apple Dev
+(when *is-mac-os*
+  (use-package xcode-mode
+    :ensure t
+    :config
+    (setq xcode-completing-read-function 'ivy-completing-read)))
+
 ;; Visual Basic
 ;; ======================================
 (autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
