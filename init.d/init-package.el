@@ -1,4 +1,4 @@
-;;; init-package.el --- required package load
+;;; init-package.el --- package management
 ;;
 ;; part of emacs config for jyamad. see init.el
 

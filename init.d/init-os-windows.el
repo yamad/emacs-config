@@ -1,4 +1,4 @@
-;;; init-windows-os.el --- Windows OS config
+;;; init-os-windows.el --- Windows OS config
 ;;
 ;; part of emacs config for jyamad. see init.el
 
@@ -17,5 +17,5 @@
     ;; Add font
     (set-frame-font "Consolas-11")))
 
-(provide 'init-windows-os)
-;;; init-windows-os.el ends here
+(provide 'init-os-windows)
+;;; init-os-windows.el ends here
