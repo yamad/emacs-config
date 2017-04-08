@@ -880,7 +880,10 @@ _k_: kill        _s_: split                   _{_: wrap with { }
                    'inferior-ess-mode-hook))
 
 (use-package polymode
-  :ensure t
+  :ensure nil                           ; load locally
+  :load-path (lambda ()
+               (list "site-lisp/polymode"
+                     "site-lisp/polymode/modes"))
   :defer t
   :mode ("\\.Rmd$" . Rmd-mode)
   :init
@@ -891,8 +894,15 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     (require 'poly-markdown)
     (R-mode)
     (poly-markdown+r-mode))
+  (defvar Rmd-mode-map nil "Keymap for `Rmd-mode'")
+  (bind-keys
+   :map Rmd-mode-map
+   ("C-c <C-up>" . ess-Rmd-eval-buffer-from-beg-to-here)
+   ("C-c <C-down>" . ess-Rmd-eval-buffer-from-here-to-end)
+   ("C-c C-b" . ess-Rmd-eval-buffer)
+   ("C-M-x" . ess-Rmd-eval-chunk))
   :config
-  (add-hook 'Rmd-mode-hook #'visual-line-mode))
+  (add-hook 'poly-markdown+r-mode-hook #'visual-line-mode))
 
 (when *is-mac-os*
   (defun maxima-version ()
