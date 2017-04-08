@@ -127,10 +127,6 @@
     ("G"  (progn (goto-char (point-max)) (flycheck-previous-error)) "Last")
     ("q"  nil)))
 
-(use-package helm-flycheck
-  :ensure t
-  :after flycheck)
-
 (use-package autorevert
   :init (global-auto-revert-mode)
   :diminish auto-revert-mode)
@@ -149,13 +145,7 @@
   (setq projectile-mode-line
         '(:eval (format " P/%s" (projectile-project-name))))
   (setq projectile-enable-caching t) ; otherwise too slow
-  (use-package helm-projectile       ; use helm as interface
-    :ensure t
-    :disabled
-    :config
-    (setq projectile-completion-system #'helm)
-    (helm-projectile-on)
-    (setq projectile-switch-project-action #'helm-projectile)))
+  )
 
 ;; which-key -- keybinding display
 (use-package which-key
@@ -182,7 +172,6 @@
     ;;Prefixes for global prefixes and minor modes
     "C-c !" "flycheck"
     "C-c f" "files"
-    "C-c h" "helm"
     "C-c i" "ivy"
     "C-c j" "jump"
     "C-c m" "major mode"
@@ -319,54 +308,6 @@ point reaches the beginning or end of the buffer, stop there."
 (bind-key [remap move-beginning-of-line]
           'smarter-move-beginning-of-line)
 
-;; helm
-(use-package helm
-  :ensure t
-  :bind (([remap execute-extended-command] . helm-M-x)     ; M-x
-         ([remap switch-to-buffer] . helm-mini)            ; C-x b
-         ([remap bookmark-jump] . helm-filtered-bookmarks) ; C-x r b
-         ([remap find-file] . helm-find-files)             ; C-x C-f
-         ([remap yank-pop] . helm-show-kill-ring)          ; M-y
-         ("C-c h" . helm-command-prefix)
-         :map helm-command-map
-         ("o" . helm-occur)             ; C-c h o
-         ("i" . helm-imenu)             ; C-c h i
-         ("s" . helm-swoop)             ; C-c h s
-         :map helm-map
-         ("<tab>" . helm-execute-persistent-action)
-         ("C-i" . helm-execute-persistent-action) ; make tab work in terminal
-         ("C-z" . helm-select-action))            ; list actions using C-z
-  :diminish helm-mode
-  :config
-  (require 'helm-config)
-  (helm-mode)
-  (use-package helm-swoop :ensure t)    ; helm-based searching
-  (use-package helm-descbinds
-    :ensure t
-    :config (helm-descbinds-mode))
-  (global-unset-key (kbd "C-x c"))
-  ;; don't ask before creating new buffer
-  (setq helm-ff-newfile-prompt-p nil))
-
-
-;; company -- autocomplete
-(use-package company
-  :ensure t
-  :diminish company-mode
-  :bind (("M-RET" . company-complete))
-  :config
-  (global-company-mode)
-  (setq company-dabbrev-code-modes t
-        company-dabbrev-code-everywhere t))
-
-(use-package helm-company
-  :ensure t
-  :after (helm company)
-  :bind (:map company-mode-map
-         ("C-:" . helm-company)
-         :map company-active-map
-         ("C-:" . helm-company)))
-
 ;; ivy -- completion backend
 (use-package ivy
   :ensure t
@@ -420,9 +361,19 @@ point reaches the beginning or end of the buffer, stop there."
    :map company-active-map
    ("C-:" . counsel-company)) )
 
+
+;; company -- autocomplete
+(use-package company
+  :ensure t
+  :diminish company-mode
+  :bind (("M-RET" . company-complete))
+  :config
+  (global-company-mode)
+  (setq company-dabbrev-code-modes t
+        company-dabbrev-code-everywhere t))
+
 ;; ag -- better grep searching
 (use-package ag :ensure t)
-(use-package helm-ag :ensure t)
 
 ;; hippie-expand -- dabbrev replacement for expansion and completion
 (use-package hippie-exp
@@ -439,26 +390,6 @@ point reaches the beginning or end of the buffer, stop there."
           try-expand-list
           try-complete-lisp-symbol-partially
           try-complete-lisp-symbol)))
-
-;; dash documentation browser
-(use-package helm-dash
-  :ensure t
-  :after helm
-  :bind (:map helm-command-map
-              ("f" . helm-dash)
-              ("g" . helm-dash-at-point)
-              ("h" . helm-dash-reset-connections))
-  :config
-  (defun jyh/dash-install (docset)
-    (unless (member docset (helm-dash-installed-docsets))
-      (helm-dash-install-docset docset)))
-  (defvar jyh/required-dash-docsets
-    '("C"
-      "CMake"
-      "D3JS"))
-  (dolist (ds jyh/required-dash-docsets)
-    (jyh/dash-install ds))
-  (setq helm-dash-browser-func 'eww))
 
 (setq tramp-default-method "ssh")
 
@@ -497,24 +428,6 @@ point reaches the beginning or end of the buffer, stop there."
          ("C-. p" . avy-pop-mark))
   :config
   (setq avy-background t))
-
-(use-package ace-jump-helm-line
-  :bind (:map helm-map
-              ("C-." . ace-jump-helm-line))
-  :config
-  ;; change appearance
-  (setq ace-jump-helm-line-style 'pre)
-  (setq ace-jump-helm-line-background t)
-  (setq ace-jump-helm-line-default-action 'move-only)
-  (ace-jump-helm-line-idle-exec-remove 'helm-mini) ;; turn off autostart
-  ;; set action switch keys
-  (setq ace-jump-helm-line-select-key ?e)
-  (setq ace-jump-helm-line-move-only-key ?o)
-  (setq ace-jump-helm-line-persistent-key ?p)
-  ;; disable hints preview
-  (ace-jump-helm-line-autoshow-mode -1)
-  ;; use `linum-mode' to show
-  (setq ace-jump-helm-line-autoshow-mode-use-linum t))
 
 (use-package ace-window
   :ensure t
@@ -738,7 +651,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 (use-package restclient
   :ensure t
   :config
-  (use-package restclient-helm :ensure t)
   (use-package company-restclient :ensure t))
 
 (use-package js2-mode
