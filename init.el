@@ -22,6 +22,20 @@
     (warn "This version (%s) of Emacs is older than the oldest tested version (%s) with this configuration. Stuff might be broken."
           emacs-version minver)))
 
+;; configuration functions
+(defsubst hook-into-modes (func &rest modes)
+  "Help add a function FUNC to a list of MODES (from jwiegley)."
+  (dolist (mode-hook modes) (add-hook mode-hook func)))
+
+(defconst *is-mac-os* (eq system-type 'darwin))
+(defconst *is-windows-os* (eq system-type 'windows-nt))
+(defconst *is-linux-os* (eq system-type 'gnu/linux))
+
+(defconst *is-mac-display* (eq window-system 'ns))
+(defconst *is-windows-display* (eq window-system 'w32))
+(defconst *is-X-display* (eq window-system 'x))
+(defconst *is-terminal-display* (eq window-system nil))
+
 ;; don't load outdated byte code
 (setq load-prefer-newer t)
 
@@ -36,19 +50,6 @@
   (add-to-list 'Info-default-directory-list "~/info"))
 
 (setq custom-file (locate-user-emacs-file "init.d/init-custom.el"))
-
-(defsubst hook-into-modes (func &rest modes)
-  "Help add a function FUNC to a list of MODES (from jwiegley)."
-  (dolist (mode-hook modes) (add-hook mode-hook func)))
-
-(defconst *is-mac-os* (eq system-type 'darwin))
-(defconst *is-windows-os* (eq system-type 'windows-nt))
-(defconst *is-linux-os* (eq system-type 'gnu/linux))
-
-(defconst *is-mac-display* (eq window-system 'ns))
-(defconst *is-windows-display* (eq window-system 'w32))
-(defconst *is-X-display* (eq window-system 'x))
-(defconst *is-terminal-display* (eq window-system nil))
 
 ;; ensure required packages
 (require 'init-package)
@@ -67,7 +68,24 @@
     (add-to-list 'exec-path-from-shell-variables "CURL_CA_BUNDLE")
     (exec-path-from-shell-initialize)))
 
-;; General Options
+;; auxillary configurations
+(require 'init-display)
+(require 'init-irc)
+(require 'init-lang)
+(require 'init-mail)
+(require 'init-markup)
+(require 'init-news)
+(require 'init-org)
+(require 'init-tex)
+(require 'init-unicode)
+
+;; operating system specific configuration
+(require 'init-os-windows)
+(require 'init-os-mac)
+(require 'init-os-linux)
+
+
+;; general options
 (setq visible-bell nil)
 (setq ring-bell-function
       (lambda ()
@@ -75,9 +93,16 @@
         (run-with-timer 0.1 nil 'invert-face 'mode-line)))
 (setq kill-whole-line t)
 (put 'narrow-to-region 'disabled nil)
-
+;; always remove trailing whitespace before saving
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 ;; answer y/n instead of yes/no
 (fset 'yes-or-no-p #'y-or-n-p)
+;; ANSI coloring
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
+(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
+;; bind frame/window switching to shift-up/down/left/right
+(windmove-default-keybindings)
+
 
 (use-package desktop
   :config
@@ -88,28 +113,12 @@
   :init (global-auto-revert-mode)
   :diminish auto-revert-mode)
 
-(use-package visual-fill-column
-  :ensure t
-  :defer t
-  :init (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
-
-(use-package flycheck
-  :ensure t
-  :init
-  (global-flycheck-mode)
+;; unique buffer names
+(use-package uniquify                   ; unique buffer names
+  :ensure nil
   :config
-  (setq flycheck-check-syntax-automatically '(mode-enabled save))
-  (defhydra jyh/hydra-flycheck
-    (:pre (progn (setq hydra-lv t) (flycheck-list-errors))
-     :post (progn (setq hydra-lv nil) (quit-windows-on "*Flycheck errors*"))
-     :hint nil)
-    "Errors"
-    ("f"  flycheck-error-list-set-filter                            "Filter")
-    ("j"  flycheck-next-error                                       "Next")
-    ("k"  flycheck-previous-error                                   "Previous")
-    ("gg" flycheck-first-error                                      "First")
-    ("G"  (progn (goto-char (point-max)) (flycheck-previous-error)) "Last")
-    ("q"  nil)))
+  (setq uniquify-buffer-name-style 'post-forward-angle-brackets
+        uniquify-ignore-buffers-re "^\\*"))
 
 ;; terminal
 (setq explicit-shell-file-name "zsh")
@@ -117,18 +126,32 @@
   (interactive "sName: ")
   (ansi-term "zsh" name))
 
-;; project management
-(use-package projectile
+(use-package tramp
+  :config
+  (setq tramp-default-method "ssh"))
+
+(bind-keys ("C-x C-m" . execute-extended-command)
+           ("C-c C-m" . execute-extended-command)
+           ("C-x g r" . replace-regexp)
+           ("C-x g q" . query-replace-regexp)
+           ("C-x C-l" . goto-line)
+           ("C-x a r" . align-regexp))
+
+
+;; ======================================
+;;  Emacs
+;; ======================================
+
+(use-package dired+                     ; better directory management
   :ensure t
   :config
-  (projectile-global-mode)
-  (setq projectile-mode-line
-        '(:eval (format " P/%s" (projectile-project-name))))
-  (setq projectile-enable-caching t) ; otherwise too slow
-  )
+  ;; don't create new buffer for every directory
+  (diredp-toggle-find-file-reuse-dir 1))
 
-;; which-key -- keybinding display
-(use-package which-key
+(use-package bookmark+                  ; better bookmark management
+  :ensure t)
+
+(use-package which-key                  ; keybinding display
   :ensure t
   :diminish which-key-mode
   :init (which-key-mode)
@@ -161,104 +184,31 @@
     "C-c x" "text"
     "C-c y" "spotify"))
 
-(use-package highlight-parentheses
-  :ensure t
-  :diminish highlight-parentheses-mode
+
+;; ======================================
+;;  Navigation
+;; ======================================
+
+(use-package avy                        ; keyed label navigation
+  :bind (("C-. c" . avy-goto-char)
+         ("C-. f" . avy-goto-char-in-line)
+         ("C-. l" . avy-goto-line)
+         ("C-. w" . avy-goto-word-or-subword-1)
+         ("C-. s" . avy-goto-char-timer)
+         ("C-. p" . avy-pop-mark))
   :config
-  (global-highlight-parentheses-mode))
+  (setq avy-background t))
 
-;; ANSI coloring
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on) ;; for shell
-(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
-
-;; always remove trailing whitespace before saving
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;; Alternate bindings for M-x
-(bind-keys ("C-x C-m" . execute-extended-command)
-           ("C-c C-m" . execute-extended-command))
-
-;; Bindings for replace-regexp
-(bind-keys ("C-x g r" . replace-regexp)
-           ("C-x g q" . query-replace-regexp))
-
-;; other useful keybindings
-(bind-key "C-x C-l" 'goto-line)
-(bind-key "C-x a r" 'align-regexp)
-
-;; bind frame/window switching to shift-up/down/left/right
-(windmove-default-keybindings)
-
-;; directory management
-(use-package dired+
+(use-package ace-window                 ; keyed label window navigation
   :ensure t
   :config
-  ;; don't create new buffer for every directory
-  (diredp-toggle-find-file-reuse-dir 1))
+  (global-set-key (kbd "C-. n") 'ace-window)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
-(use-package ranger :ensure t)
-
-;; bookmark management
-(use-package bookmark+
-  :ensure t)
-
-;; anzu -- show search position
-(use-package anzu
-  :ensure t
-  :config (global-anzu-mode)
-  :bind
-  (([remap query-replace] . anzu-query-replace)
-   ([remap query-replace-regexp] . anzu-query-replace-regexp)
-   :map isearch-mode-map
-   ([remap isearch-query-replace] . anzu-isearch-query-replace)
-   ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
-  :diminish anzu-mode)
-
-(use-package visual-regexp
-  :ensure t
-  :bind (("C-c s r" . vr/replace)
-         ("C-c s R" . vr/query-replace)))
-
-;; Unfill functions (opposes fill-paragraph and fill-region)
-(defun unfill-paragraph ()
-  "Turn a multi-line paragraph into a single line of text."
-  (interactive)
-  (let ((fill-column (point-max)))
-    (fill-paragraph nil)))
-(defun unfill-region (beg end)
-  "Unfill the region, joining text paragraphs into a single
-    logical line.  This is useful, e.g., for use with
-    `visual-line-mode'."
-  (interactive "*r")
-  (let ((fill-column (point-max)))
-    (fill-region beg end)))
-(define-key global-map "\M-Q" 'unfill-paragraph)
-(define-key global-map "\C-\M-Q" 'unfill-region)
-
-;; Set tab behavior
-(setq-default indent-tabs-mode nil
-              tab-width 4
-              c-basic-offset 4
-              py-indent-offset 4)
-
-(use-package smart-tabs-mode
+(use-package zop-to-char                ; better zap-to-char
   :ensure t
   :config
-  (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'ruby 'nxml))
-
-(hook-into-modes #'(lambda ()
-                     (setq indent-tabs-mode t
-                           tab-width 4))
-                 'c-mode-common-hook
-                 'js2-mode-hook
-                 'java-mode-hook)
-
-;; Unique buffer names
-(use-package uniquify
-  :ensure nil
-  :config
-  (setq uniquify-buffer-name-style 'post-forward-angle-brackets
-        uniquify-ignore-buffers-re "^\\*"))
+  (global-set-key [remap zap-to-char] 'zop-to-char))
 
 ;; from http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
 (defun smarter-move-beginning-of-line (arg)
@@ -288,93 +238,74 @@ point reaches the beginning or end of the buffer, stop there."
 (bind-key [remap move-beginning-of-line]
           'smarter-move-beginning-of-line)
 
-;; ivy -- completion backend
-(use-package ivy
+;; alternative directory/file navigator
+(use-package ranger :ensure t)
+
+
+
+;; ======================================
+;;  Editing/Searching
+;; ======================================
+
+(use-package anzu                       ; show search position
   :ensure t
-  :diminish ivy-mode
-  :bind (("C-c C-r" . ivy-resume)
-         :map ivy-minibuffer-map
-         ("C-." . ivy-avy))
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t
-        ivy-re-builders-alist
-        '((t . ivy--regex-ignore-order))
-        ivy-height 20
-        ivy-fixed-height-minibuffer nil)
+  :config (global-anzu-mode)
+  :bind
+  (([remap query-replace] . anzu-query-replace)
+   ([remap query-replace-regexp] . anzu-query-replace-regexp)
+   :map isearch-mode-map
+   ([remap isearch-query-replace] . anzu-isearch-query-replace)
+   ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
+  :diminish anzu-mode)
 
-  (use-package ivy-hydra :ensure t)
-  (use-package swiper :ensure t)
-  (use-package counsel :ensure t)
-  (use-package counsel-projectile :ensure t
-    :config
-    (counsel-projectile-on))
-
-  ;; setup ivy-based global command keymap
-  (bind-keys
-   :prefix-map ivy-command-map
-   :prefix "C-c i"
-   :prefix-docstring "Ivy/Counsel command keymap"
-   ("s" . swiper)
-   ("o" . ivy-occur)
-   ("i" . counsel-imenu)
-   ("k" . counsel-ag)
-   ("f" . counsel-recentf)
-   ("g" . counsel-git)
-   ("j" . counsel-git-grep)
-   ("l" . counsel-locate)
-   ("u" . counsel-unicode-char)
-   )
-
-  ;; remap built-in functions
-  (bind-keys
-   ([remap execute-extended-command] . counsel-M-x)  ; M-x
-   ([remap switch-to-buffer] . ivy-switch-buffer)    ; C-x b
-   ([remap bookmark-jump] . counsel-bookmark)        ; C-x r b
-   ([remap find-file] . counsel-find-file)           ; C-x C-f
-   ([remap yank-pop] . counsel-yank-pop)             ; M-y
-   )
-
-  (bind-keys
-   :map company-mode-map
-   ("C-:" . counsel-company)
-   :map company-active-map
-   ("C-:" . counsel-company)) )
-
-
-;; company -- autocomplete
-(use-package company
+(use-package visual-regexp
   :ensure t
-  :diminish company-mode
-  :bind (("M-RET" . company-complete))
-  :config
-  (global-company-mode)
-  (setq company-dabbrev-code-modes t
-        company-dabbrev-code-everywhere t))
+  :bind (("C-c s r" . vr/replace)
+         ("C-c s R" . vr/query-replace)))
 
-;; ag -- better grep searching
-(use-package ag :ensure t)
-
-;; hippie-expand -- dabbrev replacement for expansion and completion
-(use-package hippie-exp
-  :bind (([remap dabbrev-expand] . hippie-expand))
+(use-package visual-fill-column
+  :ensure t
   :defer t
+  :init (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
+;; Unfill functions (opposes fill-paragraph and fill-region)
+(defun unfill-paragraph ()
+  "Turn a multi-line paragraph into a single line of text."
+  (interactive)
+  (let ((fill-column (point-max)))
+    (fill-paragraph nil)))
+(defun unfill-region (beg end)
+  "Unfill the region, joining text paragraphs into a single
+    logical line.  This is useful, e.g., for use with
+    `visual-line-mode'."
+  (interactive "*r")
+  (let ((fill-column (point-max)))
+    (fill-region beg end)))
+(bind-keys ("M-Q" . unfill-paragraph)
+           ("C-M-Q" . unfill-region))
+
+;; tab/spaces behavior
+(setq-default indent-tabs-mode nil
+              tab-width 4
+              c-basic-offset 4
+              py-indent-offset 4)
+(use-package smart-tabs-mode            ; tabs(indentation), spaces(alignment)
+  :ensure t
   :config
-  (setq hippie-expand-try-functions-list
-        '(try-expand-dabbrev
-          try-expand-dabbrev-all-buffers
-          try-expand-dabbrev-from-kill
-          try-complete-file-name-partially
-          try-complete-file-name
-          try-expand-all-abbrevs
-          try-expand-list
-          try-complete-lisp-symbol-partially
-          try-complete-lisp-symbol)))
+  (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'ruby 'nxml))
 
-(setq tramp-default-method "ssh")
+(hook-into-modes #'(lambda ()
+                     (setq indent-tabs-mode t
+                           tab-width 4))
+                 'c-mode-common-hook
+                 'js2-mode-hook
+                 'java-mode-hook)
 
-;; magit (git)
-(use-package magit
+
+;; ======================================
+;;  Programming
+;; ======================================
+
+(use-package magit                      ; git version control
   :ensure t
   :bind (("C-x C-g" . magit-status))
   :config
@@ -382,41 +313,15 @@ point reaches the beginning or end of the buffer, stop there."
     (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git.exe"))
   (setq magit-last-seen-setup-instructions "1.4.0"))
 
-(use-package yasnippet
+
+(use-package highlight-parentheses      ; highlight matching parens
   :ensure t
-  :diminish yas-minor-mode
+  :diminish highlight-parentheses-mode
   :config
-  (yas-global-mode 1))
+  (global-highlight-parentheses-mode))
 
-(use-package zop-to-char
-  :ensure t
-  :config
-  (global-set-key [remap zap-to-char] 'zop-to-char))
-
-(use-package avy
-  :bind (("C-. c" . avy-goto-char)
-         ("C-. f" . avy-goto-char-in-line)
-         ("C-. l" . avy-goto-line)
-         ("C-. w" . avy-goto-word-or-subword-1)
-         ("C-. s" . avy-goto-char-timer)
-         ("C-. p" . avy-pop-mark))
-  :config
-  (setq avy-background t))
-
-(use-package ace-window
-  :ensure t
-  :config
-  (global-set-key (kbd "C-. n") 'ace-window)
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
-
-(use-package expand-region
-  :ensure t
-  :bind (("C-c v" . er/expand-region)))
-
-(use-package hydra :ensure t)
-
-;; directly from lunaryorn's config
-(use-package smartparens                ; Parenthesis editing and balancing
+;; from lunaryorn's config
+(use-package smartparens                ; parens editing and balancing
   :ensure t
   :bind (("C-c k" . lunaryorn-smartparens/hydra/body)
          :map smartparens-strict-mode-map
@@ -483,19 +388,157 @@ _k_: kill        _s_: split                   _{_: wrap with { }
         sp-hybrid-kill-entire-symbol nil)
   :diminish smartparens-mode)
 
-(use-package restclient
+(use-package expand-region
+  :ensure t
+  :bind (("C-c v" . er/expand-region)))
+
+(use-package flycheck                   ; on-the-fly error checking
+  :ensure t
+  :init
+  (global-flycheck-mode)
+  :config
+  (setq flycheck-check-syntax-automatically '(mode-enabled save))
+  (defhydra jyh/hydra-flycheck
+    (:pre (progn (setq hydra-lv t) (flycheck-list-errors))
+     :post (progn (setq hydra-lv nil) (quit-windows-on "*Flycheck errors*"))
+     :hint nil)
+    "Errors"
+    ("f"  flycheck-error-list-set-filter                            "Filter")
+    ("j"  flycheck-next-error                                       "Next")
+    ("k"  flycheck-previous-error                                   "Previous")
+    ("gg" flycheck-first-error                                      "First")
+    ("G"  (progn (goto-char (point-max)) (flycheck-previous-error)) "Last")
+    ("q"  nil)))
+
+(use-package projectile                 ; project management
+  :ensure t
+  :diminish projectile-mode
+  :config
+  (projectile-global-mode)
+  ;; uncomment this if smart-mode-line is off
+  ;(setq projectile-mode-line
+        ;'(:eval (format " P/%s" (projectile-project-name))))
+  ;; otherwise too slow
+  (setq projectile-enable-caching t))
+
+(use-package ggtags                     ; symbol tags
   :ensure t
   :config
-  (use-package company-restclient :ensure t))
+  (hook-into-modes
+   '(lambda () (ggtags-mode 1))
+   'c-mode-hook
+   'c++-mode-hook
+   'erlang-mode-hook
+   'f90-mode-hook
+   'java-mode-hook
+   'js2-mode-hook
+   'lua-mode-hook
+   'makefile-mode-hook))
 
-(use-package spotify
+(use-package yasnippet                  ; snippets/templates
+  :ensure t
+  :diminish yas-minor-mode
+  :config
+  (yas-global-mode 1))
+
+
+;; ======================================
+;;  Completion
+;; ======================================
+
+(use-package ivy                        ; completion backend
+  :ensure t
+  :diminish ivy-mode
+  :bind (("C-c C-r" . ivy-resume)
+         :map ivy-minibuffer-map
+         ("C-." . ivy-avy))
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t
+        ivy-re-builders-alist
+        '((t . ivy--regex-ignore-order))
+        ivy-height 20
+        ivy-fixed-height-minibuffer nil)
+
+  (use-package ivy-hydra :ensure t)     ; sticky keybindings within ivy
+  (use-package swiper :ensure t)        ; within-buffer searching
+  (use-package counsel :ensure t)
+  (use-package counsel-projectile :ensure t
+    :config
+    (counsel-projectile-on))
+
+  ;; setup ivy-based global command keymap
+  (bind-keys
+   :prefix-map ivy-command-map
+   :prefix "C-c i"
+   :prefix-docstring "Ivy/Counsel command keymap"
+   ("s" . swiper)
+   ("o" . ivy-occur)
+   ("i" . counsel-imenu)
+   ("k" . counsel-ag)
+   ("f" . counsel-recentf)
+   ("g" . counsel-git)
+   ("j" . counsel-git-grep)
+   ("l" . counsel-locate)
+   ("u" . counsel-unicode-char)
+   )
+
+  ;; remap built-in functions
+  (bind-keys
+   ([remap execute-extended-command] . counsel-M-x)  ; M-x
+   ([remap switch-to-buffer] . ivy-switch-buffer)    ; C-x b
+   ([remap bookmark-jump] . counsel-bookmark)        ; C-x r b
+   ([remap find-file] . counsel-find-file)           ; C-x C-f
+   ([remap yank-pop] . counsel-yank-pop)             ; M-y
+   )
+
+  (bind-keys
+   :map company-mode-map
+   ("C-:" . counsel-company)
+   :map company-active-map
+   ("C-:" . counsel-company)) )
+
+(use-package company                    ; autocompletion
+  :ensure t
+  :diminish company-mode
+  :bind (("M-RET" . company-complete))
+  :config
+  (global-company-mode)
+  (setq company-dabbrev-code-modes t
+        company-dabbrev-code-everywhere t))
+
+(use-package hippie-exp    ; dabbrev enhacements, expansion/completion
+  :bind (([remap dabbrev-expand] . hippie-expand))
+  :defer t
+  :config
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          try-complete-file-name-partially
+          try-complete-file-name
+          try-expand-all-abbrevs
+          try-expand-list
+          try-complete-lisp-symbol-partially
+          try-complete-lisp-symbol)))
+
+(use-package hydra :ensure t)           ;
+
+
+;; ======================================
+;;  External Utilities
+;; ======================================
+
+(use-package ag :ensure t)              ; better grep search
+
+(use-package spotify                    ; spotify controls
   :ensure t
   :bind (("C-c y y" . spotify-playpause)
          ("C-c y p" . spotify-previous)
          ("C-c y n" . spotify-next)
          ("C-c y c" . spotify-current)))
 
-(use-package maxima
+(use-package maxima                     ; computer algebra system
   :defer t
   :ensure nil)
 (use-package imaxima
@@ -503,31 +546,29 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :ensure nil
   :after maxima)
 
-;; tags
-(use-package ggtags
+
+;; ======================================
+;;  Other
+;; ======================================
+
+(use-package restclient
   :ensure t
   :config
-  (hook-into-modes '(lambda () (ggtags-mode 1))
-                   'c-mode-hook
-                   'c++-mode-hook
-                   'erlang-mode-hook
-                   'f90-mode-hook
-                   'java-mode-hook
-                   'js2-mode-hook
-                   'lua-mode-hook
-                   'makefile-mode-hook))
+  (use-package company-restclient :ensure t))
 
-;; useful utilities library from bbatsov
-(use-package crux :ensure t)
+(use-package crux :ensure t)            ; bbatsov useful utitilies
 
-;; Constants
+;; constants
 (require 'constants)
 (define-key global-map "\C-cci" 'constants-insert)
 (define-key global-map "\C-ccg" 'constants-get)
 (define-key global-map "\C-ccr" 'constants-replace)
 (setq constants-unit-system 'SI)
 
-;; Other
+
+
+;; ======================================
+;;  Misc Functions
 ;; ======================================
 
 ;; Date-Time Functions
@@ -584,6 +625,7 @@ are: unix, dos, mac"
         (narrow-to-region b e)
         (goto-char (point-min))
         (count-matches "\\sw+")))))
+
 (defun randomly-inject-string (str &optional b e)
   (interactive "r")
   (let* ((b (if mark-active (region-beginning) (point-min)))
@@ -598,21 +640,6 @@ are: unix, dos, mac"
           (setq step (random (/ wc 5)))
           (forward-word step)
           (insert " " str))))))
-
-(require 'init-display)
-(require 'init-irc)
-(require 'init-lang)
-(require 'init-mail)
-(require 'init-markup)
-(require 'init-news)
-(require 'init-org)
-(require 'init-tex)
-(require 'init-unicode)
-
-;; operating system specific configuration
-(require 'init-os-windows)
-(require 'init-os-mac)
-(require 'init-os-linux)
 
 ;; Local Variables:
 ;; coding: utf-8
