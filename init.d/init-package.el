@@ -33,35 +33,6 @@
         paradox-spinner-type 'moon)
   (require 'init-package-private))
 
-;; Required Packages
-(defvar jyh-required-packages
-  '(ctags
-    exec-path-from-shell
-    ghc
-    helm-dash
-    multi-web-mode
-    pandoc-mode)
-  "List of required packages to ensure are installed at launch")
-
-(defun jyh-packages-installed-p (package-list)
-  (let ((all-p t))
-    (dolist (p package-list)
-      (if (not (package-installed-p p))
-	  (setq all-p nil)
-	nil))
-    all-p))
-
-;; install missing packages
-(if (not (jyh-packages-installed-p jyh-required-packages))
-    (progn
-      ;; check for new packages
-      (message "%s" "Refreshing package database...")
-      (package-refresh-contents)
-      (message "%s" " done.")
-      (dolist (p jyh-required-packages)
-	(if (not (package-installed-p p))
-	  (package-install p)))))
-
 (provide 'init-package)
 
 ;;; init-package.el ends here
