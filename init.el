@@ -834,8 +834,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 ;; Igor Pro
 ;; ======================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/igor-mode")
-(require 'igor-mode)
+(use-package igor-mode
+  :ensure nil
+  :load-path "site-lisp/igor-mode")
 
 ;; Visual Basic
 ;; ======================================
