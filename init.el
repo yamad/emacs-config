@@ -732,18 +732,8 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 ;; HTML/CSS
 ;; ======================================
-;(require 'scss-mode)
-;(setq scss-compile-at-save nil)
-
-(use-package multi-web-mode
-  :ensure t
-  :init
-  (setq mweb-default-major-mode 'html-mode)
-  (setq mweb-tags
-        '((js2-mode "<script[^>]*>" "</script>")
-          (css-mode "<style[^>]*>" "</style>")))
-  (setq mweb-filename-extensions '("htm" "html"))
-  (multi-web-global-mode 1))
+(use-package web-mode
+  :ensure t)
 
 (use-package restclient
   :ensure t
