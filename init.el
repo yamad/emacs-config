@@ -656,12 +656,11 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   (add-hook 'c-mode-common-hook
             #'(lambda ()
                 (setq-local eldoc-documentation-function #'rtags-eldoc)
-                (setq-local company-b
-                            ckends (cons 'company-rtags company-backends))))
+                (setq-local company-backends
+                            (cons 'company-rtags company-backends))))
   (rtags-enable-standard-keybindings)   ; default C-c r prefix
   (setq rtags-autostart-diagnostics t
-        rtags-completions-enabled t
-        rtags-use-helm t)
+        rtags-completions-enabled t)
   (rtags-diagnostics)
 
   (require 'flycheck-rtags)
