@@ -173,6 +173,7 @@
 
   (which-key-declare-prefixes
     ;;Prefixes for global prefixes and minor modes
+    "C-." "avy"
     "C-c !" "flycheck"
     "C-c f" "files"
     "C-c i" "ivy"
