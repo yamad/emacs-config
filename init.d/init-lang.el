@@ -187,13 +187,13 @@
   :mode (("\\.js$" . js2-mode)
          ("\\.json$" . js2-mode)
          ("\\.jsx$" . js2-jsx-mode))
-  :bind (:map js2-mode-map
-         ("C-x C-e" . js-send-last-sexp)
-         ("C-\ M-x" . js-send-last-sexp-and-go)
-         ("C-c b" . js-send-buffer)
-         ("C-c C-b" . js-send-buffer-and-go)
-         ("C-c l" . js-load-file-and-go))
   :config
+  (use-package nodejs-repl
+    :bind (:map js2-mode-map
+                ("C-c C-z" . nodejs-repl-switch-to-repl)
+                ("C-x C-e" . nodejs-repl-send-last-sexp)
+                ("C-c C-b" . nodejs-repl-send-buffer)
+                ("C-c C-r" . nodejs-repl-send-region)))
   ;; use programs from local node environment if possible
   (defun jyh/setup-local-node-env ()
     "use local programs for nodejs projects"
@@ -201,14 +201,12 @@
     (let ((local-babel-node (expand-file-name "./node_modules/.bin/babel-node"))
           (local-eslint     (expand-file-name "./node_modules/.bin/eslint")))
       (if (file-exists-p local-babel-node)
-          (setq inferior-js-program-command local-babel-node))
+          (setq nodejs-repl-command local-babel-node))
       (if (file-exists-p local-eslint)
           (setq flycheck-javascript-eslint-executable local-eslint))))
   (with-eval-after-load 'projectile
     (add-hook 'projectile-after-switch-project-hook
               'jyh/setup-local-node-env))
-
-  (setq inferior-js-program-command "node")
   (add-hook 'js2-mode-hook #'flycheck-mode))
 
 ;; tern -- javascript static analysis
