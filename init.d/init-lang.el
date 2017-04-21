@@ -141,68 +141,19 @@
               ("C-c M-." . nil)
               ("C-c C-d" . nil))
   :config
-  (setq haskell-process-path-ghci "stack ghci"))
-  ;;(setq haskell-process-args-stack-ghci '("--ghci-options=-ferror-spans")))
+  (setq haskell-process-type 'stack-ghci))
 
 (use-package haskell-compile
   :ensure haskell-mode
-  :defer t
-  :config
+  :defer t)
+  ;:config
   ;; use Stack for building
-  (setq haskell-compile-cabal-build-command "stack build"))
+  ;(setq haskell-compile-cabal-build-command "stack build"))
 
 (use-package hindent
   :ensure t
   :defer t
-  :init (add-hook 'haskell-mode-hook #'hindent-mode)
-  :config
-  (setq hindent-style "johan-tibell"))
-
-(use-package haskell-mode
-  :defer t
-  :commands (haskell-decl-scan
-             haskell-doc-mode
-             haskell-indentation-mode
-             interactive-haskell-mode)
-  :init
-  (use-package ghc :ensure t)
-  (add-hook 'haskell-mode-hook
-            #'(lambda ()
-                (ghc-init)
-                (haskell-doc-mode)
-                (haskell-decl-scan-mode)
-                (haskell-indentation-mode)
-                (interactive-haskell-mode)
-                (flycheck-mode)
-                (setq-local company-backends '(company-ghc))))
-  (setq haskell-interactive-popup-errors nil)
-  :bind (:map haskell-mode-map
-              ("C-x C-d" . nil)
-              ("C-c C-z" . haskell-interactive-switch)
-              ("C-c C-l" . haskell-process-load-file)
-              ("C-c C-b" . haskell-interactive-switch)
-              ("C-c C-t" . haskell-process-do-type)
-              ("C-c C-i" . haskell-process-do-info)
-              ("C-c C-c" . haskell-compile)
-              ("C-c M-." . nil)
-              ("C-c C-d" . nil))
-  :config
-  (setq haskell-process-path-ghci "stack ghci"))
-  ;;(setq haskell-process-args-stack-ghci '("--ghci-options=-ferror-spans")))
-
-(use-package haskell-compile
-  :ensure haskell-mode
-  :defer t
-  :config
-  ;; use Stack for building
-  (setq haskell-compile-cabal-build-command "stack build"))
-
-(use-package hindent
-  :ensure t
-  :defer t
-  :init (add-hook 'haskell-mode-hook #'hindent-mode)
-  :config
-  (setq hindent-style "johan-tibell"))
+  :init (add-hook 'haskell-mode-hook #'hindent-mode))
 
 
 
