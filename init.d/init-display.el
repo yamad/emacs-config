@@ -44,11 +44,12 @@
      (setq sml/theme nil)                 ; zenburn theme provides theming
      (setq sml/no-confirm-load-theme t)
      (sml/setup)
-     (diminish 'projectile-mode)))        ; sml provides its own projectile display
+     (diminish 'projectile-mode))))        ; sml provides its own projectile display
 
  ;; set syntax highlighting and default color scheme
  (use-package zenburn-theme
    :ensure t
+   :disabled
    :config
    (load-theme 'zenburn t)
    (global-font-lock-mode)
@@ -58,7 +59,7 @@
     (custom-set-faces
      `(linum
        ((t (:foreground ,zenburn-bg+2
-                        :background ,zenburn-bg))))
+            :background ,zenburn-bg))))
      `(fringe
        ((t (:background ,zenburn-bg))))
      ;; no box around modeline
@@ -83,8 +84,14 @@
        (zenburn-with-color-variables
         (custom-set-faces
          `(mode-line ((t (:background ,zenburn-bg-2 :box nil))))))))
+
    (add-hook 'window-configuration-change-hook
-             #'jyh/change-modeline-by-window-count)))
+             #'jyh/change-modeline-by-window-count))
+
+(use-package darktooth-theme
+  :ensure t
+  :config
+  (load-theme 'darktooth t))
 
 (provide 'init-display)
 
