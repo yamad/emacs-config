@@ -19,6 +19,8 @@
 (unless *is-mac-display*
   (menu-bar-mode   -1))
 
+(setq linum-mode t)
+
 (jyh/do-after-display-system-init
  ;; remove unnecessary UI elements
  (scroll-bar-mode -1)
