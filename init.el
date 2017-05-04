@@ -282,9 +282,7 @@ point reaches the beginning or end of the buffer, stop there."
   (let ((fill-column (point-max)))
     (fill-paragraph nil)))
 (defun unfill-region (beg end)
-  "Unfill the region, joining text paragraphs into a single
-    logical line.  This is useful, e.g., for use with
-    `visual-line-mode'."
+  "Unfill the region from BEG to END, joining text paragraphs into a single logical line.  This is useful, e.g., for use with `visual-line-mode'."
   (interactive "*r")
   (let ((fill-column (point-max)))
     (fill-region beg end)))
