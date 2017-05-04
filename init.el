@@ -582,9 +582,11 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 ;; constants
 (require 'constants)
-(define-key global-map "\C-cci" 'constants-insert)
-(define-key global-map "\C-ccg" 'constants-get)
-(define-key global-map "\C-ccr" 'constants-replace)
+(bind-keys :prefix-map constants-keymap
+           :prefix "C-c c"
+           ("i" . constants-insert)
+           ("g" . constants-get)
+           ("r" . constants-replace))
 (setq constants-unit-system 'SI)
 
 ;; custom and collected elisp stuff
