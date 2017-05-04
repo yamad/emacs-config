@@ -108,4 +108,5 @@ are: unix, dos, mac"
     (while (re-search-forward regexp nil t)
       (calc-eval-region-replace-do (match-beginning 0) (match-end 0) ops))))
 
+(provide 'jyh-functions)
 ;;; jyh-functions.el ends here
