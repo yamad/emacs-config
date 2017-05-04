@@ -51,7 +51,6 @@
  ;; set syntax highlighting and default color scheme
  (use-package zenburn-theme
    :ensure t
-   :disabled
    :config
    (load-theme 'zenburn t)
    (global-font-lock-mode)
@@ -92,6 +91,7 @@
 
 (use-package darktooth-theme
   :ensure t
+  :disabled
   :config
   (load-theme 'darktooth t))
 
