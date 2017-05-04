@@ -193,19 +193,24 @@
 ;; ======================================
 
 (use-package avy                        ; keyed label navigation
-  :bind (("C-. c" . avy-goto-char)
-         ("C-. f" . avy-goto-char-in-line)
-         ("C-. l" . avy-goto-line)
-         ("C-. w" . avy-goto-word-or-subword-1)
-         ("C-. s" . avy-goto-char-timer)
-         ("C-. p" . avy-pop-mark))
   :config
+  (bind-keys
+   :prefix-map avy-keymap
+   :prefix "C-."
+   ("c" . avy-goto-char)
+   ("f" . avy-goto-char-in-line)
+   ("l" . avy-goto-line)
+   ("w" . avy-goto-word-or-subword-1)
+   ("s" . avy-goto-char-timer)
+   ("p" . avy-pop-mark))
   (setq avy-background t))
 
 (use-package ace-window                 ; keyed label window navigation
   :ensure t
   :config
-  (global-set-key (kbd "C-. n") 'ace-window)
+  (bind-keys
+   :map avy-keymap
+   ("n" . ace-window))
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 (use-package zop-to-char                ; better zap-to-char
@@ -411,7 +416,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     ("k"  flycheck-previous-error                                   "Previous")
     ("gg" flycheck-first-error                                      "First")
     ("G"  (progn (goto-char (point-max)) (flycheck-previous-error)) "Last")
-    ("q"  nil)))
+    ("q"  nil))
+  (bind-keys ("C-c ! !" . jyh/hydra-flycheck/body)))
+
 
 (use-package projectile                 ; project management
   :ensure t
@@ -536,10 +543,14 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 (use-package spotify                    ; spotify controls
   :ensure t
-  :bind (("C-c y y" . spotify-playpause)
-         ("C-c y p" . spotify-previous)
-         ("C-c y n" . spotify-next)
-         ("C-c y c" . spotify-current)))
+  :config
+  (bind-keys
+   :prefix-map spotify-keymap
+   :prefix "C-c y"
+   ("y" . spotify-playpause)
+   ("p" . spotify-previous)
+   ("n" . spotify-next)
+   ("c" . spotify-current)))
 
 (use-package maxima                     ; computer algebra system
   :defer t
