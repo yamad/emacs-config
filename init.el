@@ -175,6 +175,7 @@
     ;;Prefixes for global prefixes and minor modes
     "C-." "avy"
     "C-c !" "flycheck"
+    "C-c c" "constants"
     "C-c f" "files"
     "C-c i" "ivy"
     "C-c j" "jump"
@@ -183,6 +184,7 @@
     "C-c p" "projectile"
     "C-c s" "search"
     "C-c x" "text"
+    "C-c t" "tmux"
     "C-c y" "spotify"))
 
 
@@ -547,6 +549,25 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :ensure nil
   :after maxima)
 
+(use-package emamux
+  :ensure t
+  :config
+  (bind-keys
+   :prefix-map emamux-jyh-keymap
+   :prefix "C-c t"
+   ("s" . emamux:send-command)
+   ("y" . emamux:yank-from-list-buffers)
+   ("!" . emamux:run-command)
+   ("r" . emamux:run-last-command)
+   ("M-s" . emamux:run-region)
+   ("C-i" . emamux:inspect-runner)
+   ("C-k" . emamux:close-panes)
+   ("C-c" . emamux:interrupt-runner)
+   ("M-k" . emamux:clear-runner-history)
+   ("c" . emamux:new-window)
+   ("C" . emamux:clone-current-frame)
+   ("2" . emamux:split-window)
+   ("3" . emamux:split-window-horizontally)))
 
 ;; ======================================
 ;;  Other
