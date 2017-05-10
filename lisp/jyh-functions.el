@@ -108,5 +108,36 @@ are: unix, dos, mac"
     (while (re-search-forward regexp nil t)
       (calc-eval-region-replace-do (match-beginning 0) (match-end 0) ops))))
 
+(defun gzipped-p (beg)
+  "Return true if BEG is the start of a gzipped region."
+  (interactive "d")
+  (defun test-gzip ()
+    "Test for gzip magic number (1f 8b)."
+    (let* ((gzip-tag (buffer-substring beg (+ beg 2))))
+      (and (eq (get-byte 0 gzip-tag) #x1f)
+           (eq (get-byte 1 gzip-tag) #x8b))))
+  (if (not enable-multibyte-characters)
+      (test-gzip)
+    (toggle-enable-multibyte-characters)
+    (setq is-gzip (test-gzip))
+    (toggle-enable-multibyte-characters)
+    is-gzip))
+
+(defun maybe-zlib-decompress-region ()
+  "Decompress if point to end of buffer is gzipped.
+
+Region boundaries change due to switch from multibyte to unibyte
+buffer, so region has to be calculated inline and can't be passed
+as arguments."
+  (interactive "r")
+  (defun try-decompression ()
+    (if (gzipped-p (point))
+        (zlib-decompress-region (point) (point-max))))
+  (if (not enable-multibyte-characters)
+      (try-decompression)
+    (toggle-enable-multibyte-characters)
+    (try-decompression)
+    (toggle-enable-multibyte-characters)))
+
 (provide 'jyh-functions)
 ;;; jyh-functions.el ends here

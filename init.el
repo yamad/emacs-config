@@ -583,9 +583,22 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 ;; ======================================
 
 (use-package restclient
-  :ensure t
+  ;;:ensure t
+  :load-path "site-lisp/restclient"
   :config
-  (use-package company-restclient :ensure t))
+  (use-package company-restclient :ensure t)
+  (defun jyh-restclient-goto-body ()
+    (save-match-data
+      (beginning-of-buffer)
+      (while (not (looking-at restclient-empty-line-regexp))
+        (forward-line))
+      (forward-line)))
+  (defun jyh-restclient-maybe-gunzip ()
+    (save-excursion
+      (jyh-restclient-goto-body)
+      (maybe-zlib-decompress-region)))
+  (add-hook 'restclient-response-received-hook
+            'jyh-restclient-maybe-gunzip))
 
 (use-package crux :ensure t)            ; bbatsov useful utitilies
 
