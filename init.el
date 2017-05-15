@@ -246,10 +246,11 @@ point reaches the beginning or end of the buffer, stop there."
 (bind-key [remap move-beginning-of-line]
           'smarter-move-beginning-of-line)
 
-;; alternative directory/file navigator
-(use-package ranger :ensure t)
+(use-package ranger :ensure t)          ; alternate file navigator
 
-
+(use-package zoom-frm                   ; better font resizing
+  :ensure t
+  :bind (([remap text-scale-adjust] . zoom-in/out)))
 
 ;; ======================================
 ;;  Editing/Searching
