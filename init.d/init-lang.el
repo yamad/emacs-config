@@ -265,22 +265,17 @@
   (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
 
 ;; setup IPython shell, lifted from Emacs Prelude
+(setq python-shell-interpreter-args "-i"
+      python-shell-interpreter "python")
 (when (executable-find "ipython")
-  (setq python-shell-interpreter "ipython"
-        python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-        python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
-        python-shell-completion-setup-code
-        "from IPython.core.completerlib import module_completion"
-        python-shell-completion-module-string-code
-        "';'.join(module_completion('''%s'''))\n"
-        python-shell-completion-string-code
-        "';'.join(get_ipython().Completer.all_completions('''%s'''))\n")
-  (if (version< (replace-regexp-in-string "\n$" ""
-                                          (shell-command-to-string "ipython --version"))
-                "5")
-      (setq python-shell-interpreter-args "-i")
-    (setq python-shell-interpreter-args "--simple-prompt -i")))
-
+  (setq python-shell-interpreter "ipython")
+  (let ((version-number
+         (replace-regexp-in-string "\n$" "" (shell-command-to-string "ipython --version"))))
+    (cond ((version< version-number "5")
+           (setq python-shell-interpreter-args "-i"))
+          ((version<= version-number "6")
+           (setq python-shell-interpreter-args "--TerminalIPythonApp.interactive_shell_class=rlipython.TerminalInteractiveShell -i"))
+          (t (setq python-shell-interpreter-args "--simple-prompt -i")))))
 
 (require 'cython-mode)
 ;; Nosetests
