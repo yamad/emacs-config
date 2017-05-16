@@ -173,6 +173,7 @@
 
   (which-key-declare-prefixes
     ;;Prefixes for global prefixes and minor modes
+    "C-c ." "avy"
     "C-." "avy"
     "C-c !" "flycheck"
     "C-c c" "constants"
@@ -196,13 +197,14 @@
   :config
   (bind-keys
    :prefix-map avy-keymap
-   :prefix "C-."
+   :prefix "C-c ."
    ("c" . avy-goto-char)
    ("f" . avy-goto-char-in-line)
    ("l" . avy-goto-line)
    ("w" . avy-goto-word-or-subword-1)
    ("s" . avy-goto-char-timer)
    ("p" . avy-pop-mark))
+  (bind-key "C-." avy-keymap)           ; shortcut for GUIs
   (setq avy-background t))
 
 (use-package ace-window                 ; keyed label window navigation
