@@ -74,12 +74,14 @@
         rtags-completions-enabled t)
   (rtags-diagnostics)
 
-  (require 'flycheck-rtags)
-  (defun jyh-flycheck-rtags-setup ()
-    (flycheck-select-checker 'rtags)
-    (setq-local flycheck-highlighting-mode nil)
-    (setq-local flycheck-check-syntax-automatically nil))
-  (add-hook 'c-mode-common-hook #'jyh-flycheck-rtags-setup))
+  (use-package flycheck-rtags
+    :ensure t
+    :config
+    (defun jyh-flycheck-rtags-setup ()
+      (flycheck-select-checker 'rtags)
+      (setq-local flycheck-highlighting-mode nil)
+      (setq-local flycheck-check-syntax-automatically nil))
+    (add-hook 'c-mode-common-hook #'jyh-flycheck-rtags-setup)))
 
 
 ;; Objective-C
