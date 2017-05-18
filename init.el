@@ -13,6 +13,8 @@
 
 ;;; Code:
 
+(defconst emacs-start-time (current-time)) ; cribbed from jwiegley
+
 ;; added by Package.el for emacs 25
 (package-initialize)
 

@@ -180,12 +180,11 @@
 
 (use-package js2-mode
   :ensure t
-  :defer t
   :after flycheck
   :mode (("\\.js$" . js2-mode)
          ("\\.json$" . js2-mode)
          ("\\.jsx$" . js2-jsx-mode))
-  :config
+  :init
   (use-package nodejs-repl
     :bind (:map js2-mode-map
                 ("C-c C-z" . nodejs-repl-switch-to-repl)
