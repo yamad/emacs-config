@@ -65,10 +65,10 @@
   :config
   (when (memq window-system '(mac ns))
     (add-to-list 'exec-path-from-shell-variables "NIX_PATH")
-    (add-to-list 'exec-path-from-shell-variables "CURL_CA_BUNDLE")
     (exec-path-from-shell-initialize)))
 
 ;; auxillary configurations
+(require 'init-complete)
 (require 'init-display)
 (require 'init-irc)
 (require 'init-lang)
@@ -446,12 +446,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
    'lua-mode-hook
    'makefile-mode-hook))
 
-(use-package yasnippet                  ; snippets/templates
-  :ensure t
-  :diminish yas-minor-mode
-  :config
-  (yas-global-mode 1))
-
 
 ;; ======================================
 ;;  Completion
@@ -509,31 +503,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
    :map company-active-map
    ("C-:" . counsel-company)) )
 
-(use-package company                    ; autocompletion
-  :ensure t
-  :diminish company-mode
-  :bind (("M-RET" . company-complete))
-  :config
-  (global-company-mode)
-  (setq company-dabbrev-code-modes t
-        company-dabbrev-code-everywhere t))
-
-(use-package hippie-exp    ; dabbrev enhacements, expansion/completion
-  :bind (([remap dabbrev-expand] . hippie-expand))
-  :defer t
-  :config
-  (setq hippie-expand-try-functions-list
-        '(try-expand-dabbrev
-          try-expand-dabbrev-all-buffers
-          try-expand-dabbrev-from-kill
-          try-complete-file-name-partially
-          try-complete-file-name
-          try-expand-all-abbrevs
-          try-expand-list
-          try-complete-lisp-symbol-partially
-          try-complete-lisp-symbol)))
-
-(use-package hydra :ensure t)           ;
+(use-package hydra :ensure t)           ; sticky keys
 
 
 ;; ======================================

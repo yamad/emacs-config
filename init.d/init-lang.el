@@ -19,11 +19,8 @@
 
 (use-package company-c-headers
   :after cc-mode
-  :config
-  (add-hook 'c-mode-common-hook
-            #'(lambda ()
-                (setq-local company-backends
-                            (cons 'company-c-headers company-backends)))))
+  :init
+  (jyh-company-for-mode 'c-mode-common-hook company-c-headers))
 
 (defun c-lineup-arglist-tabs-only (ignored)
   "Line up argument lists by tabs, not spaces"
@@ -66,9 +63,8 @@
   (add-hook 'c++-mode-common-hook #'rtags-start-process-unless-running)
   (add-hook 'c-mode-common-hook
             #'(lambda ()
-                (setq-local eldoc-documentation-function #'rtags-eldoc)
-                (setq-local company-backends
-                            (cons 'company-rtags company-backends))))
+                (setq-local eldoc-documentation-function #'rtags-eldoc)))
+  (jyh-company-for-mode 'c-mode-common-hook company-rtags)
   (rtags-enable-standard-keybindings)   ; default C-c r prefix
   (setq rtags-autostart-diagnostics t
         rtags-completions-enabled t)
@@ -216,24 +212,20 @@
   :ensure t
   :defer t
   :after js2-mode
-  :config
+  :init
   (add-hook 'js2-mode-hook #'tern-mode))
 
 (use-package company-tern
   :ensure t
-  :defer t
   :after (company tern)
-  :config
-  (add-hook 'js2-mode-hook
-            #'(lambda ()
-                (setq-local company-backends
-                            (cons 'company-tern company-backends)))))
+  :init
+  (jyh-company-for-mode 'js2-mode-hook company-tern))
 
 ;; skewer -- run browser REPL with buffers
 (use-package skewer-mode
   :defer t
   :after js2-mode
-  :config
+  :init
   (add-hook 'js2-mode #'skewer-mode))
 
 
@@ -262,11 +254,16 @@
 
 (use-package anaconda-mode
   :ensure t
-  :config
+  :init
   (add-hook 'python-mode-hook 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
+  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+  (use-package company-anaconda
+    :ensure t
+    :after company
+    :init
+    (jyh-company-for-mode 'python-mode-hook company-anaconda)))
 
-;; setup IPython shell, lifted from Emacs Prelude
+;; setup IPython shell, use readline (rlipython) in IPython 6
 (setq python-shell-interpreter-args "-i"
       python-shell-interpreter "python")
 (when (executable-find "ipython")
