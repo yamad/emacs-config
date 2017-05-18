@@ -8,7 +8,8 @@
 (when *is-mac-os*
   (use-package xcode-mode
     :ensure t
-    :config
+    :defer t
+    :init
     (setq xcode-completing-read-function 'ivy-completing-read)))
 
 (when *is-mac-os*

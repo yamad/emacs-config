@@ -64,10 +64,10 @@
 
 ;; pick up environment from shell
 (use-package exec-path-from-shell
+  :if (memq window-system '(mac ns))
   :config
-  (when (memq window-system '(mac ns))
-    (add-to-list 'exec-path-from-shell-variables "NIX_PATH")
-    (exec-path-from-shell-initialize)))
+  (add-to-list 'exec-path-from-shell-variables "NIX_PATH")
+  (exec-path-from-shell-initialize))
 
 ;; auxillary configurations
 (require 'init-complete)
@@ -146,12 +146,14 @@
 
 (use-package dired+                     ; better directory management
   :ensure t
+  :defer 10
   :config
   ;; don't create new buffer for every directory
   (diredp-toggle-find-file-reuse-dir 1))
 
 (use-package bookmark+                  ; better bookmark management
-  :ensure t)
+  :ensure t
+  :defer 10)
 
 (use-package which-key                  ; keybinding display
   :ensure t
@@ -180,6 +182,7 @@
     "C-c !" "flycheck"
     "C-c c" "constants"
     "C-c f" "files"
+    "C-c g" "git"
     "C-c i" "ivy"
     "C-c j" "jump"
     "C-c m" "major mode"
@@ -196,7 +199,9 @@
 ;; ======================================
 
 (use-package avy                        ; keyed label navigation
-  :config
+  :ensure t
+  :defer t
+  :init
   (bind-keys
    :prefix-map avy-keymap
    :prefix "C-c ."
@@ -211,7 +216,8 @@
 
 (use-package ace-window                 ; keyed label window navigation
   :ensure t
-  :config
+  :defer t
+  :init
   (bind-keys
    :map avy-keymap
    ("n" . ace-window))
@@ -219,8 +225,7 @@
 
 (use-package zop-to-char                ; better zap-to-char
   :ensure t
-  :config
-  (global-set-key [remap zap-to-char] 'zop-to-char))
+  :bind ([remap zap-to-char] . zop-to-char))
 
 ;; from http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
 (defun smarter-move-beginning-of-line (arg)
@@ -291,7 +296,8 @@ _._: split horizontal    _/_: split vertical
 
 (use-package anzu                       ; show search position
   :ensure t
-  :config (global-anzu-mode)
+  :init
+  (global-anzu-mode)
   :bind
   (([remap query-replace] . anzu-query-replace)
    ([remap query-replace-regexp] . anzu-query-replace-regexp)
@@ -359,14 +365,6 @@ _._: split horizontal    _/_: split vertical
   :ensure t
   :defer t
   :diminish "GG"
-  ;; :init
-  ;; (bind-keys :prefix "C-c g"
-  ;;            :prefix-map git-keymap
-  ;;            ("t" . git-gutter:toggle)
-  ;;            ("SPC" . git-gutter:mark-hunk)
-  ;;            ("=" . git-gutter:popup-hunk)
-  ;;            ("g" . jyh-hydra-git-gutter/body))
-
   :config
   (defhydra jyh-hydra-git-gutter ()
       "git (operate on hunks)"
@@ -469,28 +467,28 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 (use-package flycheck                   ; on-the-fly error checking
   :ensure t
-  :init
-  (global-flycheck-mode)
+  :bind ("C-c ! !" . jyh/hydra-flycheck/body)
+  :init (global-flycheck-mode)
   :config
   (setq flycheck-check-syntax-automatically '(mode-enabled save))
   (defhydra jyh/hydra-flycheck
     (:pre (progn (setq hydra-lv t) (flycheck-list-errors))
      :post (progn (setq hydra-lv nil) (quit-windows-on "*Flycheck errors*"))
      :hint nil)
-    "Errors"
+    "Errors (_q_ to quit)"
     ("f"  flycheck-error-list-set-filter                            "Filter")
     ("j"  flycheck-next-error                                       "Next")
     ("k"  flycheck-previous-error                                   "Previous")
     ("gg" flycheck-first-error                                      "First")
     ("G"  (progn (goto-char (point-max)) (flycheck-previous-error)) "Last")
-    ("q"  nil))
-  (bind-keys ("C-c ! !" . jyh/hydra-flycheck/body)))
+    ("q"  nil)))
 
 
 (use-package projectile                 ; project management
   :ensure t
+  :defer t
   :diminish projectile-mode
-  :config
+  :init
   (projectile-global-mode)
   ;; uncomment this if smart-mode-line is off
   ;(setq projectile-mode-line
@@ -500,7 +498,8 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 (use-package ggtags                     ; symbol tags
   :ensure t
-  :config
+  :defer t
+  :init
   (hook-into-modes
    '(lambda () (ggtags-mode 1))
    'c-mode-hook
@@ -580,7 +579,8 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 (use-package spotify                    ; spotify controls
   :ensure t
-  :config
+  :defer t
+  :init
   (bind-keys
    :prefix-map spotify-keymap
    :prefix "C-c y"
@@ -599,7 +599,8 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 (use-package emamux
   :ensure t
-  :config
+  :defer t
+  :init
   (bind-keys
    :prefix-map emamux-jyh-keymap
    :prefix "C-c t"
@@ -622,10 +623,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 ;; ======================================
 
 (use-package restclient
-  ;;:ensure t
   :load-path "site-lisp/restclient"
-  :config
-  (use-package company-restclient :ensure t)
+  :defer t
+  :preface
   (defun jyh-restclient-goto-body ()
     (save-match-data
       (beginning-of-buffer)
@@ -636,19 +636,28 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     (save-excursion
       (jyh-restclient-goto-body)
       (maybe-zlib-decompress-region)))
+  :init
   (add-hook 'restclient-response-received-hook
             'jyh-restclient-maybe-gunzip))
+
+(use-package company-restclient
+  :ensure t
+  :after restclient
+  :init
+  (jyh-company-for-mode 'restclient-mode-hook company-restclient))
 
 (use-package crux :ensure t)            ; bbatsov useful utitilies
 
 ;; constants
-(require 'constants)
-(bind-keys :prefix-map constants-keymap
-           :prefix "C-c c"
-           ("i" . constants-insert)
-           ("g" . constants-get)
-           ("r" . constants-replace))
-(setq constants-unit-system 'SI)
+(use-package constants
+  :defer t
+  :init
+  (bind-keys :prefix-map constants-keymap
+             :prefix "C-c c"
+             ("i" . constants-insert)
+             ("g" . constants-get)
+             ("r" . constants-replace))
+  (setq constants-unit-system 'SI))
 
 (server-start)                          ; server for emacsclient
 

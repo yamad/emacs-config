@@ -23,17 +23,17 @@
   (require 'use-package))
 (require 'diminish)
 (require 'bind-key)
-(setq use-package-always-ensure t)
+;(setq use-package-always-ensure t)
 (setq use-package-verbose t)            ; for profiling
 
 (use-package paradox
   :ensure t
   :defer 10
-  :commands (paradox-upgrade-packages paradox-list-packages)
-  :config
+  :init
   (setq paradox-execute-asynchronously nil
         paradox-automatically-star nil
         paradox-spinner-type 'moon)
+  :config
   (require 'init-package-private))
 
 (provide 'init-package)

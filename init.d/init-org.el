@@ -9,6 +9,7 @@
 
 (use-package org
   :ensure t
+  :defer t
   :init
   ;; use-package's :bind isn't working with :prefix(-map), so
   ;; workaround like this
@@ -20,7 +21,6 @@
              ;; use links outside org-mode
              ("L" . org-insert-link-global)
              ("O" . org-open-at-point-global))
-  :config
   (setq org-log-done t                  ; log timepoints
         org-use-fast-todo-selection t
         org-agenda-include-diary t
@@ -64,6 +64,16 @@
   (add-hook 'rst-mode-hook 'turn-on-orgstruct)
   (add-hook 'rst-mode-hook 'turn-on-orgtbl)
 
+
+  (add-hook 'org-mode-hook
+            (lambda ()
+              ;; yasnippet (using the new org-cycle hooks)
+              (make-variable-buffer-local 'yas/trigger-key)
+              (setq yas/trigger-key [tab])
+              (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
+              (define-key yas/keymap [tab] 'yas/next-field)))
+
+  :config
   ;; rst export for orgtbl
   (defun tbl-line (start end sep width-list field-func)
     (concat
@@ -137,15 +147,7 @@
         (switch-to-buffer-other-window "notes.tex"))))
 
   (defun yas/org-very-safe-expand ()
-    (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
-
-  (add-hook 'org-mode-hook
-            (lambda ()
-              ;; yasnippet (using the new org-cycle hooks)
-              (make-variable-buffer-local 'yas/trigger-key)
-              (setq yas/trigger-key [tab])
-              (add-to-list 'org-tab-first-hook 'yas/org-very-safe-expand)
-              (define-key yas/keymap [tab] 'yas/next-field))))
+    (let ((yas/fallback-behavior 'return-nil)) (yas/expand))))
 
 (provide 'init-org)
 

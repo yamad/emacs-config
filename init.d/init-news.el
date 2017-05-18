@@ -4,7 +4,8 @@
 
 ;;; Code:
 (use-package gnus
-  :config
+  :defer t
+  :init
   (setq gnus-select-method '(nntp "news.eternal-september.org")
         gnus-secondary-select-methods '((nntp "news.gmane.org"))
         user-full-name "Jason Yamada-Hanff"

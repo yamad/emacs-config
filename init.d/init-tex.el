@@ -67,7 +67,8 @@
 
 (use-package latex
   :ensure auctex
-  :config
+  :defer t
+  :init
   (defun jyh/setup-LaTeX ()
     (defun LaTeX-word-count ()
     (interactive)

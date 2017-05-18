@@ -48,15 +48,15 @@
      (sml/setup)
      (diminish 'projectile-mode))))        ; sml provides its own projectile display
 
- ;; set syntax highlighting and default color scheme
- (use-package zenburn-theme
-   :ensure t
-   :config
-   (load-theme 'zenburn t)
-   (global-font-lock-mode)
+;; set syntax highlighting and default color scheme
+(use-package zenburn-theme
+  :ensure t
+  :config
+  (load-theme 'zenburn t)
+  (global-font-lock-mode)
 
-   ;; tone down some default colors in zenburn
-   (zenburn-with-color-variables
+  ;; tone down some default colors in zenburn
+  (zenburn-with-color-variables
     (custom-set-faces
      `(linum
        ((t (:foreground ,zenburn-bg+2
@@ -74,20 +74,20 @@
      `(ivy-virtual
        ((t (:foreground ,zenburn-bg+2))))))
 
-   (defun jyh/change-modeline-by-window-count ()
-     "change modeline style based on number of windows"
-     (if (eq (count-windows) 1)
-         ;; tone down mode line if just one window
-         (zenburn-with-color-variables
+  (defun jyh/change-modeline-by-window-count ()
+    "change modeline style based on number of windows"
+    (if (eq (count-windows) 1)
+        ;; tone down mode line if just one window
+        (zenburn-with-color-variables
           (custom-set-faces
            `(mode-line ((t (:background ,zenburn-bg-1 :box nil))))))
-       ;; make active mode line darker
-       (zenburn-with-color-variables
+      ;; make active mode line darker
+      (zenburn-with-color-variables
         (custom-set-faces
          `(mode-line ((t (:background ,zenburn-bg-2 :box nil))))))))
 
-   (add-hook 'window-configuration-change-hook
-             #'jyh/change-modeline-by-window-count))
+  (add-hook 'window-configuration-change-hook
+            #'jyh/change-modeline-by-window-count))
 
 (use-package darktooth-theme
   :ensure t

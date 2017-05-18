@@ -58,7 +58,9 @@
 (add-hook 'c-initialization-hook 'my-make-CR-do-indent)
 
 (use-package rtags
-  :config
+  :ensure t
+  :defer t
+  :init
   (add-hook 'c-mode-common-hook #'rtags-start-process-unless-running)
   (add-hook 'c++-mode-common-hook #'rtags-start-process-unless-running)
   (add-hook 'c-mode-common-hook
@@ -68,16 +70,18 @@
   (rtags-enable-standard-keybindings)   ; default C-c r prefix
   (setq rtags-autostart-diagnostics t
         rtags-completions-enabled t)
-  (rtags-diagnostics)
+  (rtags-diagnostics))
 
-  (use-package flycheck-rtags
-    :ensure t
-    :config
-    (defun jyh-flycheck-rtags-setup ()
-      (flycheck-select-checker 'rtags)
-      (setq-local flycheck-highlighting-mode nil)
-      (setq-local flycheck-check-syntax-automatically nil))
-    (add-hook 'c-mode-common-hook #'jyh-flycheck-rtags-setup)))
+(use-package flycheck-rtags
+  :ensure t
+  :defer t
+  :preface
+  (defun jyh-flycheck-rtags-setup ()
+    (flycheck-select-checker 'rtags)
+    (setq-local flycheck-highlighting-mode nil)
+    (setq-local flycheck-check-syntax-automatically nil))
+  :init
+  (add-hook 'c-mode-common-hook #'jyh-flycheck-rtags-setup))
 
 
 ;; Objective-C
@@ -116,8 +120,8 @@
              haskell-doc-mode
              haskell-indentation-mode
              interactive-haskell-mode)
+
   :init
-  (use-package ghc :ensure t)
   (add-hook 'haskell-mode-hook
             #'(lambda ()
                 (ghc-init)
@@ -128,6 +132,8 @@
                 (flycheck-mode)
                 (setq-local company-backends '(company-ghc))))
   (setq haskell-interactive-popup-errors nil)
+  (setq haskell-process-type 'stack-ghci)
+
   :bind (:map haskell-mode-map
               ("C-x C-d" . nil)
               ("C-c C-z" . haskell-interactive-switch)
@@ -139,7 +145,7 @@
               ("C-c M-." . nil)
               ("C-c C-d" . nil))
   :config
-  (setq haskell-process-type 'stack-ghci))
+  (use-package ghc :ensure t))
 
 (use-package haskell-compile
   :ensure haskell-mode
@@ -161,8 +167,10 @@
 
 (use-package igor-mode
   :ensure nil
+  :defer t
   :load-path "site-lisp/igor-mode"
-  :config
+  :mode ("\\.ipf$" . igor-mode)
+  :preface
   (defun reload-igor-mode ()
     (interactive)
     (if (member major-mode '(igor-mode))
@@ -253,14 +261,17 @@
 
 (use-package anaconda-mode
   :ensure t
+  :defer t
   :init
   (add-hook 'python-mode-hook 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
-  (use-package company-anaconda
-    :ensure t
-    :after company
-    :init
-    (jyh-company-for-mode 'python-mode-hook company-anaconda)))
+  (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
+
+(use-package company-anaconda
+  :ensure t
+  :defer t
+  :after (company anaconda-mode)
+  :init
+  (jyh-company-for-mode 'python-mode-hook company-anaconda))
 
 ;; setup IPython shell, use readline (rlipython) in IPython 6
 (setq python-shell-interpreter-args "-i"
@@ -274,24 +285,6 @@
           ((version<= version-number "6")
            (setq python-shell-interpreter-args "--TerminalIPythonApp.interactive_shell_class=rlipython.TerminalInteractiveShell -i"))
           (t (setq python-shell-interpreter-args "--simple-prompt -i")))))
-
-(require 'cython-mode)
-;; Nosetests
-(defun py-nosetests()
-  "Runs nosetests command on current file"
-  (interactive)
-  (let ((directory
-         (substring (buffer-file-name) 0
-                    (- (length
-                        (buffer-file-name))
-                       (+ 1 (length (buffer-name))))))
-        (file (file-name-sans-extension (buffer-name))))
-    (eshell-command
-     (format "nosetests --pdb --with-doctest -w%s %s" directory file))))
-(add-hook 'python-mode-hook
-          '(lambda ()
-             (local-set-key "\C-c\C-q" 'py-nosetests)))
-
 
 ;; Pdb debugger
 (setq pdb-path '/usr/lib/python2.6/pdb.py
@@ -354,7 +347,6 @@
   :load-path (lambda ()
                (list "site-lisp/polymode"
                      "site-lisp/polymode/modes"))
-  :defer t
   :mode ("\\.Rmd$" . Rmd-mode)
   :init
   (defun Rmd-mode ()
@@ -371,7 +363,6 @@
    ("C-c <C-down>" . ess-Rmd-eval-buffer-from-here-to-end)
    ("C-c C-b" . ess-Rmd-eval-buffer)
    ("C-M-x" . ess-Rmd-eval-chunk))
-  :config
   (add-hook 'poly-markdown+r-mode-hook #'visual-line-mode))
 
 
@@ -382,7 +373,8 @@
 
 (use-package geiser
   :ensure t
-  :config
+  :defer t
+  :init
   (add-hook 'geiser-mode-hook
             (lambda ()
               (local-unset-key (kbd "C-.")))))
@@ -393,11 +385,8 @@
 ;;  Visual Basic
 ;; ======================================
 
-(autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
-(setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|vbs\\)$" .
-                                 visual-basic-mode)) auto-mode-alist))
-
-
+(use-package visual-basic-mode
+  :mode ("\\.\\(frm\\|bas\\|cls\\|vbs\\)$" . visual-basic-mode))
 
 (provide 'init-lang)
 ;;; init-lang.el ends here

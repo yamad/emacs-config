@@ -42,13 +42,16 @@
          ("\\.cmake\\'" . cmake-mode)))
 
 ;; HTML/CSS
-(use-package web-mode :ensure t)
+(use-package web-mode
+  :ensure t
+  :mode (("\\.html?\\'" . web-mode)
+         ("\\.jinja\\'" . web-mode)))
 
 ;; nix package mangement
-(use-package nix-mode :ensure t)
-(use-package nix-buffer :ensure t)
-(use-package nix-sandbox :ensure t)
-(use-package nixos-options :ensure t)
+(use-package nix-mode      :ensure t :defer t)
+(use-package nix-buffer    :ensure t :defer t)
+(use-package nix-sandbox   :ensure t :defer t)
+(use-package nixos-options :ensure t :defer t)
 
 ;; XML
 (eval-after-load 'rng-loc
@@ -63,6 +66,7 @@
 ;; ledger -- accounting program
 (use-package ledger-mode
   :ensure t
+  :defer t
   :config
   (set-face-attribute 'ledger-font-xact-highlight-face nil
                       :background "midnight blue")
