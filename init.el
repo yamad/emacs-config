@@ -347,12 +347,47 @@ _._: split horizontal    _/_: split vertical
 
 (use-package magit                      ; git version control
   :ensure t
+  :defer 5
   :bind (("C-x C-g" . magit-status))
-  :config
+  :init
   (when *is-windows-os*
     (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git.exe"))
-  (setq magit-last-seen-setup-instructions "1.4.0"))
+  (setq magit-last-seen-setup-instructions "1.4.0")
+  (setq vc-handled-backends (delq 'Git vc-handled-backends)))
 
+(use-package git-gutter
+  :ensure t
+  :defer t
+  :diminish "GG"
+  ;; :init
+  ;; (bind-keys :prefix "C-c g"
+  ;;            :prefix-map git-keymap
+  ;;            ("t" . git-gutter:toggle)
+  ;;            ("SPC" . git-gutter:mark-hunk)
+  ;;            ("=" . git-gutter:popup-hunk)
+  ;;            ("g" . jyh-hydra-git-gutter/body))
+
+  :config
+  (defhydra jyh-hydra-git-gutter ()
+      "git (operate on hunks)"
+      ("p" git-gutter:previous-hunk "previous")
+      ("n" git-gutter:next-hunk "next")
+      ("s" git-gutter:stage-hunk "stage")
+      ("=" git-gutter:popup-hunk "view")
+      ("SPC" git-gutter:mark-hunk "mark")
+      ("q" nil "quit")))
+
+(bind-keys* :prefix "C-c g"
+            :prefix-map git-keymap)
+(bind-keys :map git-keymap
+             ("s" . magit-status)
+             ("t" . git-gutter:toggle)
+             ("SPC" . git-gutter:mark-hunk)
+             ("=" . git-gutter:popup-hunk)
+             ("p" . git-gutter:previous-hunk)
+             ("n" . git-gutter:next-hunk)
+             ("S" . git-gutter:stage-hunk)
+             ("g" . jyh-hydra-git-gutter/body))
 
 (use-package highlight-parentheses      ; highlight matching parens
   :ensure t
