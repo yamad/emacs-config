@@ -254,6 +254,35 @@ point reaches the beginning or end of the buffer, stop there."
   :ensure t
   :bind (([remap text-scale-adjust] . zoom-in/out)))
 
+(defhydra jyh/hydra-resize-windows (:hint nil)
+  "
+Windows (_q_ to quit):
+_h_: grow horizontal     _l_: shrink horizontal
+_j_: grow vertical       _k_: shrink vertical
+_o_: cycle windows (>)   _O_: cycle windows (<)
+_._: split horizontal    _/_: split vertical
+"
+  ("h" enlarge-window-horizontally)
+  ("j" enlarge-window)
+  ("k" shrink-window)
+  ("l" srink-window-horizontally)
+  ("/" split-window-horizontally)
+  ("." split-window-vertically)
+  ("o" other-window)
+  ("O" (other-window -1))
+  ("q" nil))
+(bind-key "C-c w" 'jyh/hydra-resize-windows/body)
+
+(defhydra hydra-vi (:pre (set-cursor-color "#40e0d0")
+                    :post (set-cursor-color "#ffffff"))
+  "vi"
+  ("l" forward-char)
+  ("h" backward-char)
+  ("j" next-line)
+  ("k" previous-line)
+  ("q" nil "quit"))
+(bind-key "C-c v" 'hydra-vi/body)
+
 ;; ======================================
 ;;  Editing/Searching
 ;; ======================================
