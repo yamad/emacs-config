@@ -192,7 +192,8 @@
     "C-c s" "search"
     "C-c x" "text"
     "C-c t" "tmux"
-    "C-c y" "spotify"))
+    "C-c y" "spotify"
+    "C-c &" "yasnippet"))
 
 
 ;; ======================================
