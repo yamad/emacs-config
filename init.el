@@ -107,7 +107,7 @@
 
 
 (use-package desktop
-  :config
+  :init
   (desktop-save-mode 1)
   (setq desktop-restore-eager 3))
 
@@ -117,8 +117,7 @@
 
 ;; unique buffer names
 (use-package uniquify                   ; unique buffer names
-  :ensure nil
-  :config
+  :init
   (setq uniquify-buffer-name-style 'post-forward-angle-brackets
         uniquify-ignore-buffers-re "^\\*"))
 
@@ -129,7 +128,8 @@
   (ansi-term "zsh" name))
 
 (use-package tramp
-  :config
+  :defer t
+  :init
   (setq tramp-default-method "ssh"))
 
 (bind-keys ("C-x C-m" . execute-extended-command)
@@ -157,6 +157,7 @@
 
 (use-package which-key                  ; keybinding display
   :ensure t
+  :defer t
   :diminish which-key-mode
   :init (which-key-mode)
   :config
@@ -336,7 +337,8 @@ _._: split horizontal    _/_: split vertical
               py-indent-offset 4)
 (use-package smart-tabs-mode            ; tabs(indentation), spaces(alignment)
   :ensure t
-  :config
+  :defer
+  :init
   (smart-tabs-insinuate 'c 'c++ 'java 'javascript 'cperl 'ruby 'nxml))
 
 (hook-into-modes #'(lambda ()
@@ -389,13 +391,15 @@ _._: split horizontal    _/_: split vertical
 
 (use-package highlight-parentheses      ; highlight matching parens
   :ensure t
+  :defer t
   :diminish highlight-parentheses-mode
-  :config
+  :init
   (global-highlight-parentheses-mode))
 
 ;; from lunaryorn's config
 (use-package smartparens                ; parens editing and balancing
   :ensure t
+  :defer t
   :bind (("C-c k" . lunaryorn-smartparens/hydra/body)
          :map smartparens-strict-mode-map
          ;; A fill paragraph in strict mode
@@ -522,7 +526,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :bind (("C-c C-r" . ivy-resume)
          :map ivy-minibuffer-map
          ("C-." . ivy-avy))
-  :config
+  :init
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t
         ivy-re-builders-alist
@@ -530,12 +534,13 @@ _k_: kill        _s_: split                   _{_: wrap with { }
         ivy-height 20
         ivy-fixed-height-minibuffer nil)
 
-  (use-package ivy-hydra :ensure t)     ; sticky keybindings within ivy
-  (use-package swiper :ensure t)        ; within-buffer searching
-  (use-package counsel :ensure t)
-  (use-package counsel-projectile :ensure t
-    :config
-    (counsel-projectile-on))
+  (use-package ivy-hydra :ensure t :defer t)     ; sticky keybindings within ivy
+  (use-package swiper :ensure t :defer t)        ; within-buffer searching
+  (use-package counsel :ensure t :defer t)
+  (use-package counsel-projectile
+    :ensure t
+    :defer t
+    :init (counsel-projectile-on))
 
   ;; setup ivy-based global command keymap
   (bind-keys
@@ -646,7 +651,10 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :init
   (jyh-company-for-mode 'restclient-mode-hook company-restclient))
 
-(use-package crux :ensure t)            ; bbatsov useful utitilies
+(use-package crux                       ; bbatsov useful utilities
+  :ensure t
+  :commands (crux-rename-file-and-buffer)
+  :defer t)
 
 ;; constants
 (use-package constants
