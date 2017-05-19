@@ -121,6 +121,10 @@
   (setq uniquify-buffer-name-style 'post-forward-angle-brackets
         uniquify-ignore-buffers-re "^\\*"))
 
+(use-package evil
+  :ensure t
+  :init (evil-mode 1))
+
 ;; terminal
 (setq explicit-shell-file-name "zsh")
 (defun named-term (name)
