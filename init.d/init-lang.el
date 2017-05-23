@@ -211,7 +211,10 @@
   (with-eval-after-load 'projectile
     (add-hook 'projectile-after-switch-project-hook
               'jyh/setup-local-node-env))
-  (add-hook 'js2-mode-hook #'flycheck-mode))
+  (with-eval-after-load 'flycheck       ; prefer flycheck errors to builtins
+    (setq js2-mode-show-strict-warnings nil
+          js2-mode-show-parse-errors nil)
+    (add-hook 'js2-mode-hook #'flycheck-mode)))
 
 ;; tern -- javascript static analysis
 (use-package tern
