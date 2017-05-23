@@ -532,7 +532,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :diminish ivy-mode
   :bind (("C-c C-r" . ivy-resume)
          :map ivy-minibuffer-map
-         ("C-." . ivy-avy))
+         ("C-." . ivy-avy)
+         ("C-m" . ivy-alt-done)
+         ("C-S-m" . ivy-immediate-done))
   :init
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t
