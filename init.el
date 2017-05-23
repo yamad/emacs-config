@@ -375,9 +375,9 @@ _._: split horizontal    _/_: split vertical
   :ensure t
   :defer t
   :diminish "GG"
-  :config
+  :init
   (defhydra jyh-hydra-git-gutter ()
-      "git (operate on hunks)"
+      "git"
       ("p" git-gutter:previous-hunk "previous")
       ("n" git-gutter:next-hunk "next")
       ("s" git-gutter:stage-hunk "stage")
@@ -475,7 +475,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 (use-package expand-region
   :ensure t
-  :bind (("C-c v" . er/expand-region)))
+  :bind (("C-c e" . er/expand-region)))
 
 (use-package flycheck                   ; on-the-fly error checking
   :ensure t
@@ -485,15 +485,14 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   (setq flycheck-check-syntax-automatically '(mode-enabled save))
   (defhydra jyh/hydra-flycheck
     (:pre (progn (setq hydra-lv t) (flycheck-list-errors))
-     :post (progn (setq hydra-lv nil) (quit-windows-on "*Flycheck errors*"))
-     :hint nil)
-    "Errors (_q_ to quit)"
+     :post (progn (setq hydra-lv nil) (quit-windows-on "*Flycheck errors*")))
+    "Errors"
     ("f"  flycheck-error-list-set-filter                            "Filter")
     ("j"  flycheck-next-error                                       "Next")
     ("k"  flycheck-previous-error                                   "Previous")
     ("gg" flycheck-first-error                                      "First")
     ("G"  (progn (goto-char (point-max)) (flycheck-previous-error)) "Last")
-    ("q"  nil)))
+    ("q"  nil "quit")))
 
 
 (use-package projectile                 ; project management
