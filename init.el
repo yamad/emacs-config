@@ -295,6 +295,7 @@ _._: split horizontal    _/_: split vertical
   ("h" backward-char)
   ("j" next-line)
   ("k" previous-line)
+  ("." hydra-repeat)
   ("q" nil "quit"))
 (bind-key "C-c v" 'hydra-vi/body)
 
