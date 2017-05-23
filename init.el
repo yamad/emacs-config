@@ -297,6 +297,14 @@ _._: split horizontal    _/_: split vertical
   ("q" nil "quit"))
 (bind-key "C-c v" 'hydra-vi/body)
 
+(use-package persp-mode
+  :ensure t
+  :bind-keymap ("C-c q" . persp-key-map))
+
+(use-package persp-projectile
+  :ensure t
+  :defer t)
+
 ;; ======================================
 ;;  Editing/Searching
 ;; ======================================
