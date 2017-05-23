@@ -67,7 +67,6 @@
    git-commit-mode
    flycheck-error-list-mode
    git-rebase-mode
-   dired-mode
    eshell-mode
    magit-blame-mode)
   "List of modes that start in Emacs state.")
