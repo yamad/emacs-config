@@ -261,7 +261,9 @@ point reaches the beginning or end of the buffer, stop there."
 (bind-key [remap move-beginning-of-line]
           'smarter-move-beginning-of-line)
 
-(use-package ranger :ensure t)          ; alternate file navigator
+(use-package ranger                     ; alternate file navigator
+  :ensure t
+  :bind (("C-c a r" . ranger)))
 
 (use-package zoom-frm                   ; better font resizing
   :ensure t
