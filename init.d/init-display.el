@@ -51,10 +51,11 @@
 ;; set syntax highlighting and default color scheme
 (use-package zenburn-theme
   :ensure t
-  :config
+  :init
   (load-theme 'zenburn t)
   (global-font-lock-mode)
 
+  :config
   ;; tone down some default colors in zenburn
   (zenburn-with-color-variables
     (custom-set-faces
@@ -92,7 +93,7 @@
 (use-package darktooth-theme
   :ensure t
   :disabled
-  :config
+  :init
   (load-theme 'darktooth t))
 
 (provide 'init-display)
