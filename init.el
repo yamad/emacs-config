@@ -72,6 +72,7 @@
 ;; auxillary configurations
 (require 'init-complete)
 (require 'init-display)
+(require 'init-evil)
 (require 'init-irc)
 (require 'init-lang)
 (require 'init-mail)
@@ -120,10 +121,6 @@
   :init
   (setq uniquify-buffer-name-style 'post-forward-angle-brackets
         uniquify-ignore-buffers-re "^\\*"))
-
-(use-package evil
-  :ensure t
-  :init (evil-mode 1))
 
 ;; terminal
 (setq explicit-shell-file-name "zsh")
