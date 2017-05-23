@@ -80,6 +80,7 @@
 (require 'init-news)
 (require 'init-org)
 (require 'init-tex)
+(require 'init-tmux)
 (require 'init-unicode)
 
 ;; operating system specific configuration
