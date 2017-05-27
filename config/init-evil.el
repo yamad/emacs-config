@@ -15,7 +15,7 @@
 
 (use-package evil
   :ensure t
-  ;:disabled
+  :disabled
   :init
   (evil-mode 1))
 
