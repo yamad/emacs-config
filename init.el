@@ -123,12 +123,6 @@
   (setq uniquify-buffer-name-style 'post-forward-angle-brackets
         uniquify-ignore-buffers-re "^\\*"))
 
-;; terminal
-(setq explicit-shell-file-name "zsh")
-(defun named-term (name)
-  (interactive "sName: ")
-  (ansi-term "zsh" name))
-
 (use-package tramp
   :defer t
   :init
