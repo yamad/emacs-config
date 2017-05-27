@@ -394,14 +394,14 @@ _._: split horizontal    _/_: split vertical
 (bind-keys* :prefix "C-c g"
             :prefix-map git-keymap)
 (bind-keys :map git-keymap
-             ("s" . magit-status)
-             ("t" . git-gutter:toggle)
-             ("SPC" . git-gutter:mark-hunk)
-             ("=" . git-gutter:popup-hunk)
-             ("p" . git-gutter:previous-hunk)
-             ("n" . git-gutter:next-hunk)
-             ("S" . git-gutter:stage-hunk)
-             ("g" . jyh-hydra-git-gutter/body))
+           ("s" . magit-status)
+           ("t" . git-gutter:toggle)
+           ("SPC" . git-gutter:mark-hunk)
+           ("=" . git-gutter:popup-hunk)
+           ("p" . git-gutter:previous-hunk)
+           ("n" . git-gutter:next-hunk)
+           ("S" . git-gutter:stage-hunk)
+           ("g" . jyh-hydra-git-gutter/body))
 
 (use-package highlight-parentheses      ; highlight matching parens
   :ensure t
