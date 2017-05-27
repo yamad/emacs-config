@@ -44,14 +44,14 @@
 ;; extra load paths
 (eval-and-compile
   ;; initialization files directory
-  (add-to-list 'load-path (locate-user-emacs-file "init.d"))
+  (add-to-list 'load-path (locate-user-emacs-file "config"))
   ;; custom elisp directory
   (add-to-list 'load-path (locate-user-emacs-file "lisp"))
   ;; local package directory
   (add-to-list 'load-path (locate-user-emacs-file "site-lisp"))
   (add-to-list 'Info-default-directory-list "~/info"))
 
-(setq custom-file (locate-user-emacs-file "init.d/init-custom.el"))
+(setq custom-file (locate-user-emacs-file "config/init-custom.el"))
 
 ;; ensure required packages
 (require 'init-package)
