@@ -682,7 +682,10 @@ _k_: kill        _s_: split                   _{_: wrap with { }
              ("r" . constants-replace))
   (setq constants-unit-system 'SI))
 
-(unless (server-running-p) (server-start)) ; server for emacsclient
+(use-package server                     ; server for emacsclient
+  :commands server-running-p
+  :init
+  (unless (server-running-p) (server-start)))
 
 ;; custom and collected elisp stuff
 (require 'jyh-functions)
