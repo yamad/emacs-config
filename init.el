@@ -111,7 +111,8 @@
 (use-package desktop
   :init
   (desktop-save-mode 1)
-  (setq desktop-restore-eager 3))
+  (setq desktop-restore-eager 3
+        desktop-lazy-verbose nil))
 
 (use-package autorevert
   :init (global-auto-revert-mode)
