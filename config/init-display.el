@@ -16,8 +16,15 @@
 
 (setq inhibit-startup-screen t)
 
-(unless *is-mac-display*
-  (menu-bar-mode   -1))
+(defun contextual-menubar (&optional frame)
+  "Display the menubar if FRAME is on a graphical display. Hide
+menubar otherwise. from
+https://stackoverflow.com/a/24958242/192780"
+  (interactive)
+  (set-frame-parameter frame 'menu-bar-lines
+                       (if (display-graphic-p frame) 1 0)))
+(add-hook 'after-make-frame-functions 'contextual-menubar)
+(add-hook 'after-init-hook 'contextual-menubar)
 
 (setq linum-mode t)
 
