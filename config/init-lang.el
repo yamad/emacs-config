@@ -268,6 +268,75 @@
   (add-hook 'python-mode-hook 'anaconda-mode)
   (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
 
+(use-package pyenv-mode
+  :ensure t
+  :defer t
+  :commands pyenv-mode
+  :init
+  (add-hook 'python-mode-hook #'pyenv-mode)
+  (when (file-exists-p "~/.pyenv/shims")
+    (add-to-list 'exec-path "~/.pyenv/shims"))
+  :config
+  (defun projectile-pyenv-mode-set ()
+    "Set pyenv version matching project name."
+    (let ((project (projectile-project-name)))
+      (if (member project (pyenv-mode-versions))
+          (pyenv-mode-set project)
+        (pyenv-mode-unset))))
+  (add-hook 'projectile-switch-project-hook #'projectile-pyenv-mode-set))
+
+(use-package pyenv-mode-auto
+  :ensure t)
+
+(use-package pyvenv
+  :ensure t
+  :defer t
+  :commands pyvenv-mode
+  :init
+  (add-hook 'python-mode-hook #'pyvenv-mode))
+
+(use-package py-isort                   ; sort import statements
+  :ensure t
+  :defer t
+  :commands (py-isort-buffer py-isort-before-save)
+  :init
+  (defun jyh-python-sort-imports ()
+    (when (derived-mode-p 'python-mode)
+      (py-isort-before-save)))
+  (add-hook 'before-save-hook 'jyh-python-sort-imports))
+
+(use-package pip-requirements           ; edit mode for requirements.txt
+  :ensure t)
+
+(use-package pylookup
+  :ensure t
+  :disabled)
+
+(use-package pytest
+  :ensure t
+  :defer t
+  :commands (pytest-all
+             pytest-module
+             pytest-one
+             pytest-directory
+             pytest-pdb-all
+             pytest-pdb-module
+             pytest-pdb-one))
+
+(use-package yapfify                    ; python code formatter
+  :ensure t
+  :defer t
+  :commands yapfify-buffer)
+
+(use-package pydoc                      ; python documentation viewer
+  :ensure t
+  :defer t
+  :commands (pydoc
+             pydoc-at-point
+             pydoc-browse
+             pydoc-info
+             pydoc-jump-to-section))
+
 (use-package company-anaconda
   :ensure t
   :defer t
@@ -281,7 +350,7 @@
 (when (executable-find "ipython")
   (setq python-shell-interpreter "ipython")
   (let ((version-number
-         (replace-regexp-in-string "\n$" "" (shell-command-to-string "ipython --version"))))
+         (replace-regexp-in-string "\n$" "" (shell-command-to-string (concat (executable-find "ipython") " --version")))))
     (cond ((version< version-number "5")
            (setq python-shell-interpreter-args "-i"))
           ((version<= version-number "6")
