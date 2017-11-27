@@ -185,6 +185,17 @@
 ;;  Javascript
 ;; ======================================
 
+(defun jyh/find-parent-path (target)
+  "Find nearest parent directory containing TARGET."
+  (locate-dominating-file (buffer-file-name) target))
+
+(defun jyh/find-path (target)
+  "Find nearest path to TARGET in parent directories.
+
+e.g. (jyh/find-path '.git') finds the nearest .git directory path"
+  (let ((root (jyh/find-parent-path target)))
+    (if root (expand-file-name target root) nil)))
+
 (use-package js2-mode
   :ensure t
   :after flycheck
@@ -193,24 +204,43 @@
          ("\\.jsx$" . js2-jsx-mode))
   :init
   (use-package nodejs-repl
+    :ensure t
     :bind (:map js2-mode-map
                 ("C-c C-z" . nodejs-repl-switch-to-repl)
-                ("C-x C-e" . nodejs-repl-send-last-sexp)
+                ("C-x C-e" . nodejs-repl-send-last-expression)
                 ("C-c C-b" . nodejs-repl-send-buffer)
                 ("C-c C-r" . nodejs-repl-send-region)))
+
   ;; use programs from local node environment if possible
+  (defun jyh/find-node-executable (target-exec)
+    "Return path to a node.js program TARGET-EXEC, preferring
+local copy first."
+    (or (jyh/find-path
+         (concat (file-name-as-directory "node_modules/.bin")
+                 target-exec))
+        (executable-find target-exec)))
+
   (defun jyh/setup-local-node-env ()
-    "use local programs for nodejs projects"
+    "Use local programs for nodejs projects."
     (interactive)
-    (let ((local-babel-node (expand-file-name "./node_modules/.bin/babel-node"))
-          (local-eslint     (expand-file-name "./node_modules/.bin/eslint")))
-      (if (file-exists-p local-babel-node)
-          (setq nodejs-repl-command local-babel-node))
-      (if (file-exists-p local-eslint)
-          (setq flycheck-javascript-eslint-executable local-eslint))))
+    (let* ((root (jyh/find-path "node_modules"))
+           (bin-path (and root
+                          (expand-file-name ".bin/" root))))
+      (when bin-path
+        (make-local-variable 'exec-path)
+        (add-to-list 'exec-path bin-path)
+        (make-local-variable 'process-environment)
+        (setenv "PATH"
+                (concat
+                 (directory-file-name bin-path) ":"
+                 (getenv "PATH"))))))
+
   (with-eval-after-load 'projectile
     (add-hook 'projectile-after-switch-project-hook
               'jyh/setup-local-node-env))
+
+  (add-hook 'js2-mode-hook #'jyh/setup-local-node-env)
+
   (with-eval-after-load 'flycheck       ; prefer flycheck errors to builtins
     (setq js2-mode-show-strict-warnings nil
           js2-mode-show-parse-errors nil)
@@ -275,18 +305,14 @@
   :init
   (add-hook 'python-mode-hook #'pyenv-mode)
   (when (file-exists-p "~/.pyenv/shims")
-    (add-to-list 'exec-path "~/.pyenv/shims"))
-  :config
-  (defun projectile-pyenv-mode-set ()
-    "Set pyenv version matching project name."
-    (let ((project (projectile-project-name)))
-      (if (member project (pyenv-mode-versions))
-          (pyenv-mode-set project)
-        (pyenv-mode-unset))))
-  (add-hook 'projectile-switch-project-hook #'projectile-pyenv-mode-set))
+    (add-to-list 'exec-path "~/.pyenv/shims")))
+
+(defun jyh/pyenv-version ()
+  (s-trim (shell-command-to-string "pyenv version-name")))
 
 (use-package pyenv-mode-auto
-  :ensure t)
+  :ensure t
+  :disabled)
 
 (use-package pyvenv
   :ensure t

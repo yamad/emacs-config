@@ -64,10 +64,16 @@
 
 ;; pick up environment from shell
 (use-package exec-path-from-shell
+  :ensure t
   :if (memq window-system '(mac ns))
+  :init
+  (setq exec-path-from-shell-check-startup-files nil)
   :config
-  (add-to-list 'exec-path-from-shell-variables "NIX_PATH")
   (exec-path-from-shell-initialize))
+
+;; packages needed for config
+(use-package s :ensure t)               ; string handling
+(use-package f :ensure t)               ; file handling
 
 ;; auxillary configurations
 (require 'init-complete)
