@@ -73,5 +73,10 @@
   (set-face-attribute 'ledger-occur-xact-face nil
                       :background "midnight blue"))
 
+;; docker -- container files
+(use-package docker :ensure t)
+(use-package dockerfile-mode :ensure t)
+(use-package docker-compose-mode :ensure t)
+
 (provide 'init-markup)
 ;;; init-markup.el ends here
