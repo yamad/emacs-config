@@ -553,7 +553,8 @@ _k_: kill        _s_: split                   _{_: wrap with { }
         ivy-re-builders-alist
         '((t . ivy--regex-ignore-order))
         ivy-height 20
-        ivy-fixed-height-minibuffer nil)
+        ivy-fixed-height-minibuffer nil
+        ivy-use-selectable-prompt t)
 
   (use-package ivy-hydra :ensure t :defer t)     ; sticky keybindings within ivy
   (use-package swiper :ensure t :defer t)        ; within-buffer searching
