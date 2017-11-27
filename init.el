@@ -310,6 +310,11 @@ _._: split horizontal    _/_: split vertical
 ;;  Editing/Searching
 ;; ======================================
 
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode 1))
+
 (use-package anzu                       ; show search position
   :ensure t
   :init
