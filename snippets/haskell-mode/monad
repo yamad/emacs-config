@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: monad
+# key: monad
+# expand-env: ((yas-indent-line 'fixed))
+# --
+instance Functor ${1:type} where
+  fmap = liftM
+
+instance Applicative $1 where
+  pure = ${0:undefined}
+  (<*>) = ap
+
+instance Monad $1 where
+  (>>=) = undefined

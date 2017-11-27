@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: init-module
+# key: init-mod
+# --
+;;; init-$1.el -- $2
+;;
+;; part of emacs config for jyamad. see init.el
+
+;;; Commentary:
+;; $3
+
+;;; Code:
+
+$0
+
+(provide 'init-$1)
+;;; init-$1.el ends here
