@@ -15,9 +15,11 @@
 
 (use-package evil
   :ensure t
-  :disabled
   :init
-  (evil-mode 1))
+  (evil-mode 1)
+  :config
+  ;; stay in emacs mode, switch to vim mode with C-z
+  (setq evil-default-state 'emacs))
 
 (use-package evil-surround
   :ensure t

@@ -78,7 +78,7 @@
 ;; auxillary configurations
 (require 'init-complete)
 (require 'init-display)
-;(require 'init-evil)
+(require 'init-evil)
 (require 'init-irc)
 (require 'init-lang)
 (require 'init-mail)
