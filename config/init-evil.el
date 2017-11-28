@@ -40,6 +40,7 @@
 (use-package evil-commentary
   :ensure t
   :after evil
+  :diminish evil-commentary-mode
   :init
   (evil-commentary-mode t))
 

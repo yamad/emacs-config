@@ -312,6 +312,7 @@ _._: split horizontal    _/_: split vertical
 
 (use-package undo-tree
   :ensure t
+  :diminish undo-tree-mode
   :init
   (global-undo-tree-mode 1))
 
