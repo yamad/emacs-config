@@ -5,36 +5,31 @@
 (require 'package)
 (setq package-enable-at-startup nil)
 
-(defvar jyh/package-archives
-  '(("melpa" . "http://melpa.org/packages/")
-    ("melpa-stable" . "http://stable.melpa.org/packages/")
-    ("org" . "http://orgmode.org/elpa/")))
-(dolist (pa jyh/package-archives)
-  (add-to-list 'package-archives pa))
+;; bootstrap straight.el package manager
+(let ((bootstrap-file (concat user-emacs-directory "straight/bootstrap.el"))
+      (bootstrap-version 2))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(package-initialize)
+;; use straight as backend for use-package
+(straight-use-package 'use-package)
 
-;; bootstrap `use-package'
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; (defvar jyh/package-archives
+;;   '(("melpa" . "http://melpa.org/packages/")
+;;     ("melpa-stable" . "http://stable.melpa.org/packages/")
+;;     ("org" . "http://orgmode.org/elpa/")))
+;; (dolist (pa jyh/package-archives)
+;;   (add-to-list 'package-archives pa))
 
-(eval-when-compile
-  (require 'use-package))
-(require 'diminish)
-(require 'bind-key)
-;(setq use-package-always-ensure t)
+;;(package-initialize)
+
 (setq use-package-verbose t)            ; for profiling
-
-(use-package paradox
-  :ensure t
-  :defer 10
-  :init
-  (setq paradox-execute-asynchronously nil
-        paradox-automatically-star nil
-        paradox-spinner-type 'moon)
-  :config
-  (require 'init-package-private))
 
 (provide 'init-package)
 

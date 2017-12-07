@@ -57,10 +57,10 @@
 (eval-after-load 'rng-loc
   '(add-to-list 'rng-schema-locating-files
                 "~/.schemas/nxml-schemas.xml"))
-(use-package n3-mode
-  :ensure t
-  :mode (("\\.n3\\'" . n3-mode)
-         ("\\.owl\\'" . n3-mode)))
+;(use-package n3-mode
+;  :ensure t
+;  :mode (("\\.n3\\'" . n3-mode)
+;         ("\\.owl\\'" . n3-mode)))
 (require 'rng-nxml)
 
 ;; ledger -- accounting program
