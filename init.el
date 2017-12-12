@@ -625,7 +625,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :ensure nil
   :after maxima)
 
-(use-package emamux
+(use-package emamux                     ; tmux integration
   :ensure t
   :defer t
   :init
