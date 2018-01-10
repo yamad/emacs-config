@@ -133,7 +133,7 @@
 (use-package tramp
   :defer t
   :init
-  (setq tramp-default-method "ssh"))
+  (setq tramp-default-method "sshx"))
 
 (bind-keys ("C-x C-m" . execute-extended-command)
            ("C-c C-m" . execute-extended-command)
