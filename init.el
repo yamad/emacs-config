@@ -402,7 +402,7 @@ _._: split horizontal    _/_: split vertical
             :prefix-map git-keymap)
 (bind-keys :map git-keymap
            ("s" . magit-status)
-           ("t" . git-gutter:toggle)
+           ("t" . git-gutter-mode)
            ("SPC" . git-gutter:mark-hunk)
            ("=" . git-gutter:popup-hunk)
            ("p" . git-gutter:previous-hunk)
