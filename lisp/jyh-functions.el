@@ -22,7 +22,7 @@
   "Specify new end-of-line conversion NEW-EOL for the buffer's
 file coding system.  This marks the buffer as modified.  Choices
 are: unix, dos, mac"
-  (interactive "End-of-line conversion for visited file: \n")
+  (interactive "MEnd-of-line conversion for visited file: \n")
   ;; Check for valid input
   (unless (or (string-equal new-eol "unix")
               (string-equal new-eol "dos")
