@@ -36,13 +36,6 @@ https://stackoverflow.com/a/24958242/192780"
  ;; reduce gutters/margins/"fringes" to 'half-width
  (set-fringe-mode 4)
 
- ;; unobtrusive scroll bar, only in GUI mode-line
- (if (display-graphic-p)
-     (use-package yascroll
-       :config
-       (global-yascroll-bar-mode 1)
-       (setq yascroll:delay-to-hide nil)))
-
  ;; mode line
  (line-number-mode 1)                    ; show line-number in mode line
  (column-number-mode 1)                  ; show col-number  in mode line
