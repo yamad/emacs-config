@@ -48,6 +48,7 @@ https://stackoverflow.com/a/24958242/192780"
  (column-number-mode 1)                  ; show col-number  in mode line
  (use-package smart-mode-line
    :ensure t
+   :straight t
    :config
    (progn
      (setq sml/theme nil)                 ; zenburn theme provides theming
@@ -58,6 +59,7 @@ https://stackoverflow.com/a/24958242/192780"
 ;; set syntax highlighting and default color scheme
 (use-package zenburn-theme
   :ensure t
+  :straight t
   :init
   (load-theme 'zenburn t)
   (global-font-lock-mode)

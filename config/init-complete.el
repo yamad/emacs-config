@@ -14,6 +14,7 @@
 
 (use-package company                    ; autocompletion
   :ensure t
+  :straight t
   :diminish company-mode
   :bind (("M-RET" . company-complete))
 ;  :commands (company-capf company-dabbrev-code company-gtags company-etags company-keywords company-files company-dabbrev)
@@ -41,6 +42,7 @@
 
 (use-package hippie-exp    ; dabbrev enhacements, expansion/completion
   :bind (([remap dabbrev-expand] . hippie-expand))
+  :straight t
   :defer t
   :config
   (setq hippie-expand-try-functions-list
@@ -56,6 +58,7 @@
 
 (use-package yasnippet                  ; snippets/templates
   :ensure t
+  :straight t
   :diminish yas-minor-mode
   :commands (yas/trigger-key yas/keymap)
   :init

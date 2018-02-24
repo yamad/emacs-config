@@ -8,19 +8,28 @@
   :defer t
   :mode (("\\.rst$" . rst-mode)
          ("\\.rest$" . rst-mode)))
-(use-package markdown-mode  :defer t)
-(use-package markdown-mode+ :defer t)
+(use-package markdown-mode
+  :ensure t
+  :straight t
+  :defer t)
+(use-package markdown-mode+
+  :ensure t
+  :straight t
+  :defer t)
 
 
 ;; screenplay format (Fountain)
 (use-package fountain-mode
-  :commands (fountain-export-tex-template)
+  :ensure t
+  :straight t
   :defer t
+  :commands (fountain-export-tex-template)
   :config
   (assq-delete-all 'note fountain-export-tex-template)
   (add-to-list 'fountain-export-tex-template '(note "\\emph{{{content}}}\n\n")))
 (use-package olivetti
   :ensure fountain-mode
+  :straight t
   :defer t
   :config
   (add-hook 'fountain-mode-hook #'turn-on-olivetti-mode))
@@ -38,12 +47,15 @@
 
 (use-package cmake-mode
   :ensure t
+  :straight t
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
 
 ;; HTML/CSS
 (use-package web-mode
   :ensure t
+  :straight t
+  :defer t
   :mode (("\\.html?\\'" . web-mode)
          ("\\.jinja\\'" . web-mode)))
 
@@ -66,6 +78,7 @@
 ;; ledger -- accounting program
 (use-package ledger-mode
   :ensure t
+  :straight t
   :defer t
   :config
   (set-face-attribute 'ledger-font-xact-highlight-face nil
@@ -74,9 +87,9 @@
                       :background "midnight blue"))
 
 ;; docker -- container files
-(use-package docker :ensure t)
-(use-package dockerfile-mode :ensure t)
-(use-package docker-compose-mode :ensure t)
+(use-package docker :ensure t :straight t)
+(use-package dockerfile-mode :ensure t :straight t)
+(use-package docker-compose-mode :ensure t :straight t)
 
 (provide 'init-markup)
 ;;; init-markup.el ends here

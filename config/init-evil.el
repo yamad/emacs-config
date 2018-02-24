@@ -15,6 +15,7 @@
 
 (use-package evil
   :ensure t
+  :straight t
   :init
   (evil-mode 1)
   :config
@@ -23,22 +24,26 @@
 
 (use-package evil-surround
   :ensure t
+  :straight t
   :after evil
   :init
   (global-evil-surround-mode 1))
 
 (use-package evil-exchange
   :ensure t
+  :straight t
   :after evil
   :init
   (evil-exchange-install))
 
 (use-package evil-avy
   :ensure t
+  :straight t
   :after evil)
 
 (use-package evil-commentary
   :ensure t
+  :straight t
   :after evil
   :diminish evil-commentary-mode
   :init
@@ -46,17 +51,20 @@
 
 (use-package evil-visualstar
   :ensure t
+  :straight t
   :after evil
   :init
   (global-evil-visualstar-mode t))
 
 (use-package evil-numbers
   :ensure t
+  :straight t
   :after evil)
 
 ;; map extra esc keys in insert mode - jk and qq
 (use-package key-chord
   :ensure t
+  :straight t
   :init
   (key-chord-mode 1)
   (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)

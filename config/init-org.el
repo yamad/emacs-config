@@ -9,6 +9,7 @@
 
 (use-package org
   :ensure t
+  :straight t
   :defer t
   :init
   ;; use-package's :bind isn't working with :prefix(-map), so

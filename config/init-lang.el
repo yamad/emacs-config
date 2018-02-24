@@ -51,13 +51,9 @@
             (setq show-trailing-whitespace t)
             (c-set-style "linux"))))
 
-(use-package company-c-headers
-  :after cc-mode
-  :init
-  (jyh-company-for-mode 'c-mode-common-hook company-c-headers))
-
 (use-package rtags
   :ensure t
+  :straight t
   :defer t
   :init
   (add-hook 'c-mode-common-hook #'rtags-start-process-unless-running)
@@ -73,6 +69,7 @@
 
 (use-package flycheck-rtags
   :ensure t
+  :straight t
   :defer t
   :preface
   (defun jyh-flycheck-rtags-setup ()
@@ -144,17 +141,18 @@
               ("C-c M-." . nil)
               ("C-c C-d" . nil))
   :config
-  (use-package ghc :ensure t))
+  (use-package ghc :ensure t :straight t))
 
-(use-package haskell-compile
-  :ensure haskell-mode
-  :defer t)
+;;(use-package haskell-compile
+;;  :ensure haskell-mode
+;;  :defer t)
   ;:config
   ;; use Stack for building
   ;(setq haskell-compile-cabal-build-command "stack build"))
 
 (use-package hindent
   :ensure t
+  :straight t
   :defer t
   :init (add-hook 'haskell-mode-hook #'hindent-mode))
 
@@ -198,6 +196,7 @@ e.g. (jyh/find-path '.git') finds the nearest .git directory path"
 
 (use-package js2-mode
   :ensure t
+  :straight t
   :after flycheck
   :mode (("\\.js$" . js2-mode)
          ("\\.json$" . js2-mode)
@@ -205,6 +204,7 @@ e.g. (jyh/find-path '.git') finds the nearest .git directory path"
   :init
   (use-package nodejs-repl
     :ensure t
+    :straight t
     :bind (:map js2-mode-map
                 ("C-c C-z" . nodejs-repl-switch-to-repl)
                 ("C-x C-e" . nodejs-repl-send-last-expression)
@@ -249,6 +249,7 @@ local copy first."
 ;; tern -- javascript static analysis
 (use-package tern
   :ensure t
+  :straight t
   :defer t
   :after js2-mode
   :init
@@ -256,6 +257,7 @@ local copy first."
 
 (use-package company-tern
   :ensure t
+  :straight t
   :after (company tern)
   :init
   (jyh-company-for-mode 'js2-mode-hook company-tern))
@@ -263,6 +265,7 @@ local copy first."
 ;; skewer -- run browser REPL with buffers
 (use-package skewer-mode
   :defer t
+  :straight t
   :after js2-mode
   :init
   (add-hook 'js2-mode #'skewer-mode))
@@ -275,6 +278,7 @@ local copy first."
 
 (use-package lua-mode
   :ensure t
+  :straight t
   :interpreter "lua")
 
 
@@ -293,6 +297,7 @@ local copy first."
 
 (use-package anaconda-mode
   :ensure t
+  :straight t
   :defer t
   :init
   (add-hook 'python-mode-hook 'anaconda-mode)
@@ -300,6 +305,7 @@ local copy first."
 
 (use-package pyenv-mode
   :ensure t
+  :straight t
   :defer t
   :commands pyenv-mode
   :init
@@ -316,6 +322,7 @@ local copy first."
 
 (use-package pyvenv
   :ensure t
+  :straight t
   :defer t
   :commands pyvenv-mode
   :init
@@ -323,6 +330,7 @@ local copy first."
 
 (use-package py-isort                   ; sort import statements
   :ensure t
+  :straight t
   :defer t
   :commands (py-isort-buffer py-isort-before-save)
   :init
@@ -332,14 +340,17 @@ local copy first."
   (add-hook 'before-save-hook 'jyh-python-sort-imports))
 
 (use-package pip-requirements           ; edit mode for requirements.txt
-  :ensure t)
+  :ensure t
+  :straight t)
 
 (use-package pylookup
   :ensure t
+  :straight t
   :disabled)
 
 (use-package pytest
   :ensure t
+  :straight t
   :defer t
   :commands (pytest-all
              pytest-module
@@ -351,11 +362,13 @@ local copy first."
 
 (use-package yapfify                    ; python code formatter
   :ensure t
+  :straight t
   :defer t
   :commands yapfify-buffer)
 
 (use-package pydoc                      ; python documentation viewer
   :ensure t
+  :straight t
   :defer t
   :commands (pydoc
              pydoc-at-point
@@ -365,6 +378,7 @@ local copy first."
 
 (use-package company-anaconda
   :ensure t
+  :straight t
   :defer t
   :after (company anaconda-mode)
   :init
@@ -410,6 +424,7 @@ local copy first."
 
 (use-package ess
   :ensure t
+  :straight t
   :defer t
   :commands R
   :mode (("\\.[rR]\\'" . R-mode)
@@ -433,6 +448,7 @@ local copy first."
 
 (use-package ess-smart-equals
   :ensure t
+  :straight t
   :defer t
   :init
   (hook-into-modes #'ess-smart-equals-mode
@@ -462,7 +478,8 @@ local copy first."
    ("C-M-x" . ess-Rmd-eval-chunk))
   (add-hook 'poly-markdown+r-mode-hook #'visual-line-mode))
 
-
+(straight-use-package 'stan-mode)
+(straight-use-package 'stan-snippets)
 
 ;; ======================================
 ;;  Scheme/Racket
@@ -470,6 +487,7 @@ local copy first."
 
 (use-package geiser
   :ensure t
+  :straight t
   :defer t
   :init
   (add-hook 'geiser-mode-hook
