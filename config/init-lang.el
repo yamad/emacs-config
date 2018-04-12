@@ -105,7 +105,6 @@
     (setq fortran-continuation-indent (+ 1 findent))))
 
 
-
 ;; ======================================
 ;;  Haskell
 ;; ======================================
@@ -271,6 +270,14 @@ local copy first."
   (add-hook 'js2-mode #'skewer-mode))
 
 
+;; ======================================
+;;  JVM
+;; ======================================
+
+(use-package groovy-mode
+  :ensure t
+  :straight t
+  :mode ("\\.nf$" . groovy-mode)) ;; nextflow
 
 ;; ======================================
 ;;  Lua

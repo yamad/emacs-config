@@ -71,6 +71,7 @@
   (setq exec-path-from-shell-check-startup-files nil)
   :config
   (exec-path-from-shell-initialize))
+(setenv "GPG_AGENT_INFO" nil)           ; use emacs prompt for authinfo
 
 ;; packages needed for config
 (use-package s                          ; string handling
