@@ -64,7 +64,6 @@
 
 ;; pick up environment from shell
 (use-package exec-path-from-shell
-  :ensure t
   :straight t
   :if (memq window-system '(mac ns))
   :init
@@ -75,11 +74,14 @@
 
 ;; packages needed for config
 (use-package s                          ; string handling
-  :ensure t
   :straight t)
 (use-package f                          ; file handling
-  :ensure t
   :straight t)
+(use-package hydra                      ; sticky keys
+  :straight t)
+(use-package diminish
+  :straight t)
+
 
 ;; auxillary configurations
 (require 'init-complete)
@@ -154,20 +156,17 @@
 ;; ======================================
 
 (use-package dired+                     ; better directory management
-  :ensure t
   :straight t
-  :defer 10
+  :defer 5
   :config
   ;; don't create new buffer for every directory
   (diredp-toggle-find-file-reuse-dir 1))
 
 (use-package bookmark+                  ; better bookmark management
-  :ensure t
   :straight t
-  :defer 10)
+  :defer 5)
 
 (use-package which-key                  ; keybinding display
-  :ensure t
   :straight t
   :defer t
   :diminish which-key-mode
@@ -213,7 +212,6 @@
 ;; ======================================
 
 (use-package avy                        ; keyed label navigation
-  :ensure t
   :straight t
   :defer t
   :init
@@ -230,7 +228,6 @@
   (setq avy-background t))
 
 (use-package ace-window                 ; keyed label window navigation
-  :ensure t
   :straight t
   :defer t
   :init
@@ -240,7 +237,6 @@
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 (use-package zop-to-char                ; better zap-to-char
-  :ensure t
   :straight t
   :bind ([remap zap-to-char] . zop-to-char))
 
@@ -273,12 +269,10 @@ point reaches the beginning or end of the buffer, stop there."
           'smarter-move-beginning-of-line)
 
 (use-package ranger                     ; alternate file navigator
-  :ensure t
   :straight t
   :bind (("C-c a r" . ranger)))
 
 (use-package zoom-frm                   ; better font resizing
-  :ensure t
   :straight t
   :bind (([remap text-scale-adjust] . zoom-in/out)))
 
@@ -293,7 +287,7 @@ _._: split horizontal    _/_: split vertical
   ("h" enlarge-window-horizontally)
   ("j" enlarge-window)
   ("k" shrink-window)
-  ("l" srink-window-horizontally)
+  ("l" shrink-window-horizontally)
   ("/" split-window-horizontally)
   ("." split-window-vertically)
   ("o" other-window)
@@ -313,12 +307,10 @@ _._: split horizontal    _/_: split vertical
 (bind-key "C-c v" 'hydra-vi/body)
 
 (use-package persp-mode
-  :ensure t
   :straight t
   :bind-keymap ("C-c q" . persp-key-map))
 
 (use-package persp-projectile
-  :ensure t
   :defer t
   :straight t)
 
@@ -327,13 +319,11 @@ _._: split horizontal    _/_: split vertical
 ;; ======================================
 
 (use-package undo-tree
-  :ensure t
   :diminish undo-tree-mode
   :init
   (global-undo-tree-mode 1))
 
 (use-package anzu                       ; show search position
-  :ensure t
   :straight t
   :init
   (global-anzu-mode)
@@ -346,13 +336,11 @@ _._: split horizontal    _/_: split vertical
   :diminish anzu-mode)
 
 (use-package visual-regexp
-  :ensure t
   :straight t
   :bind (("C-c s r" . vr/replace)
          ("C-c s R" . vr/query-replace)))
 
 (use-package visual-fill-column
-  :ensure t
   :straight t
   :defer t
   :init (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
@@ -376,7 +364,6 @@ _._: split horizontal    _/_: split vertical
               c-basic-offset 4
               py-indent-offset 4)
 (use-package smart-tabs-mode            ; tabs(indentation), spaces(alignment)
-  :ensure t
   :straight t
   :defer
   :init
@@ -395,7 +382,6 @@ _._: split horizontal    _/_: split vertical
 ;; ======================================
 
 (use-package magit                      ; git version control
-  :ensure t
   :straight t
   :defer 5
   :bind (("C-x C-g" . magit-status))
@@ -406,7 +392,6 @@ _._: split horizontal    _/_: split vertical
   (setq vc-handled-backends (delq 'Git vc-handled-backends)))
 
 (use-package git-gutter
-  :ensure t
   :straight t
   :defer t
   :diminish "GG"
@@ -433,7 +418,6 @@ _._: split horizontal    _/_: split vertical
            ("g" . jyh-hydra-git-gutter/body))
 
 (use-package highlight-parentheses      ; highlight matching parens
-  :ensure t
   :straight t
   :defer t
   :diminish highlight-parentheses-mode
@@ -442,7 +426,6 @@ _._: split horizontal    _/_: split vertical
 
 ;; from lunaryorn's config
 (use-package smartparens                ; parens editing and balancing
-  :ensure t
   :straight t
   :defer t
   :bind (("C-c k" . lunaryorn-smartparens/hydra/body)
@@ -511,12 +494,10 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :diminish smartparens-mode)
 
 (use-package expand-region
-  :ensure t
   :straight t
   :bind (("C-c e" . er/expand-region)))
 
 (use-package flycheck                   ; on-the-fly error checking
-  :ensure t
   :straight t
   :bind ("C-c ! !" . jyh/hydra-flycheck/body)
   :init (global-flycheck-mode)
@@ -535,7 +516,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 
 (use-package projectile                 ; project management
-  :ensure t
   :straight t
   :defer t
   :diminish projectile-mode
@@ -548,7 +528,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   (setq projectile-enable-caching t))
 
 (use-package ggtags                     ; symbol tags
-  :ensure t
   :straight t
   :defer t
   :init
@@ -569,7 +548,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 ;; ======================================
 
 (use-package ivy                        ; completion backend
-  :ensure t
   :straight t
   :diminish ivy-mode
   :bind (("C-c C-r" . ivy-resume)
@@ -587,19 +565,15 @@ _k_: kill        _s_: split                   _{_: wrap with { }
         ivy-use-selectable-prompt t)
 
   (use-package ivy-hydra                ; sticky keybindings within ivy
-    :ensure t
     :straight t
     :defer t)
   (use-package swiper                   ; within-buffer searching
-    :ensure t
     :straight t
     :defer t)
   (use-package counsel
-    :ensure t
     :straight t
     :defer t)
   (use-package counsel-projectile
-    :ensure t
     :straight t
     :defer t
     :init (counsel-projectile-mode))
@@ -635,17 +609,14 @@ _k_: kill        _s_: split                   _{_: wrap with { }
    :map company-active-map
    ("C-:" . counsel-company)) )
 
-(use-package hydra :ensure t :straight t) ; sticky keys
-
 
 ;; ======================================
 ;;  External Utilities
 ;; ======================================
 
-(use-package ag :ensure t :straight t)  ; better grep search
+(use-package ag :straight t)            ; better grep search
 
 (use-package spotify                    ; spotify controls
-  :ensure t
   :straight t
   :defer t
   :init
@@ -658,15 +629,14 @@ _k_: kill        _s_: split                   _{_: wrap with { }
    ("c" . spotify-current)))
 
 (use-package maxima                     ; computer algebra system
-  :defer t
-  :ensure nil)
+  :disabled
+  :defer t)
 (use-package imaxima
+  :disabled
   :defer t
-  :ensure nil
   :after maxima)
 
 (use-package emamux                     ; tmux integration
-  :ensure t
   :straight t
   :defer t
   :init
@@ -710,13 +680,11 @@ _k_: kill        _s_: split                   _{_: wrap with { }
             'jyh-restclient-maybe-gunzip))
 
 (use-package company-restclient
-  :ensure t
   :after restclient
   :init
   (jyh-company-for-mode 'restclient-mode-hook company-restclient))
 
 (use-package crux                       ; bbatsov useful utilities
-  :ensure t
   :straight t
   :commands (crux-rename-file-and-buffer)
   :defer t)
