@@ -52,7 +52,6 @@
             (c-set-style "linux"))))
 
 (use-package rtags
-  :ensure t
   :straight t
   :defer t
   :init
@@ -68,7 +67,6 @@
   (rtags-diagnostics))
 
 (use-package flycheck-rtags
-  :ensure t
   :straight t
   :defer t
   :preface
@@ -140,7 +138,7 @@
               ("C-c M-." . nil)
               ("C-c C-d" . nil))
   :config
-  (use-package ghc :ensure t :straight t))
+  (use-package ghc :straight t))
 
 ;;(use-package haskell-compile
 ;;  :ensure haskell-mode
@@ -150,7 +148,6 @@
   ;(setq haskell-compile-cabal-build-command "stack build"))
 
 (use-package hindent
-  :ensure t
   :straight t
   :defer t
   :init (add-hook 'haskell-mode-hook #'hindent-mode))
@@ -194,7 +191,6 @@ e.g. (jyh/find-path '.git') finds the nearest .git directory path"
     (if root (expand-file-name target root) nil)))
 
 (use-package js2-mode
-  :ensure t
   :straight t
   :after flycheck
   :mode (("\\.js$" . js2-mode)
@@ -202,7 +198,6 @@ e.g. (jyh/find-path '.git') finds the nearest .git directory path"
          ("\\.jsx$" . js2-jsx-mode))
   :init
   (use-package nodejs-repl
-    :ensure t
     :straight t
     :bind (:map js2-mode-map
                 ("C-c C-z" . nodejs-repl-switch-to-repl)
@@ -247,7 +242,6 @@ local copy first."
 
 ;; tern -- javascript static analysis
 (use-package tern
-  :ensure t
   :straight t
   :defer t
   :after js2-mode
@@ -255,7 +249,6 @@ local copy first."
   (add-hook 'js2-mode-hook #'tern-mode))
 
 (use-package company-tern
-  :ensure t
   :straight t
   :after (company tern)
   :init
@@ -285,15 +278,14 @@ local copy first."
   :straight t
   :defer t)
 
+
 ;; ======================================
 ;;  Lua
 ;; ======================================
 
 (use-package lua-mode
-  :ensure t
   :straight t
   :interpreter "lua")
-
 
 
 ;; ======================================
@@ -303,13 +295,11 @@ local copy first."
 (add-to-list 'auto-mode-alist '("\\.m$" . octave-mode))
 
 
-
 ;; ======================================
 ;;  Python
 ;; ======================================
 
 (use-package anaconda-mode
-  :ensure t
   :straight t
   :defer t
   :init
@@ -317,7 +307,6 @@ local copy first."
   (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
 
 (use-package pyenv-mode
-  :ensure t
   :straight t
   :defer t
   :commands pyenv-mode
@@ -330,11 +319,9 @@ local copy first."
   (s-trim (shell-command-to-string "pyenv version-name")))
 
 (use-package pyenv-mode-auto
-  :ensure t
   :disabled)
 
 (use-package pyvenv
-  :ensure t
   :straight t
   :defer t
   :commands pyvenv-mode
@@ -342,7 +329,6 @@ local copy first."
   (add-hook 'python-mode-hook #'pyvenv-mode))
 
 (use-package py-isort                   ; sort import statements
-  :ensure t
   :straight t
   :defer t
   :commands (py-isort-buffer py-isort-before-save)
@@ -353,16 +339,13 @@ local copy first."
   (add-hook 'before-save-hook 'jyh-python-sort-imports))
 
 (use-package pip-requirements           ; edit mode for requirements.txt
-  :ensure t
   :straight t)
 
 (use-package pylookup
-  :ensure t
   :straight t
   :disabled)
 
 (use-package pytest
-  :ensure t
   :straight t
   :defer t
   :commands (pytest-all
@@ -374,13 +357,11 @@ local copy first."
              pytest-pdb-one))
 
 (use-package yapfify                    ; python code formatter
-  :ensure t
   :straight t
   :defer t
   :commands yapfify-buffer)
 
 (use-package pydoc                      ; python documentation viewer
-  :ensure t
   :straight t
   :defer t
   :commands (pydoc
@@ -390,7 +371,6 @@ local copy first."
              pydoc-jump-to-section))
 
 (use-package company-anaconda
-  :ensure t
   :straight t
   :defer t
   :after (company anaconda-mode)
@@ -430,13 +410,11 @@ local copy first."
   "Major mode for editing python Pylons projects")
 
 
-
 ;; ======================================
 ;;  R/ESS -- statistics software
 ;; ======================================
 
 (use-package ess
-  :ensure t
   :straight t
   :defer t
   :commands R
@@ -457,10 +435,9 @@ local copy first."
           ess-continued-statement-offset 0
           ess-expression-offset 2
           ess-default-style 'DEFAULT))
-  (use-package ess-R-data-view :ensure t :defer t))
+  (use-package ess-R-data-view :defer t))
 
 (use-package ess-smart-equals
-  :ensure t
   :straight t
   :defer t
   :init
@@ -491,8 +468,9 @@ local copy first."
    ("C-M-x" . ess-Rmd-eval-chunk))
   (add-hook 'poly-markdown+r-mode-hook #'visual-line-mode))
 
-(straight-use-package 'stan-mode)
-(straight-use-package 'stan-snippets)
+(use-package stan-mode :straight t)
+(use-package stan-snippets :straight t)
+
 
 ;; ======================================
 ;;  Rust
@@ -507,19 +485,18 @@ local copy first."
   (with-eval-after-load 'rust-mode
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 
+
 ;; ======================================
 ;;  Scheme/Racket
 ;; ======================================
 
 (use-package geiser
-  :ensure t
   :straight t
   :defer t
   :init
   (add-hook 'geiser-mode-hook
             (lambda ()
               (local-unset-key (kbd "C-.")))))
-
 
 
 ;; ======================================

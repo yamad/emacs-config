@@ -9,18 +9,15 @@
   :mode (("\\.rst$" . rst-mode)
          ("\\.rest$" . rst-mode)))
 (use-package markdown-mode
-  :ensure t
   :straight t
   :defer t)
 (use-package markdown-mode+
-  :ensure t
   :straight t
   :defer t)
 
 
 ;; screenplay format (Fountain)
 (use-package fountain-mode
-  :ensure t
   :straight t
   :defer t
   :commands (fountain-export-tex-template)
@@ -46,38 +43,35 @@
          ("\\.ebnf$" . ebnf-mode)))
 
 (use-package cmake-mode
-  :ensure t
   :straight t
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
 
 ;; HTML/CSS
 (use-package web-mode
-  :ensure t
   :straight t
   :defer t
   :mode (("\\.html?\\'" . web-mode)
          ("\\.jinja\\'" . web-mode)))
 
 ;; nix package mangement
-(use-package nix-mode      :ensure t :defer t)
-(use-package nix-buffer    :ensure t :defer t)
-(use-package nix-sandbox   :ensure t :defer t)
-(use-package nixos-options :ensure t :defer t)
+(use-package nix-mode      :straight t :defer t)
+(use-package nix-buffer    :straight t :defer t)
+(use-package nix-sandbox   :straight t :defer t)
+(use-package nixos-options :straight t :defer t)
 
 ;; XML
 (eval-after-load 'rng-loc
   '(add-to-list 'rng-schema-locating-files
                 "~/.schemas/nxml-schemas.xml"))
 ;(use-package n3-mode
-;  :ensure t
+;  :straight t
 ;  :mode (("\\.n3\\'" . n3-mode)
 ;         ("\\.owl\\'" . n3-mode)))
 (require 'rng-nxml)
 
 ;; ledger -- accounting program
 (use-package ledger-mode
-  :ensure t
   :straight t
   :defer t
   :config
@@ -87,9 +81,9 @@
                       :background "midnight blue"))
 
 ;; docker -- container files
-(use-package docker :ensure t :straight t)
-(use-package dockerfile-mode :ensure t :straight t)
-(use-package docker-compose-mode :ensure t :straight t)
+(use-package docker :straight t)
+(use-package dockerfile-mode :straight t)
+(use-package docker-compose-mode :straight t)
 
 (provide 'init-markup)
 ;;; init-markup.el ends here

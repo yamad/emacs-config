@@ -7,7 +7,6 @@
 ;; Apple Dev
 (when *is-mac-os*
   (use-package xcode-mode
-    :ensure t
     :straight t
     :defer t
     :init

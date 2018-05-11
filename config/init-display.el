@@ -40,7 +40,6 @@ https://stackoverflow.com/a/24958242/192780"
  (line-number-mode 1)                    ; show line-number in mode line
  (column-number-mode 1)                  ; show col-number  in mode line
  (use-package smart-mode-line
-   :ensure t
    :straight t
    :config
    (progn
@@ -51,7 +50,6 @@ https://stackoverflow.com/a/24958242/192780"
 
 ;; set syntax highlighting and default color scheme
 (use-package zenburn-theme
-  :ensure t
   :straight t
   :init
   (load-theme 'zenburn t)
@@ -93,7 +91,6 @@ https://stackoverflow.com/a/24958242/192780"
             #'jyh/change-modeline-by-window-count))
 
 (use-package darktooth-theme
-  :ensure t
   :disabled
   :init
   (load-theme 'darktooth t))

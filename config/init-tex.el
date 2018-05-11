@@ -4,7 +4,6 @@
 
 ;; general options for all TeX-based modes
 (use-package auctex
-  :ensure t
   :straight t
   :defer t)
 

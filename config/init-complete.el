@@ -13,7 +13,6 @@
 ;;; Code:
 
 (use-package company                    ; autocompletion
-  :ensure t
   :straight t
   :diminish company-mode
   :bind (("M-RET" . company-complete))
@@ -41,9 +40,9 @@
 (macroexpand '(jyh-company-for-mode 'python-mode-hook company-anaconda))
 
 (use-package hippie-exp    ; dabbrev enhacements, expansion/completion
-  :bind (([remap dabbrev-expand] . hippie-expand))
   :straight t
   :defer t
+  :bind (([remap dabbrev-expand] . hippie-expand))
   :config
   (setq hippie-expand-try-functions-list
         '(try-expand-dabbrev
@@ -57,7 +56,6 @@
           try-complete-lisp-symbol)))
 
 (use-package yasnippet                  ; snippets/templates
-  :ensure t
   :straight t
   :diminish yas-minor-mode
   :commands (yas/trigger-key yas/keymap)
