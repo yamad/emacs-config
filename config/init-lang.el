@@ -275,9 +275,15 @@ local copy first."
 ;; ======================================
 
 (use-package groovy-mode
-  :ensure t
   :straight t
   :mode ("\\.nf$" . groovy-mode)) ;; nextflow
+
+(use-package scala-mode
+  :straight t
+  :defer t)
+(use-package ensime
+  :straight t
+  :defer t)
 
 ;; ======================================
 ;;  Lua
