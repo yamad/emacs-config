@@ -79,7 +79,7 @@
   :straight t)
 (use-package hydra                      ; sticky keys
   :straight t)
-(use-package diminish
+(use-package diminish                   ; control modeline status
   :straight t)
 
 

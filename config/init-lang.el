@@ -489,6 +489,19 @@ local copy first."
 (straight-use-package 'stan-snippets)
 
 ;; ======================================
+;;  Rust
+;; ======================================
+
+(use-package rust-mode
+  :straight t
+  :defer t)
+(use-package flycheck-rust
+  :straight t
+  :config
+  (with-eval-after-load 'rust-mode
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+
+;; ======================================
 ;;  Scheme/Racket
 ;; ======================================
 
