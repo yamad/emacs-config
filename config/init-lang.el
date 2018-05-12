@@ -275,8 +275,12 @@ local copy first."
   :straight t
   :defer t)
 (use-package ensime
-  :straight t
-  :defer t)
+  :defer t
+  :straight (ensime
+             :type git
+             :host github
+             :branch "2.0"
+             :repo "ensime/ensime-emacs"))
 
 
 ;; ======================================
