@@ -12,14 +12,10 @@
 ;; Emacs Configuration for jyamad
 
 ;;; Code:
-
 (defconst emacs-start-time (current-time)) ; cribbed from jwiegley
 
-;; added by Package.el for emacs 25
-(package-initialize)
-
 ;; document minimum version
-(let ((minver "24.5.1"))
+(let ((minver "26"))
   (when (version< emacs-version minver)
     (warn "This version (%s) of Emacs is older than the oldest tested version (%s) with this configuration. Stuff might be broken."
           emacs-version minver)))

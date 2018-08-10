@@ -9,10 +9,10 @@
 
 (use-package tex-site
   :defer t
-  :ensure auctex)
+  :after auctex)
 
 (use-package tex
-  :ensure auctex
+  :after auctex
   :defer t
   :config
   (setq TeX-parse-self t                   ; provide completion
@@ -30,7 +30,7 @@
                                (outline-minor-mode 1))))
 
 (use-package tex-mik
-  :ensure auctex
+  :after auctex
   :if (eq system-type 'windows-nt)
   :config
   (setq preview-image-type 'pnm))
@@ -68,7 +68,7 @@
 ;; dialect-specific options
 
 (use-package latex
-  :ensure auctex
+  :after auctex
   :defer t
   :init
   (defun jyh/setup-LaTeX ()
@@ -92,7 +92,7 @@
                    'ConTeXt-mode-hook))
 
 (use-package context
-  :ensure auctex
+  :after auctex
   :defer t
   :config
   ;; some configuration from ConTeXt wiki

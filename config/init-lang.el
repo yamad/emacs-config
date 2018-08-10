@@ -343,7 +343,8 @@ local copy first."
   (add-hook 'before-save-hook 'jyh-python-sort-imports))
 
 (use-package pip-requirements           ; edit mode for requirements.txt
-  :straight t)
+  :straight t
+  :defer t)
 
 (use-package pylookup
   :straight t
@@ -472,8 +473,8 @@ local copy first."
    ("C-M-x" . ess-Rmd-eval-chunk))
   (add-hook 'poly-markdown+r-mode-hook #'visual-line-mode))
 
-(use-package stan-mode :straight t)
-(use-package stan-snippets :straight t)
+(use-package stan-mode :straight t :defer t)
+(use-package stan-snippets :straight t :defer t)
 
 
 ;; ======================================
@@ -485,6 +486,7 @@ local copy first."
   :defer t)
 (use-package flycheck-rust
   :straight t
+  :defer t
   :config
   (with-eval-after-load 'rust-mode
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))

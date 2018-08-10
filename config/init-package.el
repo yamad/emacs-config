@@ -1,9 +1,7 @@
 ;;; init-package.el --- package management
 ;;
 ;; part of emacs config for jyamad. see init.el
-
-(require 'package)
-(setq package-enable-at-startup nil)
+(setq package-enable-at-startup nil) ; don't load package.el
 
 ;; bootstrap straight.el package manager
 (let ((bootstrap-file (concat user-emacs-directory "straight/bootstrap.el"))
@@ -19,6 +17,7 @@
 
 ;; use straight as backend for use-package
 (straight-use-package 'use-package)
+(setq straight-check-for-modifications 'live)
 
 ;; (defvar jyh/package-archives
 ;;   '(("melpa" . "http://melpa.org/packages/")

@@ -25,7 +25,7 @@
   (assq-delete-all 'note fountain-export-tex-template)
   (add-to-list 'fountain-export-tex-template '(note "\\emph{{{content}}}\n\n")))
 (use-package olivetti
-  :ensure fountain-mode
+  :after fountain-mode
   :straight t
   :defer t
   :config
@@ -81,9 +81,9 @@
                       :background "midnight blue"))
 
 ;; docker -- container files
-(use-package docker :straight t)
-(use-package dockerfile-mode :straight t)
-(use-package docker-compose-mode :straight t)
+(use-package docker :straight t :defer t)
+(use-package dockerfile-mode :straight t :defer t)
+(use-package docker-compose-mode :straight t :defer t)
 
 (provide 'init-markup)
 ;;; init-markup.el ends here
