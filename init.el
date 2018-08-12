@@ -69,10 +69,6 @@
   (exec-path-from-shell-initialize))
 
 ;; packages needed for config
-;(use-package s                          ; string handling
-  ;:straight t)
-;(use-package f                          ; file handling
-;  :straight t)
 (use-package hydra                      ; sticky keys
   :straight t
   :defer t
@@ -208,6 +204,21 @@
     "C-c y" "spotify"
     "C-c &" "yasnippet"))
 
+
+(use-package general
+  :straight t
+  :defer t
+  :config
+  (general-def 'normal "SPC"
+    (general-simulate-key "C-c"))
+  (general-def 'insert "M-SPC"
+    (general-simulate-key "C-c"))
+  (general-create-definer jyh/evil-leader-map
+    :prefix "SPC")
+  (general-create-definer jyh/emacs-leader-map
+    :prefix "C-c")
+
+  (general-def "C-c SPC" 'execute-extended-command))
 
 ;; ======================================
 ;;  Navigation
@@ -720,6 +731,10 @@ _k_: kill        _s_: split                   _{_: wrap with { }
              ("g" . constants-get)
              ("r" . constants-replace))
   (setq constants-unit-system 'SI))
+
+(use-package command-log-mode
+  :straight t
+  :defer t)
 
 (use-package server                     ; server for emacsclient
   :commands server-running-p
