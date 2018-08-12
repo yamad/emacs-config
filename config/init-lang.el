@@ -69,6 +69,7 @@
 (use-package flycheck-rtags
   :straight t
   :defer t
+  :after flycheck
   :preface
   (defun jyh-flycheck-rtags-setup ()
     (flycheck-select-checker 'rtags)
@@ -76,7 +77,6 @@
     (setq-local flycheck-check-syntax-automatically nil))
   :init
   (add-hook 'c-mode-common-hook #'jyh-flycheck-rtags-setup))
-
 
 ;; Objective-C
 (setq cc-other-file-alist
@@ -192,7 +192,6 @@ e.g. (jyh/find-path '.git') finds the nearest .git directory path"
 
 (use-package js2-mode
   :straight t
-  :after flycheck
   :mode (("\\.js$" . js2-mode)
          ("\\.json$" . js2-mode)
          ("\\.jsx$" . js2-jsx-mode))
@@ -229,16 +228,15 @@ local copy first."
                  (directory-file-name bin-path) ":"
                  (getenv "PATH"))))))
 
-  (with-eval-after-load 'projectile
-    (add-hook 'projectile-after-switch-project-hook
-              'jyh/setup-local-node-env))
 
+  (add-hook 'projectile-after-switch-project-hook
+            'jyh/setup-local-node-env)
   (add-hook 'js2-mode-hook #'jyh/setup-local-node-env)
 
-  (with-eval-after-load 'flycheck       ; prefer flycheck errors to builtins
-    (setq js2-mode-show-strict-warnings nil
-          js2-mode-show-parse-errors nil)
-    (add-hook 'js2-mode-hook #'flycheck-mode)))
+  ; prefer flycheck errors to builtins
+  (setq js2-mode-show-strict-warnings nil
+        js2-mode-show-parse-errors nil)
+  (add-hook 'js2-mode-hook #'flycheck-mode))
 
 ;; tern -- javascript static analysis
 (use-package tern
@@ -487,9 +485,9 @@ local copy first."
 (use-package flycheck-rust
   :straight t
   :defer t
-  :config
-  (with-eval-after-load 'rust-mode
-    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+  :after (flycheck rust-mode)
+  :init
+  (add-hook 'rust-mode-hook #'flycheck-rust-setup))
 
 
 ;; ======================================

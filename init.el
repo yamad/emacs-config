@@ -1,12 +1,13 @@
 ;;; init.el --- emacs configuration for jyamad
 ;;
 ;; .emacs config credits for many good ideas:
-;;  * http://github.com/lunaryorn/.emacs.d
-;;  * http://github.com/jwiegley/dot-emacs
-;;  * http://github.com/syl20bnr/spacemacs
-;;  * http://sachachua.com/dotemacs
-;;  * http://github.com/verdammelt/dotfiles
+;;  * https://github.com/lunaryorn/.emacs.d
+;;  * https://github.com/jwiegley/dot-emacs
+;;  * https://github.com/syl20bnr/spacemacs
+;;  * https://sachachua.com/dotemacs
+;;  * https://github.com/verdammelt/dotfiles
 ;;  * https://github.com/purcell/emacs.d
+;;  * https://github.com/hlissner/doom-emacs
 
 ;;; Commentary:
 ;; Emacs Configuration for jyamad
@@ -66,18 +67,19 @@
   (setq exec-path-from-shell-check-startup-files nil)
   :config
   (exec-path-from-shell-initialize))
-(setenv "GPG_AGENT_INFO" nil)           ; use emacs prompt for authinfo
 
 ;; packages needed for config
-(use-package s                          ; string handling
-  :straight t)
-(use-package f                          ; file handling
-  :straight t)
+;(use-package s                          ; string handling
+  ;:straight t)
+;(use-package f                          ; file handling
+;  :straight t)
 (use-package hydra                      ; sticky keys
-  :straight t)
+  :straight t
+  :defer t
+  :functions defhydra)
 (use-package diminish                   ; control modeline status
-  :straight t)
-
+  :straight t
+  :defer t)
 
 ;; auxillary configurations
 (require 'init-complete)
@@ -119,17 +121,20 @@
 
 
 (use-package desktop
+  :defer t
   :init
   (desktop-save-mode 1)
   (setq desktop-restore-eager 3
         desktop-lazy-verbose nil))
 
 (use-package autorevert
+  :defer t
   :init (global-auto-revert-mode)
   :diminish auto-revert-mode)
 
 ;; unique buffer names
 (use-package uniquify                   ; unique buffer names
+  :defer t
   :init
   (setq uniquify-buffer-name-style 'post-forward-angle-brackets
         uniquify-ignore-buffers-re "^\\*"))
@@ -137,7 +142,8 @@
 (use-package tramp
   :defer t
   :init
-  (setq tramp-default-method "sshx"))
+  (setq tramp-default-method "sshx"
+        tramp-terminal-type "dumb"))
 
 (bind-keys ("C-x C-m" . execute-extended-command)
            ("C-c C-m" . execute-extended-command)
@@ -153,14 +159,14 @@
 
 (use-package dired+                     ; better directory management
   :straight t
-  :defer 5
+  :defer t
   :config
   ;; don't create new buffer for every directory
   (diredp-toggle-find-file-reuse-dir 1))
 
 (use-package bookmark+                  ; better bookmark management
   :straight t
-  :defer 5)
+  :defer t)
 
 (use-package which-key                  ; keybinding display
   :straight t
@@ -315,6 +321,7 @@ _._: split horizontal    _/_: split vertical
 ;; ======================================
 
 (use-package undo-tree
+  :defer t
   :diminish undo-tree-mode
   :init
   (global-undo-tree-mode 1))
@@ -325,14 +332,15 @@ _._: split horizontal    _/_: split vertical
   (global-anzu-mode)
   :bind
   (([remap query-replace] . anzu-query-replace)
-   ([remap query-replace-regexp] . anzu-query-replace-regexp)
-   :map isearch-mode-map
-   ([remap isearch-query-replace] . anzu-isearch-query-replace)
-   ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
+      ([remap query-replace-regexp] . anzu-query-replace-regexp)
+      :map isearch-mode-map
+      ([remap isearch-query-replace] . anzu-isearch-query-replace)
+      ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
   :diminish anzu-mode)
 
 (use-package visual-regexp
   :straight t
+  :defer t
   :bind (("C-c s r" . vr/replace)
          ("C-c s R" . vr/query-replace)))
 
@@ -379,7 +387,7 @@ _._: split horizontal    _/_: split vertical
 
 (use-package magit                      ; git version control
   :straight t
-  :defer 5
+  :defer t
   :bind (("C-x C-g" . magit-status))
   :init
   (when *is-windows-os*
@@ -428,8 +436,16 @@ _._: split horizontal    _/_: split vertical
          :map smartparens-strict-mode-map
          ;; A fill paragraph in strict mode
          ("M-q" . sp-indent-defun))
+  :commands (smartparens-mode
+             smartparens-strict-mode)
+  :diminish smartparens-mode
   :init
-  ;; Hydra for Smartparens
+  (add-hook 'emacs-lisp-mode-hook 'smartparens-strict-mode)
+  :config
+  (require 'smartparens-config)
+  (setq sp-autoskip-closing-pair 'always
+        ;; Don't kill entire symbol on C-k
+        sp-hybrid-kill-entire-symbol nil)
   (defhydra lunaryorn-smartparens/hydra (:hint nil)
     "
 Sexps (quit with _q_)
@@ -455,7 +471,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     ("'" (lambda (_) (interactive "P") (sp-wrap-with-pair "'")))
     ("\"" (lambda (_) (interactive "P") (sp-wrap-with-pair "\"")))
     ;; Navigation
-    ("f" sp-forward-sexp )
+    ("f" sp-forward-sexp)
     ("b" sp-backward-sexp)
     ("u" sp-backward-up-sexp)
     ("d" sp-down-sexp)
@@ -479,15 +495,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     ("<right>" sp-forward-slurp-sexp)
     ("<left>" sp-forward-barf-sexp)
     ("C-<left>" sp-backward-barf-sexp)
-    ("C-<right>" sp-backward-slurp-sexp))
-
-  (smartparens-global-mode)
-  :config
-  (require 'smartparens-config)
-  (setq sp-autoskip-closing-pair 'always
-        ;; Don't kill entire symbol on C-k
-        sp-hybrid-kill-entire-symbol nil)
-  :diminish smartparens-mode)
+    ("C-<right>" sp-backward-slurp-sexp)))
 
 (use-package expand-region
   :straight t
@@ -495,8 +503,19 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 (use-package flycheck                   ; on-the-fly error checking
   :straight t
+  :defer t
   :bind ("C-c ! !" . jyh/hydra-flycheck/body)
-  :init (global-flycheck-mode)
+  :commands (flycheck-mode
+             flycheck-list-errors
+             flycheck-error-list-mode
+             flycheck-buffer)
+  :defines (flycheck-check-syntax-automatically)
+  :init
+  (hook-into-modes #'flycheck-mode
+                   'emacs-lisp-mode-hook
+                   'python-mode-hook
+                   'c-mode-hook
+                   'f90-mode-hook)
   :config
   (setq flycheck-check-syntax-automatically '(mode-enabled save))
   (defhydra jyh/hydra-flycheck
@@ -507,8 +526,10 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     ("j"  flycheck-next-error                                       "Next")
     ("k"  flycheck-previous-error                                   "Previous")
     ("gg" flycheck-first-error                                      "First")
-    ("G"  (progn (goto-char (point-max)) (flycheck-previous-error)) "Last")
-    ("q"  nil "quit")))
+    ("G"  (progn
+            (goto-char (point-max))
+            (flycheck-previous-error))                              "Last")
+    ("q"  nil                                                       "quit")))
 
 
 (use-package projectile                 ; project management
@@ -521,6 +542,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   ;(setq projectile-mode-line
         ;'(:eval (format " P/%s" (projectile-project-name))))
   ;; otherwise too slow
+  :config
   (setq projectile-enable-caching t))
 
 (use-package ggtags                     ; symbol tags
@@ -610,7 +632,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 ;;  External Utilities
 ;; ======================================
 
-(use-package ag :straight t)            ; better grep search
+(use-package ag                         ; better grep search
+  :straight t
+  :defer t)
 
 (use-package spotify                    ; spotify controls
   :straight t
