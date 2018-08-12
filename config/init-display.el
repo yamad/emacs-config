@@ -26,7 +26,7 @@ https://stackoverflow.com/a/24958242/192780"
 (add-hook 'after-make-frame-functions 'contextual-menubar)
 (add-hook 'after-init-hook 'contextual-menubar)
 
-(setq linum-mode t)
+(setq global-display-line-numbers t)
 
 (jyh/do-after-display-system-init
  ;; remove unnecessary UI elements
@@ -60,6 +60,9 @@ https://stackoverflow.com/a/24958242/192780"
   (zenburn-with-color-variables
     (custom-set-faces
      `(linum
+       ((t (:foreground ,zenburn-bg+2
+            :background ,zenburn-bg))))
+     `(line-number
        ((t (:foreground ,zenburn-bg+2
             :background ,zenburn-bg))))
      `(fringe
