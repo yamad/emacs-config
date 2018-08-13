@@ -327,6 +327,11 @@ _._: split horizontal    _/_: split vertical
   :defer t
   :straight t)
 
+(use-package eyebrowse                  ; window configurations
+  :straight t
+  :config
+  (eyebrowse-mode t))
+
 ;; ======================================
 ;;  Editing/Searching
 ;; ======================================
