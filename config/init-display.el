@@ -51,6 +51,7 @@ https://stackoverflow.com/a/24958242/192780"
 ;; set syntax highlighting and default color scheme
 (use-package zenburn-theme
   :straight t
+  :disabled
   :init
   (load-theme 'zenburn t)
   (global-font-lock-mode)
@@ -93,10 +94,10 @@ https://stackoverflow.com/a/24958242/192780"
   (add-hook 'window-configuration-change-hook
             #'jyh/change-modeline-by-window-count))
 
-(use-package darktooth-theme
-  :disabled
-  :init
-  (load-theme 'darktooth t))
+(use-package color-theme-sanityinc-tomorrow
+  :straight t
+  :config
+  (load-theme 'sanityinc-tomorrow-eighties t))
 
 (provide 'init-display)
 
