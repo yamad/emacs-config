@@ -51,7 +51,6 @@ https://stackoverflow.com/a/24958242/192780"
 ;; set syntax highlighting and default color scheme
 (use-package zenburn-theme
   :straight t
-  :disabled
   :init
   (load-theme 'zenburn t)
   (global-font-lock-mode)
@@ -96,8 +95,9 @@ https://stackoverflow.com/a/24958242/192780"
 
 (use-package color-theme-sanityinc-tomorrow
   :straight t
+  :disabled
   :config
-  (load-theme 'sanityinc-tomorrow-eighties t))
+  (load-theme 'sanityinc-tomorrow-night t))
 
 (provide 'init-display)
 
