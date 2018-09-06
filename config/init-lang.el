@@ -282,6 +282,15 @@ local copy first."
 
 
 ;; ======================================
+;;  Emacs Lisp
+;; ======================================
+
+(use-package lisp-mode
+  :defer t
+  :hook ((emacs-lisp-mode lisp-mode)
+         . (lambda () (add-hook 'after-save-hook 'check-parens nil t))))
+
+;; ======================================
 ;;  Lua
 ;; ======================================
 
