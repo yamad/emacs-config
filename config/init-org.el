@@ -7,7 +7,7 @@
 (add-to-list 'load-path "~/.emacs.d/site-lisp/org-mode/lisp")
 (add-to-list 'load-path "~/.emacs.d/site-lisp/org-mode/contrib/lisp" t)
 
-;; hack from straight.el to override built-in org version
+;;; --- HACK from straight.el to override built-in org version ---
 (require 'subr-x)
 (straight-use-package 'git)
 
@@ -38,7 +38,7 @@ Inserted by installing org-mode or when a release is made."
                "HEAD")))))
 
 (provide 'org-version)
-;; end hack
+;;; --- END HACK ---
 
 
 (use-package org
@@ -61,6 +61,7 @@ Inserted by installing org-mode or when a release is made."
         org-agenda-skip-deadline-if-done t
         org-agenda-skip-scheduled-if-done t)
 
+  ;; org-agenda
   (setq org-agenda-custom-commands
         '(("b" agenda "Emr - Simple"
            ((org-agenda-skip-scheduled-if-done nil)
@@ -85,14 +86,34 @@ Inserted by installing org-mode or when a release is made."
 
   ;; org-capture is the new org+remember in v8.0
   (setq org-directory "~/Dropbox/org/")
-  (setq org-default-notes-file (concat org-directory "notes.org"))
+  (setq org-default-notes-file (concat org-directory "refile.org"))
+  (setq org-capture-templates
+        '(("t" "todo" entry (file "")
+           "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+          ("n" "note" entry (file "")
+           "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+          ("m" "meeting" entry (file "")
+           "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)))
 
+  (setq org-refile-targets '((nil :maxlevel . 9)
+                             (org-agenda-files :maxlevel . 9)))
+  (setq org-refile-use-outline-path t)
+
+
+  (defun jyh/remove-empty-drawer-on-clock-out ()
+    "Remove empty LOGBOOK drawer"
+    (interactive)
+    (save-excursion
+      (beginning-of-line 0)
+      (org-remove-empty-drawer-at "LOGBOOK" (point))))
+  (add-hook 'org-clock-out-hook
+            'jyh/remove-empty-drawer-on-clock-out 'append)
   ;;
   ;; TODO: modernize the rest of this for org 8
   ;;
 
-  (setq org-remember-templates
-        '((?t "* %^{Title}\n %U\n %i\n %a" "~/notebook/org/gtd/General.org")))
+  ;(setq org-remember-templates
+  ;      '((?t "* %^{Title}\n %U\n %i\n %a" "~/notebook/org/gtd/General.org")))
 
   ;; OrgStruct Mode
   (add-hook 'rst-mode-hook 'turn-on-orgstruct)
