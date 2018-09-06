@@ -45,39 +45,36 @@ Inserted by installing org-mode or when a release is made."
   :straight t
   :defer t
   :init
-  ;; use-package's :bind isn't working with :prefix(-map), so
-  ;; workaround like this
-  (bind-keys :prefix "C-c o"
-             :prefix-map jyh-org-command-map
-             ("l" . org-store-link)
-             ("a" . org-agenda)
-             ("c" . org-capture)
-             ;; use links outside org-mode
-             ("L" . org-insert-link-global)
-             ("O" . org-open-at-point-global))
+  (setq org-directory "~/Dropbox/org/"
+        jyh/main-org-file (concat org-directory "notes.org"))
+
+  (defun jyh/jump-to-main-org-file ()
+    (interactive)
+    (find-file jyh/main-org-file))
+
+  (with-eval-after-load 'general
+    (general-create-definer jyh/org-command-def
+      :prefix "C-c o"
+      :prefix-map 'jyh/org-command-map)
+    (jyh/org-command-def
+     ;:prefix "C-c o"
+     ;:prefix-map 'jyh-org-command-map
+     "l" 'org-store-link
+     "a" 'org-agenda
+     "c" 'org-capture
+     "o" '(jyh/jump-to-main-org-file
+           :wk "switch to org")
+     "L" 'org-insert-link-global
+     "O" 'org-open-at-point-global))
+
+  ;; quick jump registers
+  (set-register ?o (cons 'file jyh/main-org-file))
+
   (setq org-log-done t                  ; log timepoints
         org-use-fast-todo-selection t
         org-agenda-include-diary t
         org-agenda-skip-deadline-if-done t
-        org-agenda-skip-scheduled-if-done t)
-
-  ;; org-agenda
-  (setq org-agenda-custom-commands
-        '(("b" agenda "Emr - Simple"
-           ((org-agenda-skip-scheduled-if-done nil)
-            (org-agenda-skip-archived-trees nil)
-            (org-agenda-include-diary nil)
-            (org-agenda-prefix-format "  %?-12 t% s")
-            (org-agenda-ndays 7)
-            (org-agenda-start-on-weekday 1)
-            (org-agenda-remove-times-when-in-prefix t)
-            (org-agenda-remove-tags t)
-            (org-agenda-use-time-grid nil)
-            (org-agenda-scheduled-leaders '("" ""))
-            (org-agenda-deadline-leaders '("" ""))
-            (ps-landscape-mode t)
-            (ps-number-of-columns 2))
-           ("~/Desktop/emr_week.ps"))))
+        org-agenda-skip-scheduled-if-done t))
 
   ;; link abbreviations
   (setq org-link-abbrev-alist
@@ -100,20 +97,13 @@ Inserted by installing org-mode or when a release is made."
   (setq org-refile-use-outline-path t)
 
 
-  (defun jyh/remove-empty-drawer-on-clock-out ()
-    "Remove empty LOGBOOK drawer"
-    (interactive)
-    (save-excursion
-      (beginning-of-line 0)
-      (org-remove-empty-drawer-at "LOGBOOK" (point))))
-  (add-hook 'org-clock-out-hook
-            'jyh/remove-empty-drawer-on-clock-out 'append)
+  (setq org-clock-in-resume t
+        org-clock-into-drawer t
+        org-clock-out-remove-zero-time-clocks t)
+
   ;;
   ;; TODO: modernize the rest of this for org 8
   ;;
-
-  ;(setq org-remember-templates
-  ;      '((?t "* %^{Title}\n %U\n %i\n %a" "~/notebook/org/gtd/General.org")))
 
   ;; OrgStruct Mode
   (add-hook 'rst-mode-hook 'turn-on-orgstruct)
@@ -202,7 +192,25 @@ Inserted by installing org-mode or when a release is made."
         (switch-to-buffer-other-window "notes.tex"))))
 
   (defun yas/org-very-safe-expand ()
-    (let ((yas/fallback-behavior 'return-nil)) (yas/expand))))
+    (let ((yas/fallback-behavior 'return-nil)) (yas/expand)))
+
+(use-package org-projectile             ; project-specific org files
+  :straight t
+  :defer t
+  :after org
+  :init
+  (jyh/org-command-def
+    "p" '(org-projectile-capture-for-current-project
+          :which-key "project capture"))
+  :config
+  ;; per-project todo files
+  (org-projectile-per-project)
+  (setq org-projectile-per-project-filepath "TODO.org")
+
+  (setq org-agenda-files (append org-agenda-files
+                                 (org-projectile-todo-files)))
+  (push (org-projectile-project-todo-entry)
+        org-capture-templates))
 
 (provide 'init-org)
 
