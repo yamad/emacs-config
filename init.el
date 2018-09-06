@@ -1,4 +1,4 @@
-;;; init.el --- emacs configuration for jyamad
+;;; init.el --- emacs configuration for jyamad -*- lexical-binding: t; -*-
 ;;
 ;; .emacs config credits for many good ideas:
 ;;  * https://github.com/lunaryorn/.emacs.d
@@ -69,13 +69,31 @@
   (exec-path-from-shell-initialize))
 
 ;; packages needed for config
+(use-package general                    ; keybindings
+  :straight t
+  :config
+  (general-create-definer jyh/evil-leader-map
+    :prefix "SPC"
+    :non-normal-prefix "M-SPC"
+    :states '(normal insert emacs))
+  (general-create-definer jyh/emacs-leader-map
+    :prefix "C-c")
+
+  (defun jyh/bind-leader-maps (&rest bindings)
+    (let ((bind-alist (seq-partition bindings 2)))
+      (dolist (binding bindings)
+        (jyh/emacs-leader-map binding)
+        (jyh/evil-leader-map binding))))
+
+  (jyh/bind-leader-maps "SPC" 'execute-extended-command))
+
 (use-package hydra                      ; sticky keys
   :straight t
   :defer t
   :functions defhydra)
-(use-package diminish                   ; control modeline status
-  :straight t
-  :defer t)
+;(use-package diminish                   ; control modeline status
+  ;:straight t
+  ;:defer t)
 
 ;; auxillary configurations
 (require 'init-complete)
@@ -204,21 +222,6 @@
     "C-c y" "spotify"
     "C-c &" "yasnippet"))
 
-
-(use-package general
-  :straight t
-  :defer t
-  :config
-  (general-def 'normal "SPC"
-    (general-simulate-key "C-c"))
-  (general-def 'insert "M-SPC"
-    (general-simulate-key "C-c"))
-  (general-create-definer jyh/evil-leader-map
-    :prefix "SPC")
-  (general-create-definer jyh/emacs-leader-map
-    :prefix "C-c")
-
-  (general-def "C-c SPC" 'execute-extended-command))
 
 ;; ======================================
 ;;  Navigation
