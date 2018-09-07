@@ -71,6 +71,8 @@
 ;; packages needed for config
 (use-package general                    ; keybindings
   :straight t
+  :commands (general-define-key
+             general-def)
   :config
   (general-create-definer jyh/evil-leader-map
     :prefix "SPC"
@@ -79,11 +81,10 @@
   (general-create-definer jyh/emacs-leader-map
     :prefix "C-c")
 
-  (defun jyh/bind-leader-maps (&rest bindings)
-    (let ((bind-alist (seq-partition bindings 2)))
-      (dolist (binding bindings)
-        (jyh/emacs-leader-map binding)
-        (jyh/evil-leader-map binding))))
+  (defmacro jyh/bind-leader-maps (&rest bindings)
+    `(progn
+      (jyh/emacs-leader-map ,@bindings)
+      (jyh/evil-leader-map ,@bindings)))
 
   (jyh/bind-leader-maps "SPC" 'execute-extended-command))
 
@@ -214,7 +215,6 @@
     "C-c i" "ivy"
     "C-c j" "jump"
     "C-c m" "major mode"
-    "C-c o" "org"
     "C-c p" "projectile"
     "C-c s" "search"
     "C-c x" "text"
