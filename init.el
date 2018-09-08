@@ -85,6 +85,13 @@
     `(progn
       (jyh/emacs-leader-map ,@bindings)
       (jyh/evil-leader-map ,@bindings)))
+  (defmacro jyh/bind-leader-prefix-map (prefix map &optional display)
+    "Bind key prefix PREFIX to keymap MAP.
+
+If provided, DISPLAY is used as the which-key text"
+    `(jyh/bind-leader-maps
+      ,prefix
+      '(:keymap ,map ,(when display :wk display))))
 
   (jyh/bind-leader-maps "SPC" 'execute-extended-command))
 
@@ -556,7 +563,10 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :defer t
   :diminish projectile-mode
   :init
-  (projectile-global-mode)
+  (projectile-mode)
+  (setq projectile-keymap-prefix nil)
+  (jyh/bind-leader-prefix-map
+   "p" projectile-command-map "projects")
   ;; uncomment this if smart-mode-line is off
   ;(setq projectile-mode-line
         ;'(:eval (format " P/%s" (projectile-project-name))))
