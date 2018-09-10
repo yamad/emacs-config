@@ -11,6 +11,7 @@
 
 ;;; Commentary:
 ;; Emacs Configuration for jyamad
+(require 'seq)
 
 ;;; Code:
 (defconst emacs-start-time (current-time)) ; cribbed from jwiegley
