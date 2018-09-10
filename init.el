@@ -213,8 +213,6 @@ If provided, DISPLAY is used as the which-key text"
 
   (which-key-declare-prefixes
     ;;Prefixes for global prefixes and minor modes
-    "C-c ." "avy"
-    "C-." "avy"
     "C-c !" "flycheck"
     "C-c c" "constants"
     "C-c f" "files"
@@ -222,7 +220,6 @@ If provided, DISPLAY is used as the which-key text"
     "C-c i" "ivy"
     "C-c j" "jump"
     "C-c m" "major mode"
-    "C-c p" "projectile"
     "C-c s" "search"
     "C-c x" "text"
     "C-c t" "tmux"
@@ -238,21 +235,24 @@ If provided, DISPLAY is used as the which-key text"
   :straight t
   :defer t
   :init
-  (bind-keys
-   :prefix-map avy-keymap
-   :prefix "C-c ."
-   ("c" . avy-goto-char)
-   ("f" . avy-goto-char-in-line)
-   ("l" . avy-goto-line)
-   ("w" . avy-goto-word-or-subword-1)
-   ("s" . avy-goto-char-timer)
-   ("p" . avy-pop-mark))
-  (bind-key "C-." avy-keymap)           ; shortcut for GUIs
+  (jyh/bind-leader-prefix-map
+   "." jyh/avy-keymap "nav")
+  (general-def
+    :prefix-map 'jyh/avy-keymap
+    "c" 'avy-goto-char
+    "f" 'avy-goto-char-in-line
+    "l" 'avy-goto-line
+    "w" 'avy-goto-word-or-subword-1
+    "s" 'avy-goto-char-timer
+    "p" 'avy-pop-mark)
+
+  (bind-key "C-." jyh/avy-keymap)           ; shortcut for GUIs
   (setq avy-background t))
 
 (use-package ace-window                 ; keyed label window navigation
   :straight t
   :defer t
+  :after avy
   :init
   (bind-keys
    :map avy-keymap
