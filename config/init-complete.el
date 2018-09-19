@@ -57,10 +57,15 @@
 
 (use-package yasnippet                  ; snippets/templates
   :straight t
+  :defer 8
   :diminish yas-minor-mode
   :commands (yas/trigger-key yas/keymap)
   :init
   (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :straight t
+  :after yasnippet)
 
 (provide 'init-complete)
 
