@@ -215,16 +215,11 @@ If provided, DISPLAY is used as the which-key text"
   (which-key-declare-prefixes
     ;;Prefixes for global prefixes and minor modes
     "C-c !" "flycheck"
-    "C-c c" "constants"
     "C-c f" "files"
-    "C-c g" "git"
-    "C-c i" "ivy"
     "C-c j" "jump"
     "C-c m" "major mode"
     "C-c s" "search"
     "C-c x" "text"
-    "C-c t" "tmux"
-    "C-c y" "spotify"
     "C-c &" "yasnippet"))
 
 
@@ -236,8 +231,6 @@ If provided, DISPLAY is used as the which-key text"
   :straight t
   :defer t
   :init
-  (jyh/bind-leader-prefix-map
-   "." jyh/avy-keymap "nav")
   (general-def
     :prefix-map 'jyh/avy-keymap
     "c" 'avy-goto-char
@@ -246,6 +239,8 @@ If provided, DISPLAY is used as the which-key text"
     "w" 'avy-goto-word-or-subword-1
     "s" 'avy-goto-char-timer
     "p" 'avy-pop-mark)
+  (jyh/bind-leader-prefix-map
+   "." jyh/avy-keymap "nav")
 
   (bind-key "C-." jyh/avy-keymap)           ; shortcut for GUIs
   (setq avy-background t))
@@ -256,7 +251,7 @@ If provided, DISPLAY is used as the which-key text"
   :after avy
   :init
   (bind-keys
-   :map avy-keymap
+   :map jyh/avy-keymap
    ("n" . ace-window))
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
@@ -436,17 +431,18 @@ _._: split horizontal    _/_: split vertical
       ("SPC" git-gutter:mark-hunk "mark")
       ("q" nil "quit")))
 
-(bind-keys* :prefix "C-c g"
-            :prefix-map git-keymap)
-(bind-keys :map git-keymap
-           ("s" . magit-status)
-           ("t" . git-gutter-mode)
-           ("SPC" . git-gutter:mark-hunk)
-           ("=" . git-gutter:popup-hunk)
-           ("p" . git-gutter:previous-hunk)
-           ("n" . git-gutter:next-hunk)
-           ("S" . git-gutter:stage-hunk)
-           ("g" . jyh-hydra-git-gutter/body))
+(general-def
+  :prefix-map 'jyh/git-keymap
+  "s" 'magit-status
+  "t" 'git-gutter-mode
+  "SPC" 'git-gutter:mark-hunk
+  "=" 'git-gutter:popup-hunk
+  "p" 'git-gutter:previous-hunk
+  "n" 'git-gutter:next-hunk
+  "S" 'git-gutter:stage-hunk
+  "g" 'jyh-hydra-git-gutter/body)
+(jyh/bind-leader-prefix-map
+ "g" jyh/git-keymap "git")
 
 (use-package highlight-parentheses      ; highlight matching parens
   :straight t
@@ -627,20 +623,20 @@ _k_: kill        _s_: split                   _{_: wrap with { }
     :init (counsel-projectile-mode))
 
   ;; setup ivy-based global command keymap
-  (bind-keys
-   :prefix-map ivy-command-map
-   :prefix "C-c i"
-   :prefix-docstring "Ivy/Counsel command keymap"
-   ("s" . swiper)
-   ("o" . ivy-occur)
-   ("i" . counsel-imenu)
-   ("k" . counsel-ag)
-   ("f" . counsel-recentf)
-   ("g" . counsel-git)
-   ("j" . counsel-git-grep)
-   ("l" . counsel-locate)
-   ("u" . counsel-unicode-char)
-   )
+  (general-def
+   :prefix-map 'jyh/ivy-command-map
+   :prefix-doc "Ivy/Counsel command keymap"
+   "s" 'swiper
+   "o" 'ivy-occur
+   "i" 'counsel-imenu
+   "k" 'counsel-ag
+   "f" 'counsel-recentf
+   "g" 'counsel-git
+   "j" 'counsel-git-grep
+   "l" 'counsel-locate
+   "u" 'counsel-unicode-char)
+  (jyh/bind-leader-prefix-map
+   "i" jyh/ivy-command-map "ivy")
 
   ;; remap built-in functions
   (bind-keys
@@ -648,8 +644,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
    ([remap switch-to-buffer] . ivy-switch-buffer)    ; C-x b
    ([remap bookmark-jump] . counsel-bookmark)        ; C-x r b
    ([remap find-file] . counsel-find-file)           ; C-x C-f
-   ([remap yank-pop] . counsel-yank-pop)             ; M-y
-   )
+   ([remap yank-pop] . counsel-yank-pop))            ; M-y
 
   (bind-keys
    :map company-mode-map
@@ -670,13 +665,14 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :straight t
   :defer t
   :init
-  (bind-keys
-   :prefix-map spotify-keymap
-   :prefix "C-c y"
-   ("y" . spotify-playpause)
-   ("p" . spotify-previous)
-   ("n" . spotify-next)
-   ("c" . spotify-current)))
+  (general-def
+    :prefix-map 'jyh/spotify-command-map
+   "y" 'spotify-playpause
+   "p" 'spotify-previous
+   "n" 'spotify-next
+   "c" 'spotify-current)
+  (jyh/bind-leader-prefix-map
+   "y" jyh/spotify-command-map "spotify"))
 
 (use-package maxima                     ; computer algebra system
   :disabled
@@ -690,22 +686,23 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :straight t
   :defer t
   :init
-  (bind-keys
-   :prefix-map emamux-jyh-keymap
-   :prefix "C-c t"
-   ("s" . emamux:send-command)
-   ("y" . emamux:yank-from-list-buffers)
-   ("!" . emamux:run-command)
-   ("r" . emamux:run-last-command)
-   ("M-s" . emamux:run-region)
-   ("C-i" . emamux:inspect-runner)
-   ("C-k" . emamux:close-panes)
-   ("C-c" . emamux:interrupt-runner)
-   ("M-k" . emamux:clear-runner-history)
-   ("c" . emamux:new-window)
-   ("C" . emamux:clone-current-frame)
-   ("2" . emamux:split-window)
-   ("3" . emamux:split-window-horizontally)))
+  (general-def
+   :prefix-map 'jyh/emamux-keymap
+   "s" 'emamux:send-command
+   "y" 'emamux:yank-from-list-buffers
+   "!" 'emamux:run-command
+   "r" 'emamux:run-last-command
+   "M-s" 'emamux:run-region
+   "C-i" 'emamux:inspect-runner
+   "C-k" 'emamux:close-panes
+   "C-c" 'emamux:interrupt-runner
+   "M-k" 'emamux:clear-runner-history
+   "c" 'emamux:new-window
+   "C" 'emamux:clone-current-frame
+   "2" 'emamux:split-window
+   "3" 'emamux:split-window-horizontally)
+  (jyh/bind-leader-prefix-map
+   "t" jyh/emamux-keymap "tmux"))
 
 ;; ======================================
 ;;  Other
@@ -744,11 +741,13 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :straight t
   :defer t
   :init
-  (bind-keys :prefix-map constants-keymap
-             :prefix "C-c c"
-             ("i" . constants-insert)
-             ("g" . constants-get)
-             ("r" . constants-replace))
+  (general-def
+    :prefix-map 'jyh/constants-keymap
+    "i" 'constants-insert
+    "g" 'constants-get
+    "r" 'constants-replace)
+  (jyh/bind-leader-prefix-map
+   "c" jyh/constants-keymap "constants")
   (setq constants-unit-system 'SI))
 
 (use-package command-log-mode

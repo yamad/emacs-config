@@ -452,6 +452,7 @@ local copy first."
 (use-package ess-smart-equals
   :straight t
   :defer t
+  :disabled
   :init
   (hook-into-modes #'ess-smart-equals-mode
                    'ess-mode-hook
@@ -471,13 +472,18 @@ local copy first."
     (require 'poly-markdown)
     (R-mode)
     (poly-markdown+r-mode))
-  (defvar Rmd-mode-map nil "Keymap for `Rmd-mode'")
-  (bind-keys
-   :map Rmd-mode-map
-   ("C-c <C-up>" . ess-Rmd-eval-buffer-from-beg-to-here)
-   ("C-c <C-down>" . ess-Rmd-eval-buffer-from-here-to-end)
-   ("C-c C-b" . ess-Rmd-eval-buffer)
-   ("C-M-x" . ess-Rmd-eval-chunk))
+  (defvar poly-markdown+r-mode-map
+    (make-sparse-keymap) "Keymap for `Rmd-mode'")
+  (general-def
+    poly-markdown+r-mode-map
+    [remap ess-eval-buffer-from-beg-to-here]
+    'ess-Rmd-eval-buffer-from-beg-to-here
+    [remap ess-eval-buffer-from-here-to-end]
+    'ess-Rmd-eval-buffer-from-here-to-end
+    [remap ess-eval-buffer]
+    'ess-Rmd-eval-buffer
+    [remap ess-eval-chunk]
+    'ess-Rmd-eval-chunk)
   (add-hook 'poly-markdown+r-mode-hook #'visual-line-mode))
 
 (use-package stan-mode :straight t :defer t)

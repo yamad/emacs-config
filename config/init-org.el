@@ -54,7 +54,7 @@ Inserted by installing org-mode or when a release is made."
     (find-file jyh/main-org-file))
 
   (with-eval-after-load "general"
-    (general-define-key
+    (general-def
       :prefix-map 'jyh/org-command-map
       ""  '(nil :which-key "org")
       "l" 'org-store-link
