@@ -92,9 +92,9 @@
 If provided, DISPLAY is used as the which-key text"
     `(jyh/bind-leader-maps
       ,prefix
-      '(:keymap ,map ,(when display :wk display))))
+      '(:keymap ,map ,@(when display `(:wk ,display)))))
 
-  (jyh/bind-leader-maps "SPC" 'execute-extended-command))
+  (jyh/bind-leader-maps "SPC" '(execute-extended-command :wk "M-x"))  )
 
 (use-package hydra                      ; sticky keys
   :straight t
