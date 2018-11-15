@@ -458,33 +458,56 @@ local copy first."
                    'ess-mode-hook
                    'inferior-ess-mode-hook))
 
+;; (use-package polymode
+;;   ;;:ensure nil       ; load locally
+;;   ;; :load-path (lambda ()
+;;   ;;              (list "site-lisp/polymode"
+;;   ;;                    "site-lisp/polymode/modes"))
+;;   :mode ("\\.Rmd$" . Rmd-mode)
+;;   :init
+;;   (defun Rmd-mode ()
+;;     "ESS Markdown mode for Rmd files"
+;;     (interactive)
+;;     (require 'poly-R)
+;;     (require 'poly-markdown)
+;;     (R-mode)
+;;     (poly-markdown+r-mode))
+;;   (defvar poly-markdown+r-mode-map
+;;     (make-sparse-keymap) "Keymap for `Rmd-mode'")
+;;   (general-def
+;;     poly-markdown+r-mode-map
+;;     [remap ess-eval-buffer-from-beg-to-here]
+;;     'ess-Rmd-eval-buffer-from-beg-to-here
+;;     [remap ess-eval-buffer-from-here-to-end]
+;;     'ess-Rmd-eval-buffer-from-here-to-end
+;;     [remap ess-eval-buffer]
+;;     'ess-Rmd-eval-buffer
+;;     [remap ess-eval-chunk]
+;;     'ess-Rmd-eval-chunk)
+;;   (add-hook 'poly-markdown+r-mode-hook #'visual-line-mode))
+
 (use-package polymode
-  :ensure nil                           ; load locally
-  :load-path (lambda ()
-               (list "site-lisp/polymode"
-                     "site-lisp/polymode/modes"))
-  :mode ("\\.Rmd$" . Rmd-mode)
-  :init
-  (defun Rmd-mode ()
-    "ESS Markdown mode for Rmd files"
-    (interactive)
-    (require 'poly-R)
-    (require 'poly-markdown)
-    (R-mode)
-    (poly-markdown+r-mode))
-  (defvar poly-markdown+r-mode-map
-    (make-sparse-keymap) "Keymap for `Rmd-mode'")
-  (general-def
-    poly-markdown+r-mode-map
-    [remap ess-eval-buffer-from-beg-to-here]
-    'ess-Rmd-eval-buffer-from-beg-to-here
-    [remap ess-eval-buffer-from-here-to-end]
-    'ess-Rmd-eval-buffer-from-here-to-end
-    [remap ess-eval-buffer]
-    'ess-Rmd-eval-buffer
-    [remap ess-eval-chunk]
-    'ess-Rmd-eval-chunk)
-  (add-hook 'poly-markdown+r-mode-hook #'visual-line-mode))
+  :straight (polymode
+	         :type git :host github
+             :branch "master"
+	         :repo "polymode/polymode")
+  :config
+  (use-package poly-noweb
+    :straight (poly-noweb
+	       :type git :host github
+	       :repo "polymode/poly-noweb"))
+  (use-package poly-rst
+    :straight (poly-rst
+	       :type git :host github
+	       :repo "polymode/poly-rst"))
+  (use-package poly-markdown
+    :straight (poly-markdown
+	       :type git :host github
+	       :repo "polymode/poly-markdown"))
+  (use-package poly-R
+    :straight (poly-R
+	       :type git :host github
+	       :repo "polymode/poly-R")))
 
 (use-package stan-mode :straight t :defer t)
 (use-package stan-snippets :straight t :defer t)
