@@ -214,7 +214,7 @@ If provided, DISPLAY is used as the which-key text"
 
   (which-key-declare-prefixes
     ;;Prefixes for global prefixes and minor modes
-    "C-c !" "flycheck"
+    "C-c !" "flymake"
     "C-c f" "files"
     "C-c j" "jump"
     "C-c m" "major mode"
@@ -315,7 +315,7 @@ _._: split horizontal    _/_: split vertical
 (bind-key "C-c w" 'jyh/hydra-resize-windows/body)
 
 (defhydra hydra-vi (:pre (set-cursor-color "#40e0d0")
-                    :post (set-cursor-color "#ffffff"))
+ :post (set-cursor-color "#ffffff"))
   "vi"
   ("l" forward-char)
   ("h" backward-char)
@@ -327,6 +327,7 @@ _._: split horizontal    _/_: split vertical
 
 (use-package persp-mode
   :straight t
+  :disabled
   :bind-keymap ("C-c q" . persp-key-map))
 
 (use-package persp-projectile
@@ -524,35 +525,27 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :straight t
   :bind (("C-c e" . er/expand-region)))
 
-(use-package flycheck                   ; on-the-fly error checking
-  :straight t
+(use-package flymake
   :defer t
-  :bind ("C-c ! !" . jyh/hydra-flycheck/body)
-  :commands (flycheck-mode
-             flycheck-list-errors
-             flycheck-error-list-mode
-             flycheck-buffer)
-  :defines (flycheck-check-syntax-automatically)
-  :init
-  (hook-into-modes #'flycheck-mode
-                   'emacs-lisp-mode-hook
-                   'python-mode-hook
-                   'c-mode-hook
-                   'f90-mode-hook)
+  :bind ("C-c ! !" . jyh-hydra-flymake/body)
   :config
-  (setq flycheck-check-syntax-automatically '(mode-enabled save))
-  (defhydra jyh/hydra-flycheck
-    (:pre (progn (setq hydra-lv t) (flycheck-list-errors))
-     :post (progn (setq hydra-lv nil) (quit-windows-on "*Flycheck errors*")))
+  (defhydra jyh-hydra-flymake
+    (:pre (progn (setq hydra-lv t) (flymake-show-diagnostics-buffer))
+          :post (progn (setq hydra-lv nil)
+                       (quit-windows-on
+                        (format "*Flymake diagnostics for %s*" (buffer-name)))))
     "Errors"
-    ("f"  flycheck-error-list-set-filter                            "Filter")
-    ("j"  flycheck-next-error                                       "Next")
-    ("k"  flycheck-previous-error                                   "Previous")
-    ("gg" flycheck-first-error                                      "First")
+    ("f"  "Filter")
+    ("j"  flymake-goto-next-error       "Next")
+    ("k"  flymake-goto-prev-error       "Previous")
+    ("gg" (progn
+            (goto-char (point-min))
+            (flymake-goto-next-error))  "First"
+            )
     ("G"  (progn
             (goto-char (point-max))
-            (flycheck-previous-error))                              "Last")
-    ("q"  nil                                                       "quit")))
+            (flymake-goto-prev-error))  "Last")
+    ("q"  nil                           "quit")))
 
 
 (use-package projectile                 ; project management
@@ -574,15 +567,13 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 (use-package ggtags                     ; symbol tags
   :straight t
   :defer t
+  :disabled
   :init
   (hook-into-modes
    '(lambda () (ggtags-mode 1))
-   'c-mode-hook
-   'c++-mode-hook
    'erlang-mode-hook
    'f90-mode-hook
    'java-mode-hook
-   'js2-mode-hook
    'lua-mode-hook
    'makefile-mode-hook))
 

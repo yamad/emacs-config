@@ -37,7 +37,6 @@
                 (lambda ()
                   (set (make-local-variable 'company-backends)
                        ',(append backends backend-list))))))
-(macroexpand '(jyh-company-for-mode 'python-mode-hook company-anaconda))
 
 (use-package hippie-exp    ; dabbrev enhacements, expansion/completion
   :straight t

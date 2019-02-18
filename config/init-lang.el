@@ -4,6 +4,18 @@
 
 ;;; Code:
 
+(use-package eglot
+  :straight t
+  :defer t
+  :hook ((python-mode js2-mode c-mode) . eglot-ensure)
+  :config
+  (setq flymake-start-syntax-check-on-newline nil)
+  (defun jyh/project-finder (dir)
+    (if (fboundp 'projectile-project-root)
+        (let ((root (projectile-project-root dir)))
+          (and root (cons 'transient root)))))
+  (add-to-list 'project-find-functions #'jyh/project-finder))
+
 
 ;; ======================================
 ;;  C and C++
@@ -51,32 +63,6 @@
             (setq show-trailing-whitespace t)
             (c-set-style "linux"))))
 
-(use-package rtags
-  :straight t
-  :defer t
-  :init
-  (add-hook 'c-mode-common-hook #'rtags-start-process-unless-running)
-  (add-hook 'c++-mode-common-hook #'rtags-start-process-unless-running)
-  (add-hook 'c-mode-common-hook
-            #'(lambda ()
-                (setq-local eldoc-documentation-function #'rtags-eldoc)))
-  (jyh-company-for-mode 'c-mode-common-hook company-rtags)
-  (rtags-enable-standard-keybindings)   ; default C-c r prefix
-  (setq rtags-autostart-diagnostics t
-        rtags-completions-enabled t)
-  (rtags-diagnostics))
-
-(use-package flycheck-rtags
-  :straight t
-  :defer t
-  :after flycheck
-  :preface
-  (defun jyh-flycheck-rtags-setup ()
-    (flycheck-select-checker 'rtags)
-    (setq-local flycheck-highlighting-mode nil)
-    (setq-local flycheck-check-syntax-automatically nil))
-  :init
-  (add-hook 'c-mode-common-hook #'jyh-flycheck-rtags-setup))
 
 ;; Objective-C
 (setq cc-other-file-alist
@@ -122,7 +108,6 @@
                 (haskell-decl-scan-mode)
                 (haskell-indentation-mode)
                 (interactive-haskell-mode)
-                (flycheck-mode)
                 (setq-local company-backends '(company-ghc))))
   (setq haskell-interactive-popup-errors nil)
   (setq haskell-process-type 'stack-ghci)
@@ -236,12 +221,15 @@ local copy first."
   ; prefer flycheck errors to builtins
   (setq js2-mode-show-strict-warnings nil
         js2-mode-show-parse-errors nil)
-  (add-hook 'js2-mode-hook #'flycheck-mode))
+  ;(add-hook 'js2-mode-hook #'flycheck-mode)
+  )
+
 
 ;; tern -- javascript static analysis
 (use-package tern
   :straight t
   :defer t
+  :disabled
   :after js2-mode
   :init
   (add-hook 'js2-mode-hook #'tern-mode))
@@ -249,6 +237,7 @@ local copy first."
 (use-package company-tern
   :straight t
   :after (company tern)
+  :disabled
   :init
   (jyh-company-for-mode 'js2-mode-hook company-tern))
 
@@ -257,6 +246,7 @@ local copy first."
   :defer t
   :straight t
   :after js2-mode
+  :disabled
   :init
   (add-hook 'js2-mode #'skewer-mode))
 
@@ -313,6 +303,7 @@ local copy first."
 (use-package anaconda-mode
   :straight t
   :defer t
+  :disabled
   :init
   (add-hook 'python-mode-hook 'anaconda-mode)
   (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
@@ -520,12 +511,6 @@ local copy first."
 (use-package rust-mode
   :straight t
   :defer t)
-(use-package flycheck-rust
-  :straight t
-  :defer t
-  :after (flycheck rust-mode)
-  :init
-  (add-hook 'rust-mode-hook #'flycheck-rust-setup))
 
 
 ;; ======================================
