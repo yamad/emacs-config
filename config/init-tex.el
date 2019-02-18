@@ -4,7 +4,7 @@
 
 ;; general options for all TeX-based modes
 (use-package auctex
-  :straight t
+  :straight (auctex :type git :host github :repo "emacs-straight/auctex")
   :defer t)
 
 (use-package tex-site
