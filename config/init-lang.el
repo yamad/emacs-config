@@ -428,8 +428,11 @@ local copy first."
          ("\\.[Bb][Oo][Gg]\\'" . ess-bugs-mode)
          ("\\.[Bb][Mm][Dd]\\'" . ess-bugs-mode))
   :config
-  (setq ess-eval-visibly-p nil)
-  (setq ess-ask-for-ess-directory nil)
+  (setq ess-eval-visibly-p nil
+        ess-ask-for-ess-directory nil)
+
+  (unbind-key "_" ess-mode-map)
+  (bind-key ";" 'ess-insert-assign ess-mode-map)
 
   (require 'ess-site)
   (with-eval-after-load 'ess-site
