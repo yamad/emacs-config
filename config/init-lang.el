@@ -333,6 +333,7 @@ local copy first."
 (use-package py-isort                   ; sort import statements
   :straight t
   :defer t
+  :disabled
   :commands (py-isort-buffer py-isort-before-save)
   :init
   (defun jyh-python-sort-imports ()
