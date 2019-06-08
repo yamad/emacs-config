@@ -431,11 +431,10 @@ local copy first."
   (setq ess-eval-visibly-p nil
         ess-ask-for-ess-directory nil)
 
-  (unbind-key "_" ess-mode-map)
-  (bind-key ";" 'ess-insert-assign ess-mode-map)
-
   (require 'ess-site)
   (with-eval-after-load 'ess-site
+    (unbind-key "_" ess-mode-map)
+    (bind-key ";" 'ess-insert-assign ess-mode-map)
     ;; Follow Hadley Wickham's R style guide
     (setq ess-first-continued-statement-offset 2
           ess-continued-statement-offset 0
