@@ -485,6 +485,8 @@ local copy first."
 	         :type git :host github
              :branch "master"
 	         :repo "polymode/polymode")
+  :defer t
+  :commands poly-markdown+r-mode
   :config
   (use-package poly-noweb
     :straight (poly-noweb
