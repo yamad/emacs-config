@@ -451,6 +451,7 @@ _._: split horizontal    _/_: split vertical
  "g" jyh/git-keymap "git")
 
 (use-package ediff
+  :defer t
   :config
   (setq ediff-split-window-function 'split-window-horizontally))
 
