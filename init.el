@@ -182,6 +182,7 @@ If provided, DISPLAY is used as the which-key text"
 
 (use-package dired+                     ; better directory management
   :straight t
+  :disabled				; incompatible for now with emacs 26.2
   :defer t
   :config
   ;; don't create new buffer for every directory

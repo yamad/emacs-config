@@ -37,8 +37,9 @@
     ("org" . "http://orgmode.org/elpa/")
     ("gnu-elpa" . "https://elpa.gnu.org/packages/")))
 ;; add if not already in list
-(dolist (pa jyh/package-archives)
-  (add-to-list 'package-archives pa))
+(when (boundp 'package-archives)
+  (dolist (pa jyh/package-archives)
+    (add-to-list 'package-archives pa)))
 
 (provide 'init-package)
 
