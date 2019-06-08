@@ -69,6 +69,10 @@
   :config
   (exec-path-from-shell-initialize))
 
+;; load environment variables per directory, if using direnv
+(use-package direnv
+  :straight t)
+
 ;; packages needed for config
 (use-package general                    ; keybindings
   :straight t
