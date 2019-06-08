@@ -97,6 +97,7 @@ Inserted by installing org-mode or when a release is made."
                              (org-agenda-files :maxlevel . 9)))
   (setq org-refile-use-outline-path t)
 
+  (setq org-agenda-files '("notes.org"))
 
   (setq org-clock-in-resume t
         org-clock-into-drawer t
@@ -131,10 +132,15 @@ Inserted by installing org-mode or when a release is made."
   (defun yas/org-very-safe-expand ()
     (let ((yas/fallback-behavior 'return-nil)) (yas/expand))))
 
+(use-package org-plus-contrib
+  :straight t
+  :defer t
+  :after org)
+
 (use-package org-projectile             ; project-specific org files
   :straight t
   :defer t
-  :after org
+  :after org org-plus-contrib
   :config
   ;; per-project todo files
   (org-projectile-per-project)
@@ -144,6 +150,10 @@ Inserted by installing org-mode or when a release is made."
                                  (org-projectile-todo-files)))
   (push (org-projectile-project-todo-entry)
         org-capture-templates))
+
+(use-package ox-reveal
+  :straight t
+  :defer t)
 
 (provide 'init-org)
 
