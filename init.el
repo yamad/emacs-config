@@ -450,6 +450,10 @@ _._: split horizontal    _/_: split vertical
 (jyh/bind-leader-prefix-map
  "g" jyh/git-keymap "git")
 
+(use-package ediff
+  :config
+  (setq ediff-split-window-function 'split-window-horizontally))
+
 (use-package highlight-parentheses      ; highlight matching parens
   :straight t
   :defer t
