@@ -416,37 +416,45 @@ _._: split horizontal    _/_: split vertical
 (use-package magit                      ; git version control
   :straight t
   :defer t
+  :commands (magit-status magit-file-dispatch)
   :bind (("C-x C-g" . magit-status))
   :init
   (when *is-windows-os*
     (setq magit-git-executable "C:\\Program Files (x86)\\Git\\bin\\git.exe"))
   (setq magit-last-seen-setup-instructions "1.4.0")
-  (setq vc-handled-backends (delq 'Git vc-handled-backends)))
+  (setq vc-handled-backends (delq 'Git vc-handled-backends))
+  :config
+  (global-magit-file-mode -1)) ; don't set some global keybindings
 
 (use-package git-gutter
   :straight t
   :defer t
+  :commands git-gutter-mode
   :diminish "GG"
   :init
-  (defhydra jyh-hydra-git-gutter ()
-      "git"
-      ("p" git-gutter:previous-hunk "previous")
-      ("n" git-gutter:next-hunk "next")
-      ("s" git-gutter:stage-hunk "stage")
-      ("=" git-gutter:popup-hunk "view")
-      ("SPC" git-gutter:mark-hunk "mark")
-      ("q" nil "quit")))
+  (defhydra jyh-hydra-git-gutter
+    (:body-pre (git-gutter-mode +1))
+    "git"
+    ("p" git-gutter:previous-hunk "prev")
+    ("n" git-gutter:next-hunk "next")
+    ("s" git-gutter:stage-hunk "stage")
+    ("t" git-gutter-mode "toggle")
+    ("=" git-gutter:popup-hunk "view")
+    ("SPC" git-gutter:mark-hunk "mark")
+    ("q" nil "quit")
+    ("Q" (git-gutter-mode -1)
+     "shut off" :color blue)))
 
 (general-def
   :prefix-map 'jyh/git-keymap
   "s" 'magit-status
+  "b" 'magit-blame-addition
+  "d" 'magit-diff-buffer-file
+  "l" 'magit-log-buffer-file
+  "g" 'magit-file-dispatch
   "t" 'git-gutter-mode
-  "SPC" 'git-gutter:mark-hunk
-  "=" 'git-gutter:popup-hunk
-  "p" 'git-gutter:previous-hunk
-  "n" 'git-gutter:next-hunk
-  "S" 'git-gutter:stage-hunk
-  "g" 'jyh-hydra-git-gutter/body)
+  "=" 'magit-diff-buffer-file
+  "G" 'jyh-hydra-git-gutter/body)
 (jyh/bind-leader-prefix-map
  "g" jyh/git-keymap "git")
 
