@@ -669,6 +669,10 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 (use-package ag                         ; better grep search
   :straight t
   :defer t)
+(use-package wgrep-ag                   ; modify files from grep/ag
+  :straight t
+  :defer t
+  :commands wgrep-change-to-wgrep-mode)
 
 (use-package spotify                    ; spotify controls
   :straight t
