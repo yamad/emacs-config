@@ -7,7 +7,16 @@
 (use-package rst
   :defer t
   :mode (("\\.rst$" . rst-mode)
-         ("\\.rest$" . rst-mode)))
+         ("\\.rest$" . rst-mode))
+  :config
+  (setq rst-preferred-adornments
+        '((35 over-and-under 0) ; ?#
+          (42 over-and-under 0) ; ?*
+          (61 simple 0) ; ?=
+          (45 simple 0) ; ?-
+          (94 simple 0) ; ?^
+          (34 simple 0))) ; ?"
+  )
 (use-package markdown-mode
   :straight t
   :defer t)
