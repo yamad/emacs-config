@@ -339,16 +339,10 @@ local copy first."
   :straight t
   :disabled)
 
-(use-package pytest
+(use-package python-pytest
   :straight t
   :defer t
-  :commands (pytest-all
-             pytest-module
-             pytest-one
-             pytest-directory
-             pytest-pdb-all
-             pytest-pdb-module
-             pytest-pdb-one))
+  :commands python-pytest-popup)
 
 (use-package blacken                    ; black python code formatter
   :straight t
@@ -363,6 +357,88 @@ local copy first."
              pydoc-browse
              pydoc-info
              pydoc-jump-to-section))
+
+(use-package traad
+  :straight t
+  :defer t
+  :init
+  (setq traad-server-program "traad")
+  (pretty-hydra-define
+    jyh-hydra-traad
+    (:color blue :quit-key "q" :title "Refactorings (traad/rope python)")
+    ("Rename"
+     (("r" traad-rename "rename")
+      ("R" traad-rename-advanced "rename advanced"))
+
+     "Moves"
+     (("mm" traad-move "move")
+      ("mf" traad-move-global "move function")
+      ("mM" traad-move-module "move module")
+      ("mr" traad-rename-module "rename current module"))
+
+     "History"
+     (("h" traad-display-history "history")
+      ("/" traad-undo "undo")
+      ("." traad-redo "redo"))
+
+     "Extract"
+     (("I" traad-inline "inline thing")
+      ("p" traad-introduce-parameter "add parameter")
+      ("em" traad-extract-method "extract method")
+      ("ev" traad-extract-variable "extract variable"))
+
+     "Arguments"
+     (("an" traad-normalize-arguments "normalize arguments")
+      ("aa" traad-add-argument "add argument")
+      ("ar" traad-remove-argument "rename argument"))
+
+     "Imports"
+     (("ia" traad-auto-import "add import for")
+      ("io" traad-organize-imports "organize imports")
+      ("if" traad-froms-to-imports "froms to imports")
+      ("is" traad-expand-star-imports "expand star imports")
+      ("ir" traad-relatives-to-absolutes "relative to absolute import")
+      ("il" traad-handle-long-imports "long imports")
+      ("iS" traad-imports-super-smackdown "import \"super smackdown\""))))
+
+  (general-def
+    :keymap 'python-mode-map
+    :prefix-map 'jyh/traad-command-map
+    :prefix-name "refactor"
+    :prefix "C-c r"
+    :prefix-doc "Python Refactorings (Traad/Rope)"
+    "r" '(traad-rename :wk "rename")
+    "R" '(traad-rename-advanced :wk "rename advanced")
+    ;; moves
+    "m"  '(nil :wk "move")
+    "mm" '(traad-move :wk "dwim")
+    "mf" '(traad-move-global :wk "move function")
+    "mM" '(traad-move-module :wk "move module")
+    "mr" '(traad-rename-module :wk "rename current module")
+    ;; history
+    "h" '(traad-display-history :wk "history")
+    "/" '(traad-undo :wk "undo")
+    "." '(traad-redo :wk "redo")
+    ;; extract
+    "I" '(traad-inline :wk "inline thing")
+    "p" '(traad-introduce-parameter :wk "add parameter")
+    "e"  '(nil :wk "extract")
+    "em" '(traad-extract-method :wk "extract method")
+    "ev" '(traad-extract-variable :wk "extract variable")
+    ;; arguments
+    "a"  '(nil :wk "arguments")
+    "an" '(traad-normalize-arguments :wk "normalize arguments")
+    "aa" '(traad-add-argument :wk "add argument")
+    "ar" '(traad-remove-argument :wk "rename argument")
+    ;; imports
+    "i"  '(nil :wk "imports")
+    "ia" '(traad-auto-import :wk "add import for")
+    "io" '(traad-organize-imports :wk "organize imports")
+    "if" '(traad-froms-to-imports :wk "froms to imports")
+    "is" '(traad-expand-star-imports :wk "expand star imports")
+    "ir" '(traad-relatives-to-absolutes :wk "relative to absolute import")
+    "il" '(traad-handle-long-imports :wk "long imports")
+    "iS" '(traad-imports-super-smackdown :wk "import \"super smackdown\"")))
 
 (use-package company-anaconda
   :straight t

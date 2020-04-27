@@ -104,6 +104,12 @@ If provided, DISPLAY is used as the which-key text"
   :straight t
   :defer t
   :functions defhydra)
+
+(use-package pretty-hydra
+  :straight t
+  :defer t
+  :after hydra)
+
 ;(use-package diminish                   ; control modeline status
   ;:straight t
   ;:defer t)
