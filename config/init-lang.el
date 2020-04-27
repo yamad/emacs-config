@@ -300,14 +300,6 @@ local copy first."
 ;;  Python
 ;; ======================================
 
-(use-package anaconda-mode
-  :straight t
-  :defer t
-  :disabled
-  :init
-  (add-hook 'python-mode-hook 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
-
 (use-package pyenv-mode
   :straight t
   :defer t
@@ -333,13 +325,11 @@ local copy first."
 (use-package py-isort                   ; sort import statements
   :straight t
   :defer t
-  :disabled
   :commands (py-isort-buffer py-isort-before-save)
   :init
   (defun jyh-python-sort-imports ()
     (when (derived-mode-p 'python-mode)
-      (py-isort-before-save)))
-  (add-hook 'before-save-hook 'jyh-python-sort-imports))
+      (py-isort-before-save))))
 
 (use-package pip-requirements           ; edit mode for requirements.txt
   :straight t
@@ -360,10 +350,10 @@ local copy first."
              pytest-pdb-module
              pytest-pdb-one))
 
-(use-package yapfify                    ; python code formatter
+(use-package blacken                    ; black python code formatter
   :straight t
   :defer t
-  :commands yapfify-buffer)
+  :commands (blacken-mode blacken-buffer))
 
 (use-package pydoc                      ; python documentation viewer
   :straight t
