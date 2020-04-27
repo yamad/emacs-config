@@ -18,3 +18,4 @@ eshell/*
 request/*
 url/*
 init.d/init-package-private.el
+straight/repos/*
