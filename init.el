@@ -202,6 +202,7 @@ If provided, DISPLAY is used as the which-key text"
 
 (use-package bookmark+                  ; better bookmark management
   :straight t
+  :disabled
   :defer t)
 
 (use-package which-key                  ; keybinding display
