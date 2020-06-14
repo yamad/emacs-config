@@ -178,6 +178,8 @@ If provided, DISPLAY is used as the which-key text"
   (setq tramp-default-method "sshx"
         tramp-terminal-type "dumb"))
 
+(global-display-line-numbers-mode 't)
+
 (bind-keys ("C-x C-m" . execute-extended-command)
            ("C-c C-m" . execute-extended-command)
            ("C-x g r" . replace-regexp)
