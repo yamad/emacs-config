@@ -342,6 +342,8 @@ local copy first."
 (use-package python-pytest
   :straight t
   :defer t
+  :bind (:map python-mode-map
+              ("C-c t" . python-pytest-popup))
   :commands python-pytest-popup)
 
 (use-package blacken                    ; black python code formatter
