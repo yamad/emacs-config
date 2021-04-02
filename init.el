@@ -779,7 +779,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 (use-package server                     ; server for emacsclient
   :commands server-running-p
   :init
-  (unless (server-running-p) (server-start)))
+  (unless (server-running-p)
+    (require 'git-commit)               ; support commits from terminal
+    (server-mode)))
 
 ;; custom and collected elisp stuff
 (require 'jyh-functions)
