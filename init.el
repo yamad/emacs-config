@@ -22,6 +22,10 @@
     (warn "This version (%s) of Emacs is older than the oldest tested version (%s) with this configuration. Stuff might be broken."
           emacs-version minver)))
 
+;; performance for lsp-mode
+(setq gc-cons-threshold 100000000)
+(setq read-process-output-max (* 1024 1024))
+
 ;; configuration functions
 (defsubst hook-into-modes (func &rest modes)
   "Help add a function FUNC to a list of MODES (from jwiegley)."
@@ -151,7 +155,10 @@ If provided, DISPLAY is used as the which-key text"
 (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
 ;; bind frame/window switching to shift-up/down/left/right
 (windmove-default-keybindings)
-
+;; integrate X windows clipboard
+(when *is-X-display*
+  (setq x-select-enable-clipboard t)
+  (setq x-select-enable-primary t))
 
 (use-package desktop
   :defer t
@@ -228,14 +235,19 @@ If provided, DISPLAY is used as the which-key text"
 
   (which-key-declare-prefixes
     ;;Prefixes for global prefixes and minor modes
-    "C-c !" "flymake"
+    "C-c !" "flycheck"
     "C-c f" "files"
     "C-c j" "jump"
+    "C-c l" "lsp"
     "C-c m" "major mode"
     "C-c s" "search"
     "C-c x" "text"
     "C-c &" "yasnippet"))
 
+(use-package ztree                      ; directory tree comparison
+  :straight t
+  :defer t
+  :commands (ztree-dir ztree-diff))
 
 ;; ======================================
 ;;  Navigation
@@ -467,6 +479,46 @@ _._: split horizontal    _/_: split vertical
 (jyh/bind-leader-prefix-map
  "g" jyh/git-keymap "git")
 
+(use-package smerge-mode
+  :after hydra
+  :config
+  (defhydra unpackaged/smerge-hydra
+    (:color pink :hint nil :post (smerge-auto-leave))
+    "
+^Move^       ^Keep^               ^Diff^                 ^Other^
+^^-----------^^-------------------^^---------------------^^-------
+_n_ext       _b_ase               _<_: upper/base        _C_ombine
+_p_rev       _u_pper              _=_: upper/lower       _r_esolve
+^^           _l_ower              _>_: base/lower        _k_ill current
+^^           _a_ll                _R_efine
+^^           _RET_: current       _E_diff
+"
+    ("n" smerge-next)
+    ("p" smerge-prev)
+    ("b" smerge-keep-base)
+    ("u" smerge-keep-upper)
+    ("l" smerge-keep-lower)
+    ("a" smerge-keep-all)
+    ("RET" smerge-keep-current)
+    ("\C-m" smerge-keep-current)
+    ("<" smerge-diff-base-upper)
+    ("=" smerge-diff-upper-lower)
+    (">" smerge-diff-base-lower)
+    ("R" smerge-refine)
+    ("E" smerge-ediff)
+    ("C" smerge-combine-with-next)
+    ("r" smerge-resolve)
+    ("k" smerge-kill-current)
+    ("ZZ" (lambda ()
+            (interactive)
+            (save-buffer)
+            (bury-buffer))
+     "Save and bury buffer" :color blue)
+    ("q" nil "cancel" :color blue))
+  :hook (magit-diff-visit-file . (lambda ()
+                                   (when smerge-mode
+                                     (unpackaged/smerge-hydra/body)))))
+
 (use-package ediff
   :defer t
   :config
@@ -552,27 +604,38 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :straight t
   :bind (("C-c e" . er/expand-region)))
 
-(use-package flymake
+(use-package flycheck                   ; on-the-fly error checking
+  :straight t
   :defer t
-  :bind ("C-c ! !" . jyh-hydra-flymake/body)
+  :diminish
+  :bind ("C-c ! !" . jyh/hydra-flycheck/body)
+  :commands (flycheck-mode
+             flycheck-list-errors
+             flycheck-error-list-mode
+             flycheck-buffer)
+  :defines (flycheck-check-syntax-automatically)
+  :init
+  (hook-into-modes #'flycheck-mode
+                   'emacs-lisp-mode-hook
+                   'python-mode-hook
+                   'js2-mode-hook
+                   'haskell-mode-hook
+                   'c-mode-hook
+                   'f90-mode-hook)
   :config
-  (defhydra jyh-hydra-flymake
-    (:pre (progn (setq hydra-lv t) (flymake-show-diagnostics-buffer))
-          :post (progn (setq hydra-lv nil)
-                       (quit-windows-on
-                        (format "*Flymake diagnostics for %s*" (buffer-name)))))
+  (setq flycheck-check-syntax-automatically '(mode-enabled save))
+  (defhydra jyh/hydra-flycheck
+    (:pre (progn (setq hydra-lv t) (flycheck-list-errors))
+     :post (progn (setq hydra-lv nil) (quit-windows-on "*Flycheck errors*")))
     "Errors"
-    ("f"  "Filter")
-    ("j"  flymake-goto-next-error       "Next")
-    ("k"  flymake-goto-prev-error       "Previous")
-    ("gg" (progn
-            (goto-char (point-min))
-            (flymake-goto-next-error))  "First"
-            )
+    ("f"  flycheck-error-list-set-filter                            "Filter")
+    ("j"  flycheck-next-error                                       "Next")
+    ("k"  flycheck-previous-error                                   "Previous")
+    ("gg" flycheck-first-error                                      "First")
     ("G"  (progn
             (goto-char (point-max))
-            (flymake-goto-prev-error))  "Last")
-    ("q"  nil                           "quit")))
+            (flycheck-previous-error))                              "Last")
+    ("q"  nil                                                       "quit")))
 
 
 (use-package projectile                 ; project management
@@ -594,13 +657,15 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 (use-package ggtags                     ; symbol tags
   :straight t
   :defer t
-  :disabled
   :init
   (hook-into-modes
    '(lambda () (ggtags-mode 1))
+   'c-mode-hook
+   'c++-mode-hook
    'erlang-mode-hook
    'f90-mode-hook
    'java-mode-hook
+   'js2-mode-hook
    'lua-mode-hook
    'makefile-mode-hook))
 

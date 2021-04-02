@@ -7,6 +7,7 @@
 (use-package eglot
   :straight t
   :defer t
+  :disabled
   :hook ((python-mode js2-mode c-mode) . eglot-ensure)
   :config
   (setq flymake-start-syntax-check-on-newline nil)
@@ -16,6 +17,44 @@
           (and root (cons 'transient root)))))
   (add-to-list 'project-find-functions #'jyh/project-finder))
 
+(setq lsp-keymap-prefix "C-c l")
+
+(use-package lsp-mode
+  :straight t
+  :commands lsp
+  :hook ((python-mode . lsp)
+         (lsp-mode . lsp-enable-which-key-integration))
+  :custom
+  (lsp-auto-guess-root nil)
+  (lsp-prefer-flymake nil)              ; prefer flycheck
+  ;; python
+  (lsp-pyls-rename-backend "rope")
+  (lsp-pyls-plugins-mccabe-enabled nil)
+  (lsp-pyls-plugins-pylint-enabled t)
+  (lsp-pyls-plugins-pycodestyle-enabled nil))
+
+(use-package lsp-ui
+  :after lsp-mode
+  :diminish
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-include-signature t)
+  (lsp-ui-doc-position 'top)
+  (lsp-ui-sideline-enable nil)
+  (lsp-ui-sideline-ignore-duplicate t)
+  :config
+  (setq lsp-ui-doc-use-webkit t))
+
+(use-package lsp-ivy
+  :commands lsp-ivy-workspace-symbol)
+
+(use-package dap-mode
+  :straight t
+  :commands dap-mode
+  :hook (dap-stopped . (lambda (arg) (call-interactively #'dap-hydra)))
+  :config
+  (dap-mode 1))
 
 ;; ======================================
 ;;  C and C++
@@ -220,16 +259,12 @@ local copy first."
 
   ; prefer flycheck errors to builtins
   (setq js2-mode-show-strict-warnings nil
-        js2-mode-show-parse-errors nil)
-  ;(add-hook 'js2-mode-hook #'flycheck-mode)
-  )
-
+        js2-mode-show-parse-errors nil))
 
 ;; tern -- javascript static analysis
 (use-package tern
   :straight t
   :defer t
-  :disabled
   :after js2-mode
   :init
   (add-hook 'js2-mode-hook #'tern-mode))
@@ -584,6 +619,12 @@ local copy first."
 (use-package rust-mode
   :straight t
   :defer t)
+(use-package flycheck-rust
+  :straight t
+  :defer t
+  :after (flycheck rust-mode)
+  :init
+  (add-hook 'rust-mode-hook #'flycheck-rust-setup))
 
 
 ;; ======================================
