@@ -266,6 +266,7 @@ local copy first."
   :straight t
   :defer t
   :after js2-mode
+  :disabled
   :init
   (add-hook 'js2-mode-hook #'tern-mode))
 
