@@ -34,7 +34,6 @@
 
 (defvar jyh/package-archives
   '(("melpa" . "http://melpa.org/packages/")
-    ("org" . "http://orgmode.org/elpa/")
     ("gnu-elpa" . "https://elpa.gnu.org/packages/")))
 ;; add if not already in list
 (when (boundp 'package-archives)

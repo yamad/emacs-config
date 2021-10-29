@@ -29,16 +29,19 @@ https://stackoverflow.com/a/24958242/192780"
 (setq global-display-line-numbers t)
 
 (jyh/do-after-display-system-init
- ;; remove unnecessary UI elements
- (scroll-bar-mode -1)
- (tool-bar-mode   -1)
+ (if (display-graphic-p)
+     (progn
+       ;; remove unnecessary UI elements
+       (scroll-bar-mode -1)
+       (tool-bar-mode   -1)
 
- ;; reduce gutters/margins/"fringes" to 'half-width
- (set-fringe-mode 4)
+       ;; reduce gutters/margins/"fringes" to 'half-width
+       (set-fringe-mode 4)))
 
  ;; mode line
  (line-number-mode 1)                    ; show line-number in mode line
  (column-number-mode 1)                  ; show col-number  in mode line
+
  (use-package smart-mode-line
    :straight t
    :config

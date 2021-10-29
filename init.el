@@ -231,7 +231,7 @@ If provided, DISPLAY is used as the which-key text"
           ;; Prettify hydra entry points
           ("/body\\'"     . "|=")))
 
-  (which-key-declare-prefixes
+  (which-key-add-key-based-replacements
     ;;Prefixes for global prefixes and minor modes
     "C-c !" "flycheck"
     "C-c f" "files"
@@ -370,7 +370,7 @@ _._: split horizontal    _/_: split vertical
 (use-package undo-tree
   :defer t
   :diminish undo-tree-mode
-  :init
+  :config
   (global-undo-tree-mode 1))
 
 (use-package anzu                       ; show search position
@@ -431,6 +431,9 @@ _._: split horizontal    _/_: split vertical
 ;; ======================================
 ;;  Programming
 ;; ======================================
+
+;(use-package magit-section              ; magit dependency
+;  :straight t)                          ; can remove when magit package is fixed to depend on it
 
 (use-package magit                      ; git version control
   :straight t

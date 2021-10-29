@@ -5,7 +5,6 @@
 ;;; Code:
 
 (use-package eglot
-  :straight t
   :defer t
   :disabled
   :hook ((python-mode js2-mode c-mode) . eglot-ensure)
@@ -338,6 +337,7 @@ local copy first."
 
 (use-package pyenv-mode
   :straight t
+  :disabled
   :defer t
   :commands pyenv-mode
   :init
@@ -484,6 +484,7 @@ local copy first."
   :after (company anaconda-mode)
   :init
   (jyh-company-for-mode 'python-mode-hook company-anaconda))
+
 
 ;; setup IPython shell, use readline (rlipython) in IPython 6
 (setq python-shell-interpreter-args "-i"
