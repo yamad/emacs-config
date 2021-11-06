@@ -20,8 +20,8 @@
 
 (use-package lsp-mode
   :straight t
-  :commands lsp
-  :hook ((python-mode . lsp)
+  :commands (lsp lsp-deferred)
+  :hook ((python-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration))
   :custom
   (lsp-auto-guess-root nil)
@@ -33,7 +33,6 @@
   (lsp-pyls-plugins-pycodestyle-enabled nil))
 
 (use-package lsp-ui
-  :after lsp-mode
   :diminish
   :commands lsp-ui-mode
   :custom
@@ -47,6 +46,8 @@
 
 (use-package lsp-ivy
   :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs
+  :commands lsp-treemacs-error-list)
 
 (use-package dap-mode
   :straight t
@@ -618,16 +619,11 @@ local copy first."
 ;;  Rust
 ;; ======================================
 
-(use-package rust-mode
-  :straight t
-  :defer t)
-(use-package flycheck-rust
+(use-package rustic
   :straight t
   :defer t
-  :after (flycheck rust-mode)
-  :init
-  (add-hook 'rust-mode-hook #'flycheck-rust-setup))
-
+  :config
+  (setq rustic-format-on-save t))
 
 ;; ======================================
 ;;  Scheme/Racket

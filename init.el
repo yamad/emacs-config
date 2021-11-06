@@ -64,6 +64,11 @@
 ;; store all backups (*~) in one place
 (setq backup-directory-alist `(("." . ,(locate-user-emacs-file "backups"))))
 
+;; override built-in project.el version
+;; must be called early so that internal project.el is not loaded instead
+(use-package project
+  :straight t)
+
 ;; pick up environment from shell
 (use-package exec-path-from-shell
   :straight t
@@ -432,12 +437,10 @@ _._: split horizontal    _/_: split vertical
 ;;  Programming
 ;; ======================================
 
-;(use-package magit-section              ; magit dependency
-;  :straight t)                          ; can remove when magit package is fixed to depend on it
-
 (use-package magit                      ; git version control
   :straight t
   :defer t
+  :after project
   :commands (magit-status magit-file-dispatch)
   :bind (("C-x C-g" . magit-status))
   :init
