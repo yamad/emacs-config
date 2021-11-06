@@ -655,8 +655,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   ;(setq projectile-mode-line
         ;'(:eval (format " P/%s" (projectile-project-name))))
   ;; otherwise too slow
+
   :config
-  (setq projectile-enable-caching t))
+  (setq projectile-generic-command "rg --files -0"))
 
 (use-package ggtags                     ; symbol tags
   :straight t
