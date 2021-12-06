@@ -13,16 +13,6 @@
     (setq xcode-completing-read-function 'ivy-completing-read)))
 
 (when *is-mac-os*
-  (defun maxima-version ()
-    (car
-     (last (directory-files "/usr/local/Cellar/maxima" nil "[0-9\.]+" nil))))
-  (defun maxima-emacs-path ()
-    (concat "/usr/local/Cellar/maxima/" (maxima-version)
-            "/share/maxima/" (maxima-version) "/emacs"))
-  (add-to-list 'load-path (maxima-emacs-path)))
-
-
-(when *is-mac-os*
   ;; read gpg-agent environment
   (defun read-env-line (line)
     "read a env line and post to environment"

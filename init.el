@@ -766,14 +766,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   (jyh/bind-leader-prefix-map
    "y" jyh/spotify-command-map "spotify"))
 
-(use-package maxima                     ; computer algebra system
-  :disabled
-  :defer t)
-(use-package imaxima
-  :disabled
-  :defer t
-  :after maxima)
-
 (use-package emamux                     ; tmux integration
   :straight t
   :defer t
