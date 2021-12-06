@@ -470,6 +470,16 @@ _._: split horizontal    _/_: split vertical
     ("Q" (git-gutter-mode -1)
      "shut off" :color blue)))
 
+(use-package forge
+  :straight t
+  :after magit)
+
+(use-package code-review
+  :straight (code-review :type git
+                         :host github
+                         :repo "wandersoncferreira/code-review")
+  :after forge)
+
 (general-def
   :prefix-map 'jyh/git-keymap
   "s" 'magit-status
@@ -787,6 +797,15 @@ _k_: kill        _s_: split                   _{_: wrap with { }
    "3" 'emamux:split-window-horizontally)
   (jyh/bind-leader-prefix-map
    "t" jyh/emamux-keymap "tmux"))
+
+(use-package auth-source
+  :init
+  (setenv "GPG_AGENT_INFO" nil)
+  (auth-source-pass-enable))
+
+(use-package pass
+  :straight t
+  :defer t)
 
 ;; ======================================
 ;;  Other
