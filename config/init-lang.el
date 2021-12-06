@@ -397,6 +397,10 @@ local copy first."
              pydoc-info
              pydoc-jump-to-section))
 
+(use-package snakemake-mode
+  :straight t
+  :defer t)
+
 (use-package traad
   :straight t
   :defer t

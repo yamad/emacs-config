@@ -69,6 +69,8 @@
 (use-package nix-sandbox   :straight t :defer t)
 (use-package nixos-options :straight t :defer t)
 
+(use-package just-mode     :straight t :defer t)
+
 ;; XML
 (eval-after-load 'rng-loc
   '(add-to-list 'rng-schema-locating-files
