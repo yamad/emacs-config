@@ -80,7 +80,9 @@
 
 ;; load environment variables per directory, if using direnv
 (use-package direnv
-  :straight t)
+  :straight t
+  :config
+  (direnv-mode))
 
 ;; packages needed for config
 (use-package general                    ; keybindings
