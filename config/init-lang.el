@@ -306,6 +306,11 @@ local copy first."
 (use-package groovy-mode
   :straight t
   :mode ("\\.nf$" . groovy-mode)) ;; nextflow
+(use-package nextflow-mode
+  :straight (nextflow-mode
+             :type git
+             :host github
+             :repo "emiller88/nextflow-mode"))
 
 (use-package scala-mode
   :straight t
