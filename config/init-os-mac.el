@@ -29,5 +29,12 @@
         (mapc 'read-env-line (split-string (buffer-string) "\n" t)))
       )))
 
+;; required for compatibility with yabai window manager
+(when *is-mac-display*
+  (menu-bar-mode t))
+
+(when *is-mac-os*
+  (setq mac-option-modifier 'meta))
+
 (provide 'init-os-mac)
 ;;; init-os-mac.el ends here
