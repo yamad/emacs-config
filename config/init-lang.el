@@ -56,6 +56,18 @@
   :config
   (dap-mode 1))
 
+(use-package combobulate
+  :straight '(combobulate :type git
+                          :host github
+                          :repo "mickeynp/combobulate")
+  :disabled
+  :hook ((python-mode . combobulate-mode)))
+
+(use-package tree-sitter
+  :straight t)
+(use-package tree-sitter-langs
+  :straight t)
+
 ;; ======================================
 ;;  C and C++
 ;; ======================================
