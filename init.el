@@ -451,7 +451,7 @@ _._: split horizontal    _/_: split vertical
   (setq magit-last-seen-setup-instructions "1.4.0")
   (setq vc-handled-backends (delq 'Git vc-handled-backends))
   :config
-  (global-magit-file-mode -1)) ; don't set some global keybindings
+  (setq global-magit-file-mode -1)) ; don't set some global keybindings
 
 (use-package git-gutter
   :straight t
