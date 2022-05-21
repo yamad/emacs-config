@@ -474,9 +474,19 @@ _._: split horizontal    _/_: split vertical
 
 (use-package forge
   :straight t
-  :after magit)
+  :after magit
+  ;; sqlite connection keeps freezing. try again in emacs 29?
+  :disabled
+  :init
+  (use-package sqlite3
+    :straight t)
+  (use-package emacsql-sqlite-module
+    :straight t)
+  :config
+  (setq forge-database-connector 'sqlite-module))
 
 (use-package code-review
+  :disabled
   :straight (code-review :type git
                          :host github
                          :repo "wandersoncferreira/code-review")
