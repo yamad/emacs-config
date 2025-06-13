@@ -46,7 +46,6 @@
  ("emacsmirror-mirror" . "e828d51efdb8f3a16c4f47952f010263187c1e99")
  ("emacsql" . "9dca5996168c4963eb67e61c7f17fdcb8228e314")
  ("emamux" . "6172131d78038f0b1490e24bac60534bf4ad3b30")
- ("ensime-emacs" . "34eb11dac3ec9d1c554c2e55bf056ece6983add7")
  ("epl" . "78ab7a85c08222cd15582a298a364774e3282ce6")
  ("evil" . "17c635f6e1f538bf4b2c3c276ddd9d4d165a52fb")
  ("evil-avy" . "2dd955cc3ecaa7ddeb67b295298abdc6d16dd3a5")

@@ -315,14 +315,6 @@ local copy first."
 (use-package scala-mode
   :straight t
   :defer t)
-(use-package ensime
-  :defer t
-  :straight (ensime
-             :type git
-             :host github
-             :branch "2.0"
-             :repo "ensime/ensime-emacs"))
-
 
 ;; ======================================
 ;;  Emacs Lisp
