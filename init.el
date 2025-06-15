@@ -696,78 +696,11 @@ _k_: kill        _s_: split                   _{_: wrap with { }
    'lua-mode-hook
    'makefile-mode-hook))
 
-
-;; ======================================
-;;  Completion
-;; ======================================
-
-(use-package ivy                        ; completion backend
-  :straight t
-  :diminish ivy-mode
-  :bind (("C-c C-r" . ivy-resume)
-         :map ivy-minibuffer-map
-         ("C-." . ivy-avy)
-         ("C-m" . ivy-alt-done)
-         ("C-S-m" . ivy-immediate-done))
-  :init
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t
-        ivy-re-builders-alist
-        '((t . ivy--regex-ignore-order))
-        ivy-height 20
-        ivy-fixed-height-minibuffer nil
-        ivy-use-selectable-prompt t)
-
-  (use-package ivy-hydra                ; sticky keybindings within ivy
-    :straight t
-    :defer t)
-  (use-package swiper                   ; within-buffer searching
-    :straight t
-    :defer t)
-  (use-package counsel
-    :straight t
-    :defer t)
-  (use-package counsel-projectile
-    :straight t
-    :defer t
-    :init (counsel-projectile-mode))
-
-  ;; setup ivy-based global command keymap
-  (general-def
-   :prefix-map 'jyh/ivy-command-map
-   :prefix-doc "Ivy/Counsel command keymap"
-   "s" 'swiper
-   "o" 'ivy-occur
-   "i" 'counsel-imenu
-   "k" 'counsel-ag
-   "f" 'counsel-recentf
-   "g" 'counsel-git
-   "j" 'counsel-git-grep
-   "l" 'counsel-locate
-   "u" 'counsel-unicode-char)
-  (jyh/bind-leader-prefix-map
-   "i" jyh/ivy-command-map "ivy")
-
-  ;; remap built-in functions
-  (bind-keys
-   ([remap execute-extended-command] . counsel-M-x)  ; M-x
-   ([remap switch-to-buffer] . ivy-switch-buffer)    ; C-x b
-   ([remap bookmark-jump] . counsel-bookmark)        ; C-x r b
-   ([remap find-file] . counsel-find-file)           ; C-x C-f
-   ([remap yank-pop] . counsel-yank-pop))            ; M-y
-
-  (bind-keys
-   :map company-mode-map
-   ("C-:" . counsel-company)
-   :map company-active-map
-   ("C-:" . counsel-company)) )
-
-
 ;; ======================================
 ;;  External Utilities
 ;; ======================================
 
-(use-package ag                         ; better grep search
+(use-package ripgrep                     ; better grep search
   :straight t
   :defer t)
 (use-package wgrep-ag                   ; modify files from grep/ag
@@ -840,11 +773,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :init
   (add-hook 'restclient-response-received-hook
             'jyh-restclient-maybe-gunzip))
-
-(use-package company-restclient
-  :after restclient
-  :init
-  (jyh-company-for-mode 'restclient-mode-hook company-restclient))
 
 (use-package crux                       ; bbatsov useful utilities
   :straight t

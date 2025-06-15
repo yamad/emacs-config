@@ -159,7 +159,7 @@
                 (haskell-decl-scan-mode)
                 (haskell-indentation-mode)
                 (interactive-haskell-mode)
-                (setq-local company-backends '(company-ghc))))
+                ))
   (setq haskell-interactive-popup-errors nil)
   (setq haskell-process-type 'stack-ghci)
 
@@ -281,13 +281,6 @@ local copy first."
   :disabled
   :init
   (add-hook 'js2-mode-hook #'tern-mode))
-
-(use-package company-tern
-  :straight t
-  :after (company tern)
-  :disabled
-  :init
-  (jyh-company-for-mode 'js2-mode-hook company-tern))
 
 ;; skewer -- run browser REPL with buffers
 (use-package skewer-mode
@@ -491,14 +484,6 @@ local copy first."
     "ir" '(traad-relatives-to-absolutes :wk "relative to absolute import")
     "il" '(traad-handle-long-imports :wk "long imports")
     "iS" '(traad-imports-super-smackdown :wk "import \"super smackdown\"")))
-
-(use-package company-anaconda
-  :straight t
-  :defer t
-  :after (company anaconda-mode)
-  :init
-  (jyh-company-for-mode 'python-mode-hook company-anaconda))
-
 
 ;; setup IPython shell, use readline (rlipython) in IPython 6
 (setq python-shell-interpreter-args "-i"

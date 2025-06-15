@@ -1,42 +1,64 @@
-;;; init-complete.el -- auto-completion settings (company)
+;;; init-complete.el -- auto-completion settings
 ;;
 ;; part of emacs config for jyamad. see init.el
 
 ;;; Commentary:
 ;; Configuration, functions and macros for setting up
-;; autocompletion. Currently using company.
-;;
-;; To define mode-specific backends, use:
-;;
-;;   (jyh-company-setup MODE BACKEND-1 BACKEND-2)
+;; completion. Currently using vertico/consult/marginalia.
 
 ;;; Code:
-
-(use-package company                    ; autocompletion
+(use-package vertico    ; completion ui
   :straight t
-  :diminish company-mode
-  :bind (("M-RET" . company-complete))
-;  :commands (company-capf company-dabbrev-code company-gtags company-etags company-keywords company-files company-dabbrev)
+  :custom
+  (vertico-scroll-margin 0)
+  (vertico-count 20)
+  (vertico-resize t)
+  (vertico-cycle t)
   :init
-  (global-company-mode)
-  (setq company-dabbrev-code-modes t
-        company-dabbrev-code-everywhere t)
-  (setq company-backends
-        '(company-capf
-          company-files
-          (company-dabbrev-code
-          company-gtags
-          company-etags
-          company-keywords)
-          company-dabbrev)))
+  (vertico-mode))
+(use-package vertico-directory
+  :after vertico
+  :ensure nil
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word)))
+(use-package vertico-quick  ; avy-like keys in vertico
+  :after vertico
+  :ensure nil)
 
-(defmacro jyh-company-for-mode (mode-hook &rest backends)
-  "Install extra BACKENDS for mode using MODE-HOOK."
-  (let ((backend-list company-backends))
-     `(add-hook ,mode-hook
-                (lambda ()
-                  (set (make-local-variable 'company-backends)
-                       ',(append backends backend-list))))))
+(use-package savehist
+  :init
+  (savehist-mode))
+
+(use-package marginalia   ; minibuffer/completion annotations
+  :straight t
+  :after vertico
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia-align 'right)
+  (marginalia-annotators
+   '(marginalia-annotators-heavy marginalia-annotators-light nil))
+  :init
+  (marginalia-mode))
+
+(use-package consult
+  :straight t)
+
+(use-package corfu        ; completion popup
+  :straight t
+  :custom
+  (corfu-cycle t)
+  :init
+  (global-corfu-mode))
+
+(use-package orderless    ; completion style, like ivy
+  :straight t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion--category-overrides
+   '((file (styles basic partial-completion))))
+  )
 
 (use-package hippie-exp    ; dabbrev enhacements, expansion/completion
   :straight t
