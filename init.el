@@ -101,15 +101,18 @@
     `(progn
       (jyh/emacs-leader-map ,@bindings)
       (jyh/evil-leader-map ,@bindings)))
-  (defmacro jyh/bind-leader-prefix-map (prefix map &optional display)
+  (defmacro jyh/bind-leader-prefix-map (prefix map &optional display package)
     "Bind key prefix PREFIX to keymap MAP.
 
 If provided, DISPLAY is used as the which-key text"
     `(jyh/bind-leader-maps
       ,prefix
-      '(:keymap ,map ,@(when display `(:wk ,display)))))
+      '(:keymap
+        ,map
+        ,@(when display `(:wk ,display))
+        ,@(when package `(:package ,package)))))
 
-  (jyh/bind-leader-maps "SPC" '(execute-extended-command :wk "M-x"))  )
+  (jyh/bind-leader-maps "SPC" '(execute-extended-command :wk "M-x")))
 
 (use-package hydra                      ; sticky keys
   :straight t
@@ -405,7 +408,7 @@ _._: split horizontal    _/_: split vertical
               tab-width 4
               c-basic-offset 4
               py-indent-offset 4)
-(use-package smart-tabs-mode            ; tabs(indentation), spaces(alignment)
+(use-package smart-tabs-mode         ; tabs(indentation), spaces(alignment)
   :straight t
   :defer
   :init
@@ -692,18 +695,11 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :defer t
   :commands wgrep-change-to-wgrep-mode)
 
-(use-package spotify                    ; spotify controls
+(use-package smudge                     ; spotify controls
   :straight t
-  :defer t
-  :init
-  (general-def
-    :prefix-map 'jyh/spotify-command-map
-   "y" 'spotify-playpause
-   "p" 'spotify-previous
-   "n" 'spotify-next
-   "c" 'spotify-current)
+  :config
   (jyh/bind-leader-prefix-map
-   "y" jyh/spotify-command-map "spotify"))
+   "y" smudge-command-map "spotify" smudge))
 
 (use-package emamux                     ; tmux integration
   :straight t
