@@ -68,6 +68,10 @@
 (use-package tree-sitter-langs
   :straight t)
 
+(use-package gptel
+  :straight t
+  :defer t)
+
 ;; ======================================
 ;;  C and C++
 ;; ======================================
