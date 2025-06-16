@@ -3,27 +3,13 @@
 ;; part of emacs config for jyamad. see init.el
 
 ;;; Code:
-
-(use-package eglot
-  :defer t
-  :disabled
-  :hook ((python-mode js2-mode c-mode) . eglot-ensure)
-  :config
-  (setq flymake-start-syntax-check-on-newline nil)
-  (defun jyh/project-finder (dir)
-    (if (fboundp 'projectile-project-root)
-        (let ((root (projectile-project-root dir)))
-          (and root (cons 'transient root)))))
-  (add-to-list 'project-find-functions #'jyh/project-finder))
-
-(setq lsp-keymap-prefix "C-c l")
-
-(use-package lsp-mode
+(use-package lsp-mode                   ; language server protocol
   :straight t
   :commands (lsp lsp-deferred)
   :hook ((python-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration))
   :custom
+  (lsp-keymap-prefix "C-c l")
   (lsp-auto-guess-root nil)
   (lsp-prefer-flymake nil)              ; prefer flycheck
   ;; python
@@ -44,33 +30,24 @@
   :config
   (setq lsp-ui-doc-use-webkit t))
 
-(use-package lsp-ivy
-  :commands lsp-ivy-workspace-symbol)
 (use-package lsp-treemacs
   :commands lsp-treemacs-error-list)
 
-(use-package dap-mode
-  :straight t
-  :commands dap-mode
-  :hook (dap-stopped . (lambda (arg) (call-interactively #'dap-hydra)))
-  :config
-  (dap-mode 1))
-
-(use-package combobulate
-  :straight '(combobulate :type git
-                          :host github
-                          :repo "mickeynp/combobulate")
-  :disabled
-  :hook ((python-mode . combobulate-mode)))
+(use-package dape  ; debugging support
+  :straight t)
 
 (use-package tree-sitter
   :straight t)
 (use-package tree-sitter-langs
   :straight t)
 
-(use-package gptel
+(use-package gptel   ; LLM support
   :straight t
-  :defer t)
+  :defer t
+  :custom
+  (gptel-model 'claude-3.7-sonnet)
+  (gptel-backend (gptel-make-gh-copilot "Copilot"))
+  )
 
 ;; ======================================
 ;;  C and C++

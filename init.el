@@ -17,7 +17,7 @@
 (defconst emacs-start-time (current-time)) ; cribbed from jwiegley
 
 ;; document minimum version
-(let ((minver "26"))
+(let ((minver "29"))
   (when (version< emacs-version minver)
     (warn "This version (%s) of Emacs is older than the oldest tested version (%s) with this configuration. Stuff might be broken."
           emacs-version minver)))
@@ -123,10 +123,6 @@ If provided, DISPLAY is used as the which-key text"
   :straight t
   :defer t
   :after hydra)
-
-;(use-package diminish                   ; control modeline status
-  ;:straight t
-  ;:defer t)
 
 ;; auxillary configurations
 (require 'init-complete)
@@ -691,6 +687,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 (use-package ripgrep                     ; better grep search
   :straight t
   :defer t)
+(use-package deadgrep
+  :straight t
+  :defer t)
 (use-package wgrep-ag                   ; modify files from grep/ag
   :straight t
   :defer t
@@ -737,11 +736,9 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 ;;  Other
 ;; ======================================
 
-(use-package eat
+(use-package eat   ; terminal
   :straight t)
 
-(use-package dape
-  :straight t)
 (use-package meow
   :straight t)
 
