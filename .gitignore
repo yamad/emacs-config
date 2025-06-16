@@ -19,3 +19,5 @@ request/*
 url/*
 init.d/init-package-private.el
 straight/repos/*
+straight/build-cache.el
+site-lisp/*

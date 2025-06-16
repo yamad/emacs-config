@@ -356,15 +356,6 @@ _._: split horizontal    _/_: split vertical
   ("q" nil "quit"))
 (bind-key "C-c v" 'hydra-vi/body)
 
-(use-package persp-mode
-  :straight t
-  :disabled
-  :bind-keymap ("C-c q" . persp-key-map))
-
-(use-package persp-projectile
-  :defer t
-  :straight t)
-
 (use-package eyebrowse                  ; window configurations
   :straight t
   :config
@@ -386,17 +377,10 @@ _._: split horizontal    _/_: split vertical
   (global-anzu-mode)
   :bind
   (([remap query-replace] . anzu-query-replace)
-      ([remap query-replace-regexp] . anzu-query-replace-regexp)
-      :map isearch-mode-map
-      ([remap isearch-query-replace] . anzu-isearch-query-replace)
-      ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
-  :diminish anzu-mode)
-
-(use-package visual-regexp
-  :straight t
-  :defer t
-  :bind (("C-c s r" . vr/replace)
-         ("C-c s R" . vr/query-replace)))
+   ([remap query-replace-regexp] . anzu-query-replace-regexp)
+   :map isearch-mode-map
+   ([remap isearch-query-replace] . anzu-isearch-query-replace)
+   ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp)))
 
 (use-package visual-fill-column
   :straight t

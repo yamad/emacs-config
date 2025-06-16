@@ -590,24 +590,28 @@ local copy first."
              :branch "master"
 	         :repo "polymode/polymode")
   :defer t
-  :commands poly-markdown+r-mode
-  :config
-  (use-package poly-noweb
-    :straight (poly-noweb
-	       :type git :host github
-	       :repo "polymode/poly-noweb"))
-  (use-package poly-rst
-    :straight (poly-rst
-	       :type git :host github
-	       :repo "polymode/poly-rst"))
-  (use-package poly-markdown
-    :straight (poly-markdown
-	       :type git :host github
-	       :repo "polymode/poly-markdown"))
-  (use-package poly-R
-    :straight (poly-R
-	       :type git :host github
-	       :repo "polymode/poly-R")))
+  :commands poly-markdown+r-mode)
+(use-package poly-noweb
+  :straight (poly-noweb
+	     :type git :host github
+	     :repo "polymode/poly-noweb")
+  :after polymode)
+(use-package poly-rst
+  :straight (poly-rst
+	     :type git :host github
+	     :repo "polymode/poly-rst")
+  :after polymode)
+(use-package poly-markdown
+  :straight (poly-markdown
+	     :type git :host github
+	     :repo "polymode/poly-markdown")
+  :after polymode)
+(use-package poly-R
+  :straight (poly-R
+	     :type git :host github
+	     :repo "polymode/poly-R")
+  :after polymode)
+
 
 (use-package stan-mode :straight t :defer t)
 (use-package stan-snippets :straight t :defer t)

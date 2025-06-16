@@ -96,12 +96,6 @@ https://stackoverflow.com/a/24958242/192780"
   (add-hook 'window-configuration-change-hook
             #'jyh/change-modeline-by-window-count))
 
-(use-package color-theme-sanityinc-tomorrow
-  :straight t
-  :disabled
-  :config
-  (load-theme 'sanityinc-tomorrow-night t))
-
 (provide 'init-display)
 
 ;;; init-display.el ends here

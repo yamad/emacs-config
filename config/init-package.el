@@ -12,6 +12,9 @@
 ;; https://github.com/raxod502/straight.el/issues/293
 (setq straight-recipes-gnu-elpa-use-mirror t)
 
+;; do shallow clones
+(setq straight-vc-git-default-clone-depth 1)
+
 ;; bootstrap straight.el package manager
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -36,14 +39,6 @@
 (setq straight-check-for-modifications 'live)
 
 (setq use-package-verbose t)            ; for profiling
-
-(defvar jyh/package-archives
-  '(("melpa" . "http://melpa.org/packages/")
-    ("gnu-elpa" . "https://elpa.gnu.org/packages/")))
-;; add if not already in list
-(when (boundp 'package-archives)
-  (dolist (pa jyh/package-archives)
-    (add-to-list 'package-archives pa)))
 
 (provide 'init-package)
 
