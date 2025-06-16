@@ -77,6 +77,10 @@
   (setq exec-path-from-shell-check-startup-files nil)
   :config
   (exec-path-from-shell-initialize))
+(use-package keychain-environment
+  :straight t
+  :init
+  (keychain-refresh-environment))
 
 ;; load environment variables per directory, if using direnv
 (use-package direnv
@@ -737,9 +741,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 ;; ======================================
 
 (use-package eat   ; terminal
-  :straight t)
-
-(use-package meow
   :straight t)
 
 (use-package restclient
