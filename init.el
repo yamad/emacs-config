@@ -632,6 +632,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
                    'emacs-lisp-mode-hook
                    'python-mode-hook
                    'js2-mode-hook
+                   'json-mode-hook
                    'haskell-mode-hook
                    'c-mode-hook
                    'f90-mode-hook)
@@ -735,6 +736,14 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 ;; ======================================
 ;;  Other
 ;; ======================================
+
+(use-package eat
+  :straight t)
+
+(use-package dape
+  :straight t)
+(use-package meow
+  :straight t)
 
 (use-package restclient
   :load-path "site-lisp/restclient"
