@@ -200,7 +200,6 @@ e.g. (jyh/find-path '.git') finds the nearest .git directory path"
 (use-package js2-mode
   :straight t
   :mode (("\\.js$" . js2-mode)
-         ("\\.json$" . js2-mode)
          ("\\.jsx$" . js2-jsx-mode))
   :init
   (use-package nodejs-repl

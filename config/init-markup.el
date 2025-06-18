@@ -72,14 +72,19 @@
 (use-package just-mode     :straight t :defer t)
 
 ;; XML
-(eval-after-load 'rng-loc
-  '(add-to-list 'rng-schema-locating-files
-                "~/.schemas/nxml-schemas.xml"))
-;(use-package n3-mode
-;  :straight t
-;  :mode (("\\.n3\\'" . n3-mode)
-;         ("\\.owl\\'" . n3-mode)))
-(require 'rng-nxml)
+(use-package rng-nxml
+  :defer t
+  :ensure nil)
+
+;; csv/tabular
+(use-package csv-mode
+  :straight t
+  :mode (("\\.csv\\'" . csv-mode)
+         ("\\.tsv\\'" . tsv-mode)))
+
+(use-package json-mode
+  :straight t
+  :mode (("\\.json\\'" . json-mode)))
 
 ;; ledger -- accounting program
 (use-package ledger-mode
