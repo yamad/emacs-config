@@ -376,8 +376,10 @@ _._: split horizontal    _/_: split vertical
 
 (use-package anzu                       ; show search position
   :straight t
+  :defer t
   :init
   (global-anzu-mode)
+  :diminish
   :bind
   (([remap query-replace] . anzu-query-replace)
    ([remap query-replace-regexp] . anzu-query-replace-regexp)
@@ -494,6 +496,7 @@ _._: split horizontal    _/_: split vertical
 
 (use-package smerge-mode
   :after hydra
+  :defer t
   :config
   (defhydra unpackaged/smerge-hydra
     (:color pink :hint nil :post (smerge-auto-leave))
@@ -701,6 +704,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 
 (use-package smudge                     ; spotify controls
   :straight t
+  :defer t
   :config
   (jyh/bind-leader-prefix-map
    "y" smudge-command-map "spotify" smudge))
@@ -728,6 +732,7 @@ _k_: kill        _s_: split                   _{_: wrap with { }
    "t" jyh/emamux-keymap "tmux"))
 
 (use-package auth-source
+  :defer t
   :init
   (setenv "GPG_AGENT_INFO" nil)
   (auth-source-pass-enable))
@@ -741,7 +746,8 @@ _k_: kill        _s_: split                   _{_: wrap with { }
 ;; ======================================
 
 (use-package eat   ; terminal
-  :straight t)
+  :straight t
+  :defer t)
 
 (use-package restclient
   :load-path "site-lisp/restclient"

@@ -103,6 +103,7 @@
 
 (use-package evil
   :straight t
+  :defer t
   :init
   (evil-mode 1)
   :config

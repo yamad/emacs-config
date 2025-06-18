@@ -34,12 +34,15 @@
   :commands lsp-treemacs-error-list)
 
 (use-package dape  ; debugging support
-  :straight t)
+  :straight t
+  :defer t)
 
 (use-package tree-sitter
-  :straight t)
+  :straight t
+  :defer t)
 (use-package tree-sitter-langs
-  :straight t)
+  :straight t
+  :defer t)
 
 (use-package gptel   ; LLM support
   :straight t
@@ -279,8 +282,10 @@ local copy first."
 
 (use-package groovy-mode
   :straight t
+  :defer t
   :mode ("\\.nf$" . groovy-mode)) ;; nextflow
 (use-package nextflow-mode
+  :defer t
   :straight (nextflow-mode
              :type git
              :host github
@@ -305,6 +310,7 @@ local copy first."
 
 (use-package lua-mode
   :straight t
+  :defer t
   :interpreter "lua")
 
 

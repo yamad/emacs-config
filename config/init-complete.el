@@ -9,6 +9,7 @@
 ;;; Code:
 (use-package vertico    ; completion ui
   :straight t
+  :defer t
   :custom
   (vertico-scroll-margin 0)
   (vertico-count 20)
@@ -37,6 +38,7 @@
   (vertico-multiform-mode))
 
 (use-package savehist
+  :defer t
   :init
   (savehist-mode))
 
@@ -157,6 +159,7 @@
 
 (use-package corfu        ; completion popup
   :straight t
+  :defer t
   :custom
   (corfu-cycle t)
   :init
@@ -164,6 +167,7 @@
 
 (use-package orderless    ; completion style, like ivy
   :straight t
+  :defer t
   :custom
   (completion-styles '(orderless basic))
   (completion--category-overrides
@@ -203,7 +207,7 @@
 
 (use-package yasnippet                  ; snippets/templates
   :straight t
-  :defer 8
+  :defer t
   :diminish yas-minor-mode
   :commands (yas/trigger-key yas/keymap)
   :init
