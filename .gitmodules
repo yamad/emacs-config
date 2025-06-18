@@ -1,9 +1,0 @@
-[submodule "site-lisp/igor-mode"]
-	path = site-lisp/igor-mode
-	url = git://github.com/yamad/igor-mode.git
-[submodule "site-lisp/polymode"]
-	path = site-lisp/polymode
-	url = git://github.com/yamad/polymode
-[submodule "site-lisp/org-mode"]
-	path = site-lisp/org-mode
-	url = git://orgmode.org/org-mode.git
