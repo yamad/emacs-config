@@ -162,8 +162,23 @@
   :defer t
   :custom
   (corfu-cycle t)
+  :bind
+  ("M-i" . completion-at-point)
   :init
   (global-corfu-mode))
+
+(use-package corfu-terminal
+  :straight (corfu-terminal
+             :type git
+             :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+  :defer t
+  :init
+  (unless (display-graphic-p)
+    (corfu-terminal-mode +1)))
+
+(use-package emacs
+  :custom
+  (read-extended-command-predicate #'command-completion-default-include-p))
 
 (use-package orderless    ; completion style, like ivy
   :straight t

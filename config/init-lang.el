@@ -6,19 +6,22 @@
 (use-package lsp-mode                   ; language server protocol
   :straight t
   :commands (lsp lsp-deferred)
-  :hook ((python-mode . lsp-deferred)
-         (lsp-mode . lsp-enable-which-key-integration))
+  :init
+  (defun jyh/lsp-mode-setup-completion ()
+    (setf (alist-get
+           'styles
+           (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless)))
+  :hook ((lsp-mode . lsp-enable-which-key-integration)
+         (lsp-completion-mode . jyh/lsp-mode-setup-completion))
   :custom
+  (lsp-completion-provider :none)       ; use corfu instead
   (lsp-keymap-prefix "C-c l")
-  (lsp-auto-guess-root nil)
   (lsp-prefer-flymake nil)              ; prefer flycheck
-  ;; python
-  (lsp-pyls-rename-backend "rope")
-  (lsp-pyls-plugins-mccabe-enabled nil)
-  (lsp-pyls-plugins-pylint-enabled t)
-  (lsp-pyls-plugins-pycodestyle-enabled nil))
+  )
 
 (use-package lsp-ui
+  :straight t
   :diminish
   :commands lsp-ui-mode
   :custom
@@ -47,10 +50,13 @@
 (use-package gptel   ; LLM support
   :straight t
   :defer t
+  :bind (("M-s s" . gptel-send))
   :custom
   (gptel-model 'claude-3.7-sonnet)
-  (gptel-backend (gptel-make-gh-copilot "Copilot"))
-  )
+  :config
+  ; breaks if this config is in custom block
+  (setq gptel-backend (gptel-make-gh-copilot "Copilot")))
+
 
 ;; ======================================
 ;;  C and C++
@@ -334,15 +340,6 @@ local copy first."
   :init
   (add-hook 'python-mode-hook #'pyvenv-mode))
 
-(use-package py-isort                   ; sort import statements
-  :straight t
-  :defer t
-  :commands (py-isort-buffer py-isort-before-save)
-  :init
-  (defun jyh-python-sort-imports ()
-    (when (derived-mode-p 'python-mode)
-      (py-isort-before-save))))
-
 (use-package pip-requirements           ; edit mode for requirements.txt
   :straight t
   :defer t)
@@ -479,6 +476,15 @@ local copy first."
   (interactive
    (list (gud-query-cmdline pdb-path
                             (file-name-nondirectory buffer-file-name)))))
+
+(use-package lsp-pyright
+  :straight t
+  :defer t
+  :custom
+  (lsp-pyright-langserver-command "basedpyright")
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))
 
 ;; Mako
 (define-derived-mode mako-mode html-mode "Mako"
