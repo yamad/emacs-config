@@ -57,6 +57,11 @@
 
 ;; ensure required packages
 (require 'init-package)
+(use-package auto-compile
+  :straight t
+  :init
+  (auto-compile-on-load-mode)
+  (auto-compile-on-save-mode))
 
 ;; put set variables from customize interface in own file
 (load custom-file)
@@ -81,12 +86,6 @@
   :straight t
   :init
   (keychain-refresh-environment))
-
-;; load environment variables per directory, if using direnv
-(use-package direnv
-  :straight t
-  :config
-  (direnv-mode))
 
 ;; packages needed for config
 (use-package general                    ; keybindings
@@ -794,7 +793,6 @@ _k_: kill        _s_: split                   _{_: wrap with { }
   :commands server-running-p
   :init
   (unless (server-running-p)
-    (require 'git-commit)               ; support commits from terminal
     (server-mode)))
 
 ;; custom and collected elisp stuff

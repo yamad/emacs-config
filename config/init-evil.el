@@ -111,7 +111,6 @@
   (setq evil-default-state 'emacs)
   (defvar jyh/evil-emacs-state-modes
     '(edebug-mode
-      git-commit-mode
       flycheck-error-list-mode
       git-rebase-mode
       eshell-mode

@@ -160,19 +160,6 @@
   :config
   (use-package ghc :straight t))
 
-;;(use-package haskell-compile
-;;  :ensure haskell-mode
-;;  :defer t)
-  ;:config
-  ;; use Stack for building
-  ;(setq haskell-compile-cabal-build-command "stack build"))
-
-(use-package hindent
-  :straight t
-  :defer t
-  :init (add-hook 'haskell-mode-hook #'hindent-mode))
-
-
 
 ;; ======================================
 ;; Igor Pro
